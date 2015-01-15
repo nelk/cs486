@@ -65,7 +65,24 @@ $titlepage{CS 486 - Assignment 1}{Alex Klen \\ 20372654}
       }
       $item{ % vi
         $bold{Do you agree with Searle?} \\
-        I agree with the very fine technical distinction he makes between the underlying machinery running a strong AI program not understanding anything but simply following rules, and the instantiation of the program having understanding. However, I disagree with any conclusions he makes about how this invalidates strong AI. The same argument can be made for human beings, saying their collection of neurons doesn't have any understanding of the person's consious mental state or the inputs and reactions he or she makes. A human's understanding and conciousness presumably comes from the patterns of activations of neurons - the parallel to an instantiation of a computer program. For the Chinese room example where the man has memorized all of the rules, I claim that the man doesn't need to understand any Chinese for there to be understanding because in this case the man's mind is actually the machinery manipulating symbols for another mind, which he must be simulating within his own (assuming he has enormous mental capacity relative to the mind he is simulating).
+        I agree with the very fine technical distinction he makes between the underlying machinery running a strong AI program not understanding anything but simply following rules, and the instantiation of the program having understanding. However, I disagree with any conclusions he makes about how this invalidates strong AI. The same argument can be made for human beings, saying their collection of neurons doesn't have any understanding of the person's concious mental state or the inputs and reactions he or she makes. A human's understanding and conciousness presumably comes from the patterns of activations of neurons - the parallel to an instantiation of a computer program. For the Chinese room example where the man has memorized all of the rules, I claim that the man doesn't need to understand any Chinese for there to be understanding because in this case the man's mind is actually the machinery manipulating symbols for another mind, which he must be simulating within his own (assuming he has enormous mental capacity relative to the mind he is simulating).
+      }
+    }
+  }
+
+  $section{AI in the Media}{
+    $enumerateN{i$rparen}{
+      $item{ % i
+        $bold{What is the piece's main concern?} \\
+        The piece states that the AI community needs to exercise a lot more caution then they currently do. It likens the arrival of human-level intelligent AI like the invasion of an alien race, only we know that it's coming and we're inviting it in. It speculates that if an AI intelligent enough to improve on its own design were created, then the singularity will occur and the future after that is unpredictable. AI might bring about the greatest technological change every, and with this comes huge risks that have to be remedied in the near future before it's too late.
+      }
+      $item{ % ii
+        $bold{How plausible do you find the scenarios Hawking poses?} \\
+        I think the scenarios are plausible, although the amount of time before an AI can pose a real threat is likely quite distant. Very little progress has been made in general AI, which is required for a real thinking machine. AI research currently is more focussed on performing and automating practical tasks that only humans have been able to do in the past, such as driving cars. While these systems have intelligence, this category of programs have a very limited scope of intelligence and no hope of developing their own intentions and posing risks. The only risks they can pose beyond their creator's wishes is working sub-optimally and making mistakes. Of course more intelligent weapons could be utilized, but we've had weapons that don't require intelligence to be enormously destructive for decades. I think we'll have plenty of warning if a real general purpose AI is on the horizon. There will need to be much incremental improvement before we really have to plan on how to avoid these risks.
+      }
+      $item{ % iii
+        $bold{What do you think AI researchers should do, if anything, to avoid these scenarios?} \\
+        In the future when we might begin to have generally intelligent AI systems, I think a lot more care would need to be taken. There might be a point at which an AI system will have reasoning capabilities that approach those of humans. At this point further development should be regulated. These systems should be carefully monitored in a sand-boxed environment (eg. a virtual world). If the AI isn't given access to the internet or to additional computational resources then a safe level of experimentation can be maintained. However I think if research gets to this level somebody is inevitably going to try to unleash these systems into the world.
       }
     }
   }
