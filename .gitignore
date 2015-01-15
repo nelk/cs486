@@ -1,5 +1,5 @@
 *.log
 *.tex
 *.aux
-*.fb_latexmk
+*.fdb_latexmk
 aztex-lib
