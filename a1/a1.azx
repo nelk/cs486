@@ -1,7 +1,7 @@
 $import aztex-lib/latex.azx
 $import aztex-lib/amsmath.azx
 
-$titlepage{CS 486 - Assignment 1}{Alex Klen $newline 20372654}
+$titlepage{CS 486 - Assignment 1}{Alex Klen \\ 20372654}
 
 @{
   $section{Computing Machinery and Intelligence} {
