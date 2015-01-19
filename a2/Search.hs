@@ -1,10 +1,14 @@
 {-#LANGUAGE MultiParamTypeClasses, FunctionalDependencies, ScopedTypeVariables #-}
-module Search (Searcher, Path, expandNextNode, searchPath, nextNode, isAtGoal, search) where
+module Search (Searcher(..), Path, Cost, ProblemNode(..), search) where
 
 import Prelude
 import Control.Monad.State
 
+type Cost = Double
 type Path = []
+
+class Ord k => ProblemNode pn k | pn -> k where
+  ident :: pn -> k
 
 class Show n => Searcher s n | s -> n where
   nextNode :: s -> Maybe n

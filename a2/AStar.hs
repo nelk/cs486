@@ -1,5 +1,5 @@
-{-#LANGUAGE MultiParamTypeClasses, FunctionalDependencies, FlexibleInstances #-}
-module AStar (ProblemNode(..), ProblemDef(..), Cost, aStarSearch) where
+{-#LANGUAGE MultiParamTypeClasses, FlexibleInstances #-}
+module AStar (ProblemDef(..), aStarSearch) where
 
 import Control.Applicative
 import Control.Arrow
@@ -7,29 +7,24 @@ import qualified Search
 import qualified Data.Set as Set
 import qualified Data.Heap as Heap
 
-type Cost = Double
-
-class Ord k => ProblemNode pn k | pn -> k where
-  ident :: pn -> k
-
-data (ProblemNode pn k, Show pn) => AStarNode pn k = AStarNode (Search.Path pn) pn
+data (Search.ProblemNode pn k, Show pn) => AStarNode pn k = AStarNode (Search.Path pn) pn
   deriving Show
 
-data ProblemNode pn k => ProblemDef pn k = ProblemDef
-  { neighbours :: pn -> [pn]
-  , costSoFar :: Search.Path pn -> Cost
-  , heuristicCostToEnd :: pn -> Cost
+data Search.ProblemNode pn k => ProblemDef pn k = ProblemDef
+  { successors :: pn -> [pn]
+  , costSoFar :: Search.Path pn -> Search.Cost
+  , heuristicCostToEnd :: pn -> Search.Cost
   , isGoalNode :: pn -> Bool
   }
 
 data AStarState pn k = AStarState
-  { fringe :: Heap.MinPrioHeap Cost (AStarNode pn k)
-  , processed :: Set.Set k
+  { fringe :: !(Heap.MinPrioHeap Search.Cost (AStarNode pn k))
+  , processed :: !(Set.Set k)
   , problemDef :: ProblemDef pn k
-  , successorCount :: Int
+  , successorCount :: !Int
   }
 
-aStarSearch :: (ProblemNode pn k, Show pn) => ProblemDef pn k -> pn -> (Maybe (Search.Path pn), Int)
+aStarSearch :: (Search.ProblemNode pn k, Show pn) => ProblemDef pn k -> pn -> (Maybe (Search.Path pn), Int)
 aStarSearch probDef startProblemNode = (reverse <$>) *** successorCount $ Search.search searcher
   where searcher = AStarState { problemDef = probDef
                               , processed = Set.empty
@@ -38,10 +33,10 @@ aStarSearch probDef startProblemNode = (reverse <$>) *** successorCount $ Search
                               }
         startAStarNode = AStarNode [startProblemNode] startProblemNode
 
-nodeCost :: (ProblemNode pn k, Show pn) => ProblemDef pn k -> AStarNode pn k -> Cost
+nodeCost :: (Search.ProblemNode pn k, Show pn) => ProblemDef pn k -> AStarNode pn k -> Search.Cost
 nodeCost prob (AStarNode path cur) = costSoFar prob path + heuristicCostToEnd prob cur
 
-instance (ProblemNode pn k, Show pn) => Search.Searcher (AStarState pn k) pn where
+instance (Search.ProblemNode pn k, Show pn) => Search.Searcher (AStarState pn k) pn where
   nextNode = fmap (\(_, AStarNode _ n) -> n) . Heap.viewHead . fringe
 
   searchPath s = case Heap.viewHead (fringe s) of
@@ -56,11 +51,11 @@ instance (ProblemNode pn k, Show pn) => Search.Searcher (AStarState pn k) pn whe
                       Nothing -> s
                       Just ((_, AStarNode curPath curProblemNode), newFringe) ->
                         let prob = problemDef s
-                            nextProblemNodes = neighbours prob curProblemNode
-                            nextUnprocessedProblemNodes = filter (not . flip Set.member (processed s) . ident) nextProblemNodes
+                            nextProblemNodes = successors prob curProblemNode
+                            nextUnprocessedProblemNodes = filter (not . flip Set.member (processed s) . Search.ident) nextProblemNodes
                             nextNodes = map (\probNode -> AStarNode (probNode:curPath) probNode) nextUnprocessedProblemNodes
                             newFringe' = foldl (\h n' -> Heap.insert (nodeCost prob n', n') h) newFringe nextNodes
-                            newProcessed = Set.insert (ident curProblemNode) $ processed s
+                            newProcessed = Set.insert (Search.ident curProblemNode) $ processed s
                         in s { fringe = newFringe'
                              , processed = newProcessed
                              , successorCount = successorCount s + length nextUnprocessedProblemNodes

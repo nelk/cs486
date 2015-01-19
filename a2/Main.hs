@@ -9,17 +9,19 @@ import Control.Monad
 import Data.List (sort)
 import Text.Read
 import Safe
+import qualified System.Random as Random
 import qualified Data.Set as Set
 import qualified Data.Map as Map
 
 import qualified Search
 import qualified AStar
+import qualified SimulatedAnnealing as SA
 
 type City = Char
 newtype Tour = Tour [City] deriving Show
 data TSP = TSP [City] (Map.Map City (Int, Int))
 
-instance AStar.ProblemNode Tour [City] where
+instance Search.ProblemNode Tour [City] where
   ident (Tour tour) = tour
 
 tspCities :: TSP -> [City]
@@ -34,14 +36,14 @@ makeTSP = do
   cityMap <- Map.fromList . map (\(c, x, y) -> (c, (x, y)))
   return $ TSP orderedCityNames cityMap
 
-cityDist :: TSP -> City -> City -> AStar.Cost
+cityDist :: TSP -> City -> City -> Search.Cost
 cityDist tsp a b = let (x1, y1) = tspGet tsp a
                        (x2, y2) = tspGet tsp b
                        square x = x*x
                    in sqrt $ fromIntegral $ square (x2 - x1) + square (y2 - y1)
 
--- Only includes going back to goal if all tour is of same length as number of cities.
-tourCost :: TSP -> Tour -> Double
+-- Only includes going back to goal if tour is of same length as number of cities.
+tourCost :: TSP -> Tour -> Search.Cost
 tourCost _ (Tour []) = 0
 tourCost _ (Tour (_:[])) = 0
 tourCost tsp (Tour tour@(a:b:_))
@@ -51,10 +53,10 @@ tourCost tsp (Tour tour@(a:b:_))
 startCity :: City
 startCity = 'A'
 
-solveTSP :: RunMode -> TSP -> (Maybe (Search.Path Tour), Int)
-solveTSP AStarSimple tsp = solveWithAStar False tsp
-solveTSP AStarBetter tsp = solveWithAStar True tsp
-solveTSP Annealing _ = undefined
+solveTSP :: RunMode -> TSP -> Random.StdGen -> (Maybe (Search.Path Tour), Int)
+solveTSP AStarSimple tsp _ = solveWithAStar False tsp
+solveTSP AStarBetter tsp _ = solveWithAStar True tsp
+solveTSP Annealing tsp rnd = solveWithSA tsp rnd
 
 solveWithAStar :: Bool -> TSP -> (Maybe (Search.Path Tour), Int)
 solveWithAStar useGoodHeuristic tsp =
@@ -66,7 +68,7 @@ solveWithAStar useGoodHeuristic tsp =
 mkAStarTSPProblem :: Bool -> TSP -> AStar.ProblemDef Tour [City]
 mkAStarTSPProblem useGoodHeuristic tsp = AStar.ProblemDef
   { AStar.isGoalNode = isGoalNode
-  , AStar.neighbours = neighbours
+  , AStar.successors = successors
   , AStar.costSoFar = \(tour:_) -> tourCost tsp tour
   , AStar.heuristicCostToEnd = if useGoodHeuristic
                                   then heuristicFarthestSingleCityThenGoal
@@ -77,7 +79,7 @@ mkAStarTSPProblem useGoodHeuristic tsp = AStar.ProblemDef
                              in filter (not . (`Set.member` visitedSet)) $ tspCities tsp
 
         isGoalNode (Tour tour) = length tour == length (tspCities tsp)
-        neighbours (Tour tour) = map (Tour . (:tour)) $ notYetVisited tour
+        successors (Tour tour) = map (Tour . (:tour)) $ notYetVisited tour
 
         heuristicNumRemainingCities (Tour tour) = fromIntegral $ length (tspCities tsp) - length tour
 
@@ -89,6 +91,34 @@ mkAStarTSPProblem useGoodHeuristic tsp = AStar.ProblemDef
           in if null leftToVisit
                then 0
                else toFarthestThenGoalCost
+
+solveWithSA :: TSP -> Random.StdGen -> (Maybe (Search.Path Tour), Int)
+solveWithSA tsp rnd =
+  let problem = mkSATSPProblem tsp
+  in SA.saSearch problem (Tour $ tspCities tsp) rnd -- TODO: Random start point
+
+reverseRange :: String -> Int -> Int -> String
+reverseRange s i j =
+  let (prefix, nonPrefix) = splitAt i s
+      (inRange, postfix) = splitAt (j-i+1) nonPrefix
+  in prefix ++ reverse inRange ++ postfix
+
+
+-- For this problem, ProblemNodes are actually tours.
+mkSATSPProblem :: TSP -> SA.ProblemDef Tour [City]
+mkSATSPProblem tsp = SA.ProblemDef
+  { SA.successors = \(Tour tour) -> successors tour
+  , SA.solutionCost = \(tour:_) -> tourCost tsp tour
+  , SA.coolingSchedule = SA.CoolingSchedule
+        { SA.startTemperature = 100.0
+        , SA.decrement = 0.0001
+        }
+  , SA.maxSteps = 1000000
+  }
+  where successors tour
+          | length tour < 4 = []
+          | otherwise = let ranges = [(i, j) | i <- [1..length tour - 3], j <- [i+1..length tour - 2]]
+                        in map (Tour . uncurry (reverseRange tour)) ranges
 
 
 type CityInfo = (City, Int, Int)
@@ -137,13 +167,14 @@ parseCityInfos = do
 
 main :: IO ()
 main = do
+  rnd <- Random.getStdGen
   args <- getArgs
   case parseArgs args of
     Nothing -> exitError "Usage: ./tsp-search (simple|astar|sa)"
     Just mode -> do
       cityInfos <- parseCityInfos
       let tsp = makeTSP cityInfos
-      let (maybeSoln, numProcessed) = solveTSP mode tsp
+      let (maybeSoln, numProcessed) = solveTSP mode tsp rnd
       maybe (exitError "Failed to find a solution") (prettyPrintSoln tsp numProcessed) maybeSoln
 
   where prettyPrintSoln :: TSP -> Int -> [Tour] -> IO ()
