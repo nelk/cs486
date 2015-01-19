@@ -2,6 +2,7 @@
 module AStar (ProblemNode(..), ProblemDef(..), Cost, aStarSearch) where
 
 import Control.Applicative
+import Control.Arrow
 import qualified Search
 import qualified Data.Set as Set
 import qualified Data.Heap as Heap
@@ -29,8 +30,8 @@ data AStarState pn k = AStarState
   , problemDef :: ProblemDef pn k
   }
 
-aStarSearch :: (ProblemNode pn k, Show pn) => ProblemDef pn k -> pn -> Maybe (Search.Path pn)
-aStarSearch probDef startProblemNode = reverse <$> Search.search searcher
+aStarSearch :: (ProblemNode pn k, Show pn) => ProblemDef pn k -> pn -> (Maybe (Search.Path pn), Int)
+aStarSearch probDef startProblemNode = (reverse <$>) *** (Set.size . processed) $ Search.search searcher
   where searcher = AStarState { problemDef = probDef
                               , processed = Set.empty
                               , fringe = Heap.singleton (nodeCost probDef startAStarNode, startAStarNode)

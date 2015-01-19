@@ -2,7 +2,8 @@
 module Main where
 
 import Prelude
-import System.IO
+import System.IO (hPutStrLn, putStrLn, stderr)
+import System.Environment (getArgs)
 import Control.Monad
 import qualified AStar
 import Text.Read
@@ -47,17 +48,31 @@ mkTSPProblem cities = AStar.ProblemDef
         nonLoopCostSoFar (_:[]) = 0
         nonLoopCostSoFar (a:b:rest) = cityDist a b + nonLoopCostSoFar (b:rest)
 
-        costSoFar (Tour tour@(a:b:rest)) = cityDist (last (b:rest)) a + nonLoopCostSoFar tour
-        costSoFar (Tour tour) = nonLoopCostSoFar tour
+        --costSoFar (Tour tour@(a:b:rest)) = cityDist (last (b:rest)) a + nonLoopCostSoFar tour
+        -- Doesn't include going back to goal!
+        costSoFar (Tour tour)
+          | length tour < length cities = nonLoopCostSoFar tour
+          | otherwise = nonLoopCostSoFar tour + cityDist (head tour) (last tour)
 
-        -- TODO.
-        heuristicCostToEnd (Tour tour) = fromIntegral $ length cities - length tour
+        -- Bad heuristic.
+        --heuristicCostToEnd (Tour tour) = fromIntegral $ length cities - length tour
+
+        heuristicCostToEnd (Tour tour) =
+          let leftToVisit = notYetVisited tour
+              curCity = head tour
+              goalCity = last tour
+              toFarthestThenGoalCost = maximum $ map (\city -> cityDist curCity city + cityDist city goalCity) leftToVisit
+              --toFarthestCity = maximum $ map (cityDist curCity) leftToVisit
+          in if null leftToVisit
+               then 0
+               else toFarthestThenGoalCost
 
 
 type CityInfo = (City, Int, Int)
 
 main :: IO ()
 main = do
+  -- args <- getArgs
   numCitiesStr <- getLine
   case readMaybe numCitiesStr :: Maybe Int of
    Nothing -> hPutStrLn stderr "Error - number of cities is not an integer!"
@@ -66,15 +81,17 @@ main = do
      case sequence cityInfoMaybes of
       Nothing -> hPutStrLn stderr "Failed."
       Just cityInfos -> let problem = mkTSPProblem cityInfos
-                            maybeSoln = AStar.aStarSearch problem (Tour [startCity])
-                        in maybe (hPutStrLn stderr "Failed to find a solution") (prettyPrintSoln problem) maybeSoln
+                            (maybeSoln, numProcessed) = AStar.aStarSearch problem (Tour [startCity])
+                        in maybe (hPutStrLn stderr "Failed to find a solution") (prettyPrintSoln problem numProcessed) maybeSoln
 
-  where prettyPrintSoln :: AStar.ProblemDef Tour [City] -> [Tour] -> IO ()
-        prettyPrintSoln problem tours =
+  where prettyPrintSoln :: AStar.ProblemDef Tour [City] -> Int -> [Tour] -> IO ()
+        prettyPrintSoln problem numProcessed tours =
           let (Tour tour) = last tours
               soln = reverse tour
               totalCost = AStar.costSoFar problem [Tour tour]
-          in putStrLn $ "Solution: " ++ soln ++ "\nCost: " ++ show totalCost
+          in putStrLn $ "Solution: " ++ soln ++
+                        "\nCost: " ++ show totalCost ++
+                        "\nNum Processed Nodes: " ++ show numProcessed
 
         readAndParseCity :: IO (Maybe CityInfo)
         readAndParseCity = do

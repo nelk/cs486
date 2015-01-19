@@ -14,8 +14,8 @@ class Show n => Searcher s n | s -> n where
   isAtGoal :: s -> Bool
   expandNextNode :: s -> s
 
-search :: Searcher s n => s -> Maybe (Path n)
-search = evalState search_
+search :: Searcher s n => s -> (Maybe (Path n), s)
+search = runState search_
 
 search_ :: Searcher s n => State s (Maybe (Path n))
 search_ = do
