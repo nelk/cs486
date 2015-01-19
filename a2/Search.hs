@@ -4,8 +4,6 @@ module Search (Searcher, Path, expandNextNode, searchPath, nextNode, isAtGoal, s
 import Prelude
 import Control.Monad.State
 
-import Debug.Trace
-
 type Path = []
 
 class Show n => Searcher s n | s -> n where
@@ -25,7 +23,7 @@ search_ = do
      then return $ return $ searchPath s
      else case next of
                Nothing -> return Nothing
-               Just n -> {-trace (show n) $-} do
+               Just _ -> do
                  put $ expandNextNode s
                  search_
 

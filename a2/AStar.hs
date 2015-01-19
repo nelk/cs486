@@ -7,8 +7,6 @@ import qualified Search
 import qualified Data.Set as Set
 import qualified Data.Heap as Heap
 
-import Debug.Trace
-
 type Cost = Double
 
 class Ord k => ProblemNode pn k | pn -> k where
@@ -61,8 +59,7 @@ instance (ProblemNode pn k, Show pn) => Search.Searcher (AStarState pn k) pn whe
                             nextNodes = map (\probNode -> AStarNode (probNode:curPath) probNode) nextUnprocessedProblemNodes
                             newFringe' = foldl (\h n' -> Heap.insert (nodeCost prob n', n') h) newFringe nextNodes
                             newProcessed = Set.insert (ident curProblemNode) $ processed s
-                        in {-trace ("nextUnprocessedProblemNodes " ++ show nextUnprocessedProblemNodes) $ -}
-                          s { fringe = newFringe'
+                        in s { fringe = newFringe'
                              , processed = newProcessed
                              }
 
