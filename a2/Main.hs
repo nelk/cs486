@@ -6,29 +6,37 @@ import System.IO (hPutStrLn, stderr)
 import System.Environment (getArgs)
 import System.Exit
 import Control.Monad
-import qualified Search
-import qualified AStar
+import Data.List (sort)
 import Text.Read
 import Safe
 import qualified Data.Set as Set
 import qualified Data.Map as Map
 
+import qualified Search
+import qualified AStar
+
 type City = Char
 newtype Tour = Tour [City] deriving Show
-type TSP = Map.Map City (Int, Int)
+data TSP = TSP [City] (Map.Map City (Int, Int))
 
 instance AStar.ProblemNode Tour [City] where
   ident (Tour tour) = tour
 
 tspCities :: TSP -> [City]
-tspCities = Map.keys
+tspCities (TSP cities _) = cities
+
+tspGet :: TSP -> City -> (Int, Int)
+tspGet (TSP _ cityMap) c = cityMap Map.! c
 
 makeTSP :: [CityInfo] -> TSP
-makeTSP = Map.fromList . map (\(c, x, y) -> (c, (x, y)))
+makeTSP = do
+  orderedCityNames <- sort . map (\(c, _, _) -> c)
+  cityMap <- Map.fromList . map (\(c, x, y) -> (c, (x, y)))
+  return $ TSP orderedCityNames cityMap
 
 cityDist :: TSP -> City -> City -> AStar.Cost
-cityDist tsp a b = let (x1, y1) = tsp Map.! a
-                       (x2, y2) = tsp Map.! b
+cityDist tsp a b = let (x1, y1) = tspGet tsp a
+                       (x2, y2) = tspGet tsp b
                        square x = x*x
                    in sqrt $ fromIntegral $ square (x2 - x1) + square (y2 - y1)
 
@@ -66,7 +74,7 @@ mkAStarTSPProblem useGoodHeuristic tsp = AStar.ProblemDef
   }
   where notYetVisited :: [City] -> [City]
         notYetVisited tour = let visitedSet = Set.fromList tour
-                             in filter (not . (`Set.member` visitedSet)) $ Map.keys tsp
+                             in filter (not . (`Set.member` visitedSet)) $ tspCities tsp
 
         isGoalNode (Tour tour) = length tour == length (tspCities tsp)
         neighbours (Tour tour) = map (Tour . (:tour)) $ notYetVisited tour

@@ -26,13 +26,15 @@ data AStarState pn k = AStarState
   { fringe :: Heap.MinPrioHeap Cost (AStarNode pn k)
   , processed :: Set.Set k
   , problemDef :: ProblemDef pn k
+  , successorCount :: Int
   }
 
 aStarSearch :: (ProblemNode pn k, Show pn) => ProblemDef pn k -> pn -> (Maybe (Search.Path pn), Int)
-aStarSearch probDef startProblemNode = (reverse <$>) *** (Set.size . processed) $ Search.search searcher
+aStarSearch probDef startProblemNode = (reverse <$>) *** successorCount $ Search.search searcher
   where searcher = AStarState { problemDef = probDef
                               , processed = Set.empty
                               , fringe = Heap.singleton (nodeCost probDef startAStarNode, startAStarNode)
+                              , successorCount = 0
                               }
         startAStarNode = AStarNode [startProblemNode] startProblemNode
 
@@ -61,6 +63,7 @@ instance (ProblemNode pn k, Show pn) => Search.Searcher (AStarState pn k) pn whe
                             newProcessed = Set.insert (ident curProblemNode) $ processed s
                         in s { fringe = newFringe'
                              , processed = newProcessed
+                             , successorCount = successorCount s + length nextUnprocessedProblemNodes
                              }
 
 
