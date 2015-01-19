@@ -1,0 +1,63 @@
+$import aztex-lib/latex.azx
+$import aztex-lib/amsmath.azx
+
+$titlepage{CS 486 - Assignment 2}{Alex Klen \\ 20372654}
+
+@{
+  $sectionAlph{Written Questions} {
+    $enumerateN{a.$rparen}{
+      $item{ % a
+        The algorithm will explore the states in the following order: #{s, f, p, q, r, t, g}.
+      }
+      $item{ % b
+        $enumerateN{i.$rparen}{
+          $item{ % i
+            #h is admissible because it satisfies the following two criteria. #{h(g) = 0} because the goal is zero steps from itself. For Manhattan Distance, #{h(n) $le h^*(n)} (a heuristic will give a cost from node #n to the goal of at most the cost of the shortest path) because the Manhattan Distance gives the shortest possible number of moves. This is proven below. $newline
+            Suppose we have a path #p from #n to #g where #{|p| < h(n)}. #p needs to have at least #{dx = |g.x - n.x|} horizontal moves and at least #{dy = |g.y - n.y|} vertical moves, so #{|p| $ge dx + dy}. But Manhattan Distance is exactly this quantity: #{h(n) = dx + dy}. Then #{|p| $ge dx + dy = h(n)}, a contradiction. $newline
+            Therefore, #h is an admissible heuristic function.
+          }
+          $item{ % ii
+            The algorithm will explore the states in the following order: #{s, h, k, c, a, b, d, m, g}. $newline
+          }
+          $item{ % iii
+            The algorithm will explore the states in the following order: #{s, h, k, c, f, p, q, r, t, g}. $newline
+            Note that the algorithm might not explore #c , since at that step #c and #f have the same cost plus heuristic value.
+          }
+        }
+      }
+    }
+  }
+
+  $sectionAlph{Programming Questions}{
+    $enumerateN{A.}{
+      $item{ % A
+        $bold{Informed Search} $newline
+        $enumerateN{a.}{
+          $item{ % a
+          }
+          $item{ % b
+          }
+          $item{ % c
+          }
+        }
+      }
+      $item{ % B
+        $bold{Local Search} $newline
+        $enumerateN{a.}{
+          $item{ % a
+          }
+          $item{ % b
+          }
+          $item{ % c
+          }
+          $item{ % d
+          }
+          $item{ % e
+          }
+        }
+      }
+    }
+  }
+}
+
+
