@@ -4,7 +4,7 @@ $import aztex-lib/amsmath.azx
 $titlepage{CS 486 - Assignment 2}{Alex Klen \\ 20372654}
 
 @{
-  $sectionAlph{Written Questions} {
+  $section{Written Questions} {
     $enumerateN{a.$rparen}{
       $item{ % a
         The algorithm will explore the states in the following order: #{s, f, p, q, r, t, g}.
@@ -28,14 +28,20 @@ $titlepage{CS 486 - Assignment 2}{Alex Klen \\ 20372654}
     }
   }
 
-  $sectionAlph{Programming Questions}{
+  $section{Programming Questions}{
     $enumerateN{A.}{
       $item{ % A
         $bold{Informed Search} $newline
         $enumerateN{a.}{
           $item{ % a
+            A state is a partial tour, represented by AStarNode in my implementation. In this case the path A* takes isn't needed to compute the cost of each state, because this information is stored in the state. The reason states need this information is because the heuristic needs to know which cities the tour has visited so far, so a state needs to include the partial tour. $newline$newline
+            The initial state is simply a partial tour of only city A. $newline$newline
+            Goal states are any states that has a tour of every city - the length of the tour is the number of cities in the problem. $newline$newline
+            The operator to get to new states is simply to choose each city not in the current state's tour and append it to the tour. $newline$newline
+            The cost of a state is simply the sum of distances of consecutive cities. If the tour is partial, the cost does not include a return edge to the start node. If it is complete, however, it is the full cost of the cycle.
           }
           $item{ % b
+            My heuristic function is #{h(n) = max...} % TODO
           }
           $item{ % c
           }
