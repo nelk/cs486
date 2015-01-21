@@ -53,6 +53,7 @@ tourCost tsp (Tour tour@(a:b:_))
 startCity :: City
 startCity = 'A'
 
+-- Note: Returns path of constructing tours and each tour in reverse.
 solveTSP :: RunMode -> TSP -> Random.StdGen -> (Maybe (Search.Path Tour), Int)
 solveTSP AStarSimple tsp _ = solveWithAStar False tsp
 solveTSP AStarBetter tsp _ = solveWithAStar True tsp
@@ -111,9 +112,9 @@ mkSATSPProblem tsp = SA.ProblemDef
   , SA.solutionCost = \(tour:_) -> tourCost tsp tour
   , SA.coolingSchedule = SA.CoolingSchedule
         { SA.startTemperature = 100.0
-        , SA.decrement = 0.0001
+        , SA.decrement = 0.0002
         }
-  , SA.maxSteps = 1000000
+  , SA.maxSteps = 40000
   }
   where successors tour
           | length tour < 4 = []
@@ -179,7 +180,7 @@ main = do
 
   where prettyPrintSoln :: TSP -> Int -> [Tour] -> IO ()
         prettyPrintSoln tsp numProcessed tours =
-          let (Tour tour) = last tours
+          let (Tour tour) = head tours
               soln = reverse tour
               totalCost = tourCost tsp (Tour tour)
           in putStrLn $ "Solution: " ++ soln ++

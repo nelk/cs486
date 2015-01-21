@@ -18,7 +18,7 @@ cabal-version:       >=1.10
 executable tsp-search
   main-is:             Main.hs
 
-  ghc-options: -O2 -Wall -threaded -with-rtsopts=-N8-K10000000
+  ghc-options: -O2 -Wall -threaded -prof -fprof-auto -rtsopts -with-rtsopts=-N8-K10000000
   -- other-modules:       
   -- other-extensions:    
   build-depends:       base >=4.6 && <4.7
