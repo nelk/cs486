@@ -41,7 +41,10 @@ $titlepage{CS 486 - Assignment 2}{Alex Klen \\ 20372654}
             The cost of a state is simply the sum of distances of consecutive cities. If the tour is partial, the cost does not include a return edge to the start node. If it is complete, however, it is the full cost of the cycle.
           }
           $item{ % b
-            My heuristic function is #{h(n) = max...} % TODO
+            My heuristic function is #{h(path) = $Max{n $in (@cities - @path)}{@dist(@path.last, n) + @dist(n, @path.first)}}. $nl
+            This means for some partial tour, it finds the longest Euclidean distance to any unvisited city and then back to the starting city. This heuristic is admissible; the proof follows. $nl
+            Suppose you have some partial tour #{p = p_1..p_k}. Let dist(#{p}) be the length of path #p. Let the shortest tour which begins with #p be #{T^* = [p_1..p_k, u_1..u_l, p_1]}, where #{k + l = | @cities |}. #{h(p) = @dist(p_k, u_r) + @dist(u_r, p_1)} for some #{r $in $braces{1..l}}. The shortest distance from #{p_k} to #{p_1} while visiting all unvisited cities is the distance of the portion of #{T^*} after #{p_k}, which is #{@dist(p_k, u_1...u_l, p_1) = @dist(p_k, u_1..u_r) + @dist(u_r..u_l, p_1) $ge @dist(p_k, u_r) + @dist(u_r, p_1) = h(p)}. Therefore my heuristic will never overestimate the remaining cost because for any #{u_r} chosen, the remainder of the tour must visit #{u_r} before returning to #{p_1}, and because of the triangle inequality in Euclidean space, there cannot be a shorter route to do this by taking more edges. $nl
+            My heuristic is balanced between being simple to calculate while still approximating the distance to the goal node. It makes the assumption that if we find the ``farthest'' node we have to visit, the others can be visited along the way. As soon as we try to look at multiple cities along the way we would have to make sure we aren't overestimating by measuring a sub-optimal path through them.
           }
           $item{ % c
           }
