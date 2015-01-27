@@ -13,15 +13,15 @@ $titlepage{CS 486 - Assignment 2}{Alex Klen \\ 20372654}
       $item{ % b
         $enumerateN{i.$rparen}{
           $item{ % i
-            #h is admissible because it satisfies the following two criteria. #{h(g) = 0} because the goal is zero steps from itself. For Manhattan Distance, #{h(n) $le h^*(n)} (a heuristic will give a cost from node #n to the goal of at most the cost of the shortest path) because the Manhattan Distance gives the shortest possible number of moves. This is proven below. $newline
-            Suppose we have a path #p from #n to #g where #{|p| < h(n)}. #p needs to have at least #{dx = |g.x - n.x|} horizontal moves and at least #{dy = |g.y - n.y|} vertical moves, so #{|p| $ge dx + dy}. But Manhattan Distance is exactly this quantity: #{h(n) = dx + dy}. Then #{|p| $ge dx + dy = h(n)}, a contradiction. $newline
+            #h is admissible because it satisfies the following two criteria. #{h(g) = 0} because the goal is zero steps from itself. For Manhattan Distance, #{h(n) $le h^*(n)} (a heuristic will give a cost from node #n to the goal of at most the cost of the shortest path) because the Manhattan Distance gives the shortest possible number of moves. This is proven below. $nl
+            Suppose we have a path #p from #n to #g where #{|p| < h(n)}. #p needs to have at least #{dx = |g.x - n.x|} horizontal moves and at least #{dy = |g.y - n.y|} vertical moves, so #{|p| $ge dx + dy}. But Manhattan Distance is exactly this quantity: #{h(n) = dx + dy}. Then #{|p| $ge dx + dy = h(n)}, a contradiction. $nl
             Therefore, #h is an admissible heuristic function.
           }
           $item{ % ii
-            The algorithm will explore the states in the following order: #{s, h, k, c, a, b, d, m, g}. $newline
+            The algorithm will explore the states in the following order: #{s, h, k, c, a, b, d, m, g}. $nl
           }
           $item{ % iii
-            The algorithm will explore the states in the following order: #{s, h, k, c, f, p, q, r, t, g}. $newline
+            The algorithm will explore the states in the following order: #{s, h, k, c, f, p, q, r, t, g}. $nl
             Note that the algorithm might not explore #c , since at that step #c and #f have the same cost plus heuristic value.
           }
         }
@@ -32,21 +32,31 @@ $titlepage{CS 486 - Assignment 2}{Alex Klen \\ 20372654}
   $section{Programming Questions}{
     $enumerateN{A.}{
       $item{ % A
-        $bold{Informed Search} $newline
+        $bold{Informed Search} $nl
         $enumerateN{a.}{
           $item{ % a
-            A state is a partial tour, represented by AStarNode in my implementation. In this case the path A* takes isn't needed to compute the cost of each state, because this information is stored in the state. The reason states need this information is because the heuristic needs to know which cities the tour has visited so far, so a state needs to include the partial tour. $newline$newline
-            The initial state is simply a partial tour of only city A. $newline$newline
-            Goal states are any states that has a tour of every city - the length of the tour is the number of cities in the problem. $newline$newline
-            The operator to get to new states is simply to choose each city not in the current state's tour and append it to the tour. $newline$newline
+            A state is a partial tour, represented by AStarNode in my implementation. In this case the path A* takes isn't needed to compute the cost of each state, because this information is stored in the state. The reason states need this information is because the heuristic needs to know which cities the tour has visited so far, so a state needs to include the partial tour. $nl$nl
+            The initial state is simply a partial tour of only city A. $nl$nl
+            Goal states are any states that has a tour of every city - the length of the tour is the number of cities in the problem. $nl$nl
+            The operator to get to new states is simply to choose each city not in the current state's tour and append it to the tour. $nl$nl
             The cost of a state is simply the sum of distances of consecutive cities. If the tour is partial, the cost does not include a return edge to the start node. If it is complete, however, it is the full cost of the cycle.
           }
           $item{ % b
-            % TODO: Rewrite this with MST heuristic.
-            My heuristic function is #{h(path) = $Max{n $in (@cities - @path)}{@dist(@path.last, n) + @dist(n, @path.first)}}. $nl
-            This means for some partial tour, it finds the longest Euclidean distance to any unvisited city and then back to the starting city. This heuristic is admissible; the proof follows. $nl
-            Suppose you have some partial tour #{p = p_1..p_k}. Let dist(#{p}) be the length of path #p. Let the shortest tour which begins with #p be #{T^* = [p_1..p_k, u_1..u_l, p_1]}, where #{k + l = | @cities |}. #{h(p) = @dist(p_k, u_r) + @dist(u_r, p_1)} for some #{r $in $braces{1..l}}. The shortest distance from #{p_k} to #{p_1} while visiting all unvisited cities is the distance of the portion of #{T^*} after #{p_k}, which is #{@dist(p_k, u_1...u_l, p_1) = @dist(p_k, u_1..u_r) + @dist(u_r..u_l, p_1) $ge @dist(p_k, u_r) + @dist(u_r, p_1) = h(p)}. Therefore my heuristic will never overestimate the remaining cost because for any #{u_r} chosen, the remainder of the tour must visit #{u_r} before returning to #{p_1}, and because of the triangle inequality in Euclidean space, there cannot be a shorter route to do this by taking more edges. $nl
-            My heuristic is balanced between being simple to calculate while still approximating the distance to the goal node. It makes the assumption that if we find the ``farthest'' node we have to visit, the others can be visited along the way. As soon as we try to look at multiple cities along the way we would have to make sure we aren't overestimating by measuring a sub-optimal path through them.
+            My heuristic function for an incomplete tour is as follows:
+            $math{
+              & @{Let path} = [p_1, ..., p_k] \\
+              & @{Let unvisited} = $braces@cities - $braces@path \\
+              & h(@path) = @dist(@MST(@unvisited)) + $Min{n $in @unvisited}{@dist(p_k, n)} + $Min{n $in @unvisited}{@dist(n, p_1)} \\
+            }
+            The heuristic function is 0 for a complete tour. I did not come up with this heuristic, I found it on page 26 of $it{Heuristic Search: Theory and Applications} By Stefan Edelkamp, Stefan Schroedl. $nl
+            It is admissible because of the following observation. The optimal tour #{T^* = [p_1..p_k, u_1, u_l, p_1]} has some path through the remaining unvisited nodes #{u_1..u_l}, with the edges #(p_k, u_1) and #(u_l, p_1). The path #[u_1..u_l] is a spanning tree of the unvisited nodes. By definition the minimum spanning tree (MST) has sum of edge lengths less than or equal to any spanning tree. $nl
+           $math{
+             @dist(T^*) &= @dist(p_1..p_k, u_1..u_l, p_1) \\
+                        &= @dist(p_1..p_k) + @dist(p_k, u_1) + @dist(u_1..u_l) + @dist(u_l, p_1) \\
+                        &$le @dist(p_1..p_k) + $Min{n $in @unvisited}{@dist(p_k, n)} + @dist(@MST(@unvisited)) + $Min{n $in @unvisited}{@dist(n, p_1)} \\
+                        &= @dist(p_1..p_k) + h(@path) \\
+             $therefore @{ } @dist(T^*) &- @dist(p_1..p_k) $le h(@path) \\
+           }
           }
           $item{ % c
             The following graph shows the number of A* states created and placed in the priority queue during the search averaged over all 10 given TSPs.
@@ -55,12 +65,12 @@ $titlepage{CS 486 - Assignment 2}{Alex Klen \\ 20372654}
             The trend line shows the approximate number of states generated for a 36-city TSP, which is 36.3 million. $nl
             The chart below shows the averaged running times for the same runs. $nl
             $graphic{astar_runtime.png}{scale=1.0} $nl
-            The trend line shows the approximate runtime a 36-city TSP would be ~78 hours. $nl
+            The trend line shows the approximate runtime a 36-city TSP would be $approx 78 hours. $nl
           }
         }
       }
       $item{ % B
-        $bold{Local Search} $newline
+        $bold{Local Search} $nl
         $enumerateN{a.}{
           $item{ % a
           }
