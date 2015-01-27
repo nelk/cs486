@@ -7,22 +7,31 @@ import System.Environment (getArgs)
 import System.Exit
 import Control.Monad
 import Data.List (sort)
-import Text.Read
+import Text.Read hiding (lift, get)
+import Control.Applicative
+import Control.Monad.State
 import Safe
 import qualified System.Random as Random
 import qualified Data.Set as Set
 import qualified Data.Map as Map
+import qualified Control.Monad.Trans.UnionFind as UnionFind
+import qualified Data.Heap as Heap
 
 import qualified Search
 import qualified AStar
 import qualified SimulatedAnnealing as SA
 
 type City = Char
-newtype Tour = Tour [City] deriving Show
+newtype Tour = Tour [City]
 data TSP = TSP [City] (Map.Map City (Int, Int))
+
+instance Show Tour where
+  show (Tour t) = reverse t
 
 instance Search.ProblemNode Tour [City] where
   ident (Tour tour) = tour
+
+type CityInfo = (City, Int, Int)
 
 tspCities :: TSP -> [City]
 tspCities (TSP cities _) = cities
@@ -50,50 +59,99 @@ tourCost tsp (Tour tour@(a:b:_))
   | length tour < length (tspCities tsp) = cityDist tsp a b + tourCost tsp (Tour $ tail tour)
   | otherwise = cityDist tsp a (last tour) + cityDist tsp a b + tourCost tsp (Tour $ tail tour)
 
+notYetVisited :: TSP -> [City] -> [City]
+notYetVisited tsp tour = let visitedSet = Set.fromList tour
+                     in filter (not . (`Set.member` visitedSet)) $ tspCities tsp
+
 startCity :: City
 startCity = 'A'
 
 -- Note: Returns path of constructing tours and each tour in reverse.
-solveTSP :: RunMode -> TSP -> Random.StdGen -> (Maybe (Search.Path Tour), Int)
-solveTSP AStarSimple tsp _ = solveWithAStar False tsp
-solveTSP AStarBetter tsp _ = solveWithAStar True tsp
-solveTSP Annealing tsp rnd = solveWithSA tsp rnd
+solveTSP :: RunMode -> TSP -> Random.StdGen -> (Maybe (Search.Path Tour), Int, Int)
+solveTSP AStarSimple tsp _      = solveWithAStar (heuristicNumRemainingCities tsp) tsp
+solveTSP AStarMaxTriangle tsp _ = solveWithAStar (heuristicFarthestSingleCityThenGoal tsp) tsp
+solveTSP AStarMST tsp _         = solveWithAStar (heuristicMST tsp) tsp
+solveTSP Annealing tsp rnd      = solveWithSA tsp rnd
 
-solveWithAStar :: Bool -> TSP -> (Maybe (Search.Path Tour), Int)
-solveWithAStar useGoodHeuristic tsp =
-  let problem = mkAStarTSPProblem useGoodHeuristic tsp
+solveWithAStar :: (Tour -> Search.Cost) -> TSP -> (Maybe (Search.Path Tour), Int, Int)
+solveWithAStar heuristic tsp =
+  let problem = mkAStarTSPProblem heuristic tsp
   in AStar.aStarSearch problem (Tour [startCity])
 
+heuristicNumRemainingCities :: TSP -> Tour -> Search.Cost
+heuristicNumRemainingCities tsp (Tour tour) = fromIntegral $ length (tspCities tsp) - length tour
+
+heuristicFarthestSingleCityThenGoal :: TSP -> Tour -> Search.Cost
+heuristicFarthestSingleCityThenGoal tsp (Tour tour) =
+  let leftToVisit = notYetVisited tsp tour
+      curCity = head tour
+      goalCity = last tour
+      toFarthestThenGoalCost = maximum $ map (\city -> cityDist tsp curCity city + cityDist tsp city goalCity) leftToVisit
+  in if null leftToVisit
+       then 0
+       else toFarthestThenGoalCost
+
+type Edge = (City, City, Search.Cost)
+type PointEdge = (UnionFind.Point City, UnionFind.Point City, Search.Cost)
+
+type UF = UnionFind.UnionFindT City (State (Heap.MinPrioHeap Search.Cost PointEdge))
+
+initMST_ :: [City] -> (City -> City -> Search.Cost) -> UF ()
+initMST_ cities cost = do
+  points <- mapM UnionFind.fresh cities
+  let edges = map (uncurry mkEdge) $ pairs $ zip cities points
+  lift $ put $ Heap.fromList $ map (\e@(_, _, c) -> (c, e)) edges
+
+ where mkEdge :: (City, UnionFind.Point City) -> (City, UnionFind.Point City) -> PointEdge
+       mkEdge (a, pa) (b, pb) = (pa, pb, cost a b)
+       pairs :: [a] -> [(a, a)]
+       pairs [] = []
+       pairs (n:ns) = ((,) n <$> ns) ++ pairs ns
+
+findMST_ :: UF Search.Cost
+findMST_ = do
+  (heap :: Heap.MinPrioHeap Search.Cost PointEdge) <- lift get
+  case Heap.view heap of
+    Nothing -> return 0.0
+    Just ((_, (a, b, c)), heap') -> do
+      lift $ put heap'
+      isCycle <- UnionFind.equivalent a b
+      UnionFind.union a b
+      rest <- findMST_
+      return $ if isCycle then rest else c + rest
+
+findMST :: [City] -> (City -> City -> Search.Cost) -> Search.Cost
+findMST cities cost =
+  let st :: State (Heap.MinPrioHeap Search.Cost PointEdge) Search.Cost
+      st = UnionFind.runUnionFind (initMST_ cities cost >> findMST_)
+      (mst, _) = runState st Heap.empty
+  in mst
+
+heuristicMST :: TSP -> Tour -> Search.Cost
+heuristicMST tsp (Tour tour) =
+  let nodes = notYetVisited tsp tour
+      mstCost = findMST nodes (cityDist tsp)
+      cur = head tour
+      goal = startCity -- Could make more general by taking last tour.
+      curToClosest = minimum $ map (cityDist tsp cur) nodes
+      goalToClosest = minimum $ map (cityDist tsp goal) nodes
+      h | null nodes = 0.0
+        | otherwise = mstCost + curToClosest + goalToClosest
+  in h
 
 -- For this problem, ProblemNodes are actually tours.
-mkAStarTSPProblem :: Bool -> TSP -> AStar.ProblemDef Tour [City]
-mkAStarTSPProblem useGoodHeuristic tsp = AStar.ProblemDef
+mkAStarTSPProblem :: (Tour -> Search.Cost) -> TSP -> AStar.ProblemDef Tour [City]
+mkAStarTSPProblem heuristic tsp = AStar.ProblemDef
   { AStar.isGoalNode = isGoalNode
   , AStar.successors = successors
   , AStar.costSoFar = \(tour:_) -> tourCost tsp tour
-  , AStar.heuristicCostToEnd = if useGoodHeuristic
-                                  then heuristicFarthestSingleCityThenGoal
-                                  else heuristicNumRemainingCities
+  , AStar.heuristicCostToEnd = heuristic
   }
-  where notYetVisited :: [City] -> [City]
-        notYetVisited tour = let visitedSet = Set.fromList tour
-                             in filter (not . (`Set.member` visitedSet)) $ tspCities tsp
+  where isGoalNode (Tour tour) = length tour == length (tspCities tsp)
+        successors (Tour tour) = map (Tour . (:tour)) $ notYetVisited tsp tour
 
-        isGoalNode (Tour tour) = length tour == length (tspCities tsp)
-        successors (Tour tour) = map (Tour . (:tour)) $ notYetVisited tour
 
-        heuristicNumRemainingCities (Tour tour) = fromIntegral $ length (tspCities tsp) - length tour
-
-        heuristicFarthestSingleCityThenGoal (Tour tour) =
-          let leftToVisit = notYetVisited tour
-              curCity = head tour
-              goalCity = last tour
-              toFarthestThenGoalCost = maximum $ map (\city -> cityDist tsp curCity city + cityDist tsp city goalCity) leftToVisit
-          in if null leftToVisit
-               then 0
-               else toFarthestThenGoalCost
-
-solveWithSA :: TSP -> Random.StdGen -> (Maybe (Search.Path Tour), Int)
+solveWithSA :: TSP -> Random.StdGen -> (Maybe (Search.Path Tour), Int, Int)
 solveWithSA tsp rnd =
   let problem = mkSATSPProblem tsp
   in SA.saSearch problem (Tour $ tspCities tsp) rnd -- TODO: Random start point
@@ -122,17 +180,16 @@ mkSATSPProblem tsp = SA.ProblemDef
                         in map (Tour . uncurry (reverseRange tour)) ranges
 
 
-type CityInfo = (City, Int, Int)
-
-data RunMode = AStarSimple | AStarBetter | Annealing
+data RunMode = AStarSimple | AStarMaxTriangle | AStarMST | Annealing
 
 parseArgs :: [String] -> Maybe RunMode
 parseArgs []      = Nothing
 parseArgs (s:[])
-  | s == "simple" = Just AStarSimple
-  | s == "astar"  = Just AStarBetter
-  | s == "sa"     = Just Annealing
-parseArgs _       = Nothing
+  | s == "astarsimple"   = Just AStarSimple
+  | s == "astartriangle" = Just AStarMaxTriangle
+  | s == "astar"         = Just AStarMST
+  | s == "sa"            = Just Annealing
+parseArgs _              = Nothing
 
 exitError :: String -> IO a
 exitError msg = do
@@ -171,21 +228,23 @@ main = do
   rnd <- Random.getStdGen
   args <- getArgs
   case parseArgs args of
-    Nothing -> exitError "Usage: ./tsp-search (simple|astar|sa)"
+    Nothing -> exitError "Usage: ./tsp-search (astarsimple|astartriangle|astar|sa)"
     Just mode -> do
       cityInfos <- parseCityInfos
       let tsp = makeTSP cityInfos
-      let (maybeSoln, numProcessed) = solveTSP mode tsp rnd
-      maybe (exitError "Failed to find a solution") (prettyPrintSoln tsp numProcessed) maybeSoln
+      -- print $ tourCost tsp (Tour "ACBD")
+      -- exitSuccess
+      let (maybeSoln, numProcessed, numSuccessors) = solveTSP mode tsp rnd
+      maybe (exitError "Failed to find a solution") (prettyPrintSoln tsp numProcessed numSuccessors) maybeSoln
 
-  where prettyPrintSoln :: TSP -> Int -> [Tour] -> IO ()
-        prettyPrintSoln tsp numProcessed tours =
+  where prettyPrintSoln :: TSP -> Int -> Int -> [Tour] -> IO ()
+        prettyPrintSoln tsp numProcessed numSuccessors tours =
           let (Tour tour) = head tours
               soln = reverse tour
               totalCost = tourCost tsp (Tour tour)
           in putStrLn $ "Solution: " ++ soln ++
                         "\nCost: " ++ show totalCost ++
-                        "\nNum Processed Nodes: " ++ show numProcessed
+                        "\nProcessed: " ++ show numProcessed ++ ", Successors: " ++ show numSuccessors
 
 
 

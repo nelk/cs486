@@ -1,7 +1,6 @@
 {-#LANGUAGE MultiParamTypeClasses, FlexibleInstances, ScopedTypeVariables #-}
 module SimulatedAnnealing (CoolingSchedule(..), ProblemDef(..), saSearch) where
 
-import Control.Arrow
 import qualified System.Random as Random
 import qualified Search
 
@@ -22,7 +21,8 @@ data Search.ProblemNode pn k => ProblemDef pn k = ProblemDef
 
 data SAState pn k = SAState
   { problemDef :: ProblemDef pn k
-  , successorCount :: Int
+  , successorCount :: !Int
+  , processedCount :: !Int
   , numSteps :: Int
   , stdGen :: Random.StdGen
   , nextSuccessor :: SANode pn k
@@ -53,22 +53,25 @@ instance (Search.ProblemNode pn k, Show pn) => Search.Searcher (SAState pn k) pn
         nextProblemNode
           | null succs || rndProb > moveProb = curProblemNode
           | otherwise = potentialNextProblemNode
-    in s { successorCount = successorCount s + length succs
+    in s { processedCount = processedCount s + 1
+         , successorCount = successorCount s + length succs
          , stdGen = rnd''
-         , nextSuccessor = SANode (nextProblemNode:[]) nextProblemNode -- [] -> curPath
+         , nextSuccessor = SANode [nextProblemNode] nextProblemNode -- [] -> curPath
          , numSteps = numSteps s + 1
          , temperature = t - decrement (coolingSchedule problem)
          }
 
 -- Note: Returns path in reverse order.
-saSearch :: (Search.ProblemNode pn k, Show pn) => ProblemDef pn k -> pn -> Random.StdGen -> (Maybe (Search.Path pn), Int)
-saSearch probDef startProblemNode rnd = second successorCount $ Search.search searcher
+saSearch :: (Search.ProblemNode pn k, Show pn) => ProblemDef pn k -> pn -> Random.StdGen -> (Maybe (Search.Path pn), Int, Int)
+saSearch probDef startProblemNode rnd = (fst soln, processedCount $ snd soln, successorCount $ snd soln)
   where searcher = SAState
           { problemDef = probDef
+          , processedCount = 0
           , successorCount = 0
           , numSteps = 0
           , stdGen = rnd
           , nextSuccessor = SANode [startProblemNode] startProblemNode
           , temperature = startTemperature $ coolingSchedule probDef
           }
+        soln = Search.search searcher
  

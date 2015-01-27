@@ -1,0 +1,800 @@
+Running randTSP/1/instance_1.txt.
+Solution: A
+Cost: 0.0
+Num Processed Nodes: 0
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 73% cpu 0.005 total
+Running randTSP/1/instance_2.txt.
+Solution: A
+Cost: 0.0
+Num Processed Nodes: 0
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 67% cpu 0.006 total
+Running randTSP/1/instance_3.txt.
+Solution: A
+Cost: 0.0
+Num Processed Nodes: 0
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 76% cpu 0.005 total
+Running randTSP/1/instance_4.txt.
+Solution: A
+Cost: 0.0
+Num Processed Nodes: 0
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 0% cpu 0.003 total
+Running randTSP/1/instance_5.txt.
+Solution: A
+Cost: 0.0
+Num Processed Nodes: 0
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 77% cpu 0.005 total
+Running randTSP/1/instance_6.txt.
+Solution: A
+Cost: 0.0
+Num Processed Nodes: 0
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 67% cpu 0.006 total
+Running randTSP/1/instance_7.txt.
+Solution: A
+Cost: 0.0
+Num Processed Nodes: 0
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 40% cpu 0.010 total
+Running randTSP/1/instance_8.txt.
+Solution: A
+Cost: 0.0
+Num Processed Nodes: 0
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 81% cpu 0.005 total
+Running randTSP/1/instance_9.txt.
+Solution: A
+Cost: 0.0
+Num Processed Nodes: 0
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 77% cpu 0.005 total
+Running randTSP/1/instance_10.txt.
+Solution: A
+Cost: 0.0
+Num Processed Nodes: 0
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 74% cpu 0.005 total
+Running randTSP/2/instance_1.txt.
+Solution: AB
+Cost: 94.19129471453293
+Num Processed Nodes: 1
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 51% cpu 0.008 total
+Running randTSP/2/instance_2.txt.
+Solution: AB
+Cost: 93.33809511662427
+Num Processed Nodes: 1
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 63% cpu 0.006 total
+Running randTSP/2/instance_3.txt.
+Solution: AB
+Cost: 124.53112060846478
+Num Processed Nodes: 1
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 63% cpu 0.006 total
+Running randTSP/2/instance_4.txt.
+Solution: AB
+Cost: 142.61837188805654
+Num Processed Nodes: 1
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 63% cpu 0.006 total
+Running randTSP/2/instance_5.txt.
+Solution: AB
+Cost: 42.190046219457976
+Num Processed Nodes: 1
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 62% cpu 0.006 total
+Running randTSP/2/instance_6.txt.
+Solution: AB
+Cost: 65.39113089708727
+Num Processed Nodes: 1
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 59% cpu 0.007 total
+Running randTSP/2/instance_7.txt.
+Solution: AB
+Cost: 149.26486525636233
+Num Processed Nodes: 1
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.01s system 115% cpu 0.007 total
+Running randTSP/2/instance_8.txt.
+Solution: AB
+Cost: 126.49110640673517
+Num Processed Nodes: 1
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.01s system 126% cpu 0.006 total
+Running randTSP/2/instance_9.txt.
+Solution: AB
+Cost: 34.92849839314596
+Num Processed Nodes: 1
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 66% cpu 0.006 total
+Running randTSP/2/instance_10.txt.
+Solution: AB
+Cost: 100.57832768544127
+Num Processed Nodes: 1
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 61% cpu 0.006 total
+Running randTSP/3/instance_1.txt.
+Solution: ABC
+Cost: 103.24937624566647
+Num Processed Nodes: 4
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 65% cpu 0.006 total
+Running randTSP/3/instance_2.txt.
+Solution: ABC
+Cost: 201.47761735922904
+Num Processed Nodes: 4
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 62% cpu 0.006 total
+Running randTSP/3/instance_3.txt.
+Solution: ABC
+Cost: 200.024703463021
+Num Processed Nodes: 4
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 65% cpu 0.006 total
+Running randTSP/3/instance_4.txt.
+Solution: ABC
+Cost: 149.15860886073955
+Num Processed Nodes: 4
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 62% cpu 0.006 total
+Running randTSP/3/instance_5.txt.
+Solution: ABC
+Cost: 164.35237966968583
+Num Processed Nodes: 4
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 64% cpu 0.006 total
+Running randTSP/3/instance_6.txt.
+Solution: ABC
+Cost: 114.33445636291424
+Num Processed Nodes: 4
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 61% cpu 0.006 total
+Running randTSP/3/instance_7.txt.
+Solution: ABC
+Cost: 201.44712679433337
+Num Processed Nodes: 4
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.01s system 115% cpu 0.007 total
+Running randTSP/3/instance_8.txt.
+Solution: ABC
+Cost: 129.57971662042706
+Num Processed Nodes: 4
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 55% cpu 0.007 total
+Running randTSP/3/instance_9.txt.
+Solution: ABC
+Cost: 225.77628682059427
+Num Processed Nodes: 4
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 65% cpu 0.006 total
+Running randTSP/3/instance_10.txt.
+Solution: ABC
+Cost: 113.65920710421466
+Num Processed Nodes: 4
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 59% cpu 0.007 total
+Running randTSP/4/instance_1.txt.
+Solution: ABDC
+Cost: 194.8718459556871
+Num Processed Nodes: 11
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 62% cpu 0.006 total
+Running randTSP/4/instance_2.txt.
+Solution: ACDB
+Cost: 131.24971765013908
+Num Processed Nodes: 11
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 62% cpu 0.006 total
+Running randTSP/4/instance_3.txt.
+Solution: ABDC
+Cost: 181.118174331698
+Num Processed Nodes: 11
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 63% cpu 0.006 total
+Running randTSP/4/instance_4.txt.
+Solution: ABDC
+Cost: 186.37294952661344
+Num Processed Nodes: 11
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 43% cpu 0.009 total
+Running randTSP/4/instance_5.txt.
+Solution: ABDC
+Cost: 142.3702041127083
+Num Processed Nodes: 11
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 44% cpu 0.009 total
+Running randTSP/4/instance_6.txt.
+Solution: ABCD
+Cost: 160.74272606816083
+Num Processed Nodes: 11
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 61% cpu 0.006 total
+Running randTSP/4/instance_7.txt.
+Solution: ABDC
+Cost: 143.64904498448345
+Num Processed Nodes: 11
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 57% cpu 0.007 total
+Running randTSP/4/instance_8.txt.
+Solution: ACDB
+Cost: 200.87339199517402
+Num Processed Nodes: 11
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 64% cpu 0.006 total
+Running randTSP/4/instance_9.txt.
+Solution: ABCD
+Cost: 226.30440284515169
+Num Processed Nodes: 11
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 52% cpu 0.008 total
+Running randTSP/4/instance_10.txt.
+Solution: ABCD
+Cost: 149.40541901613992
+Num Processed Nodes: 11
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 68% cpu 0.006 total
+Running randTSP/5/instance_1.txt.
+Solution: ADECB
+Cost: 184.33199990400223
+Num Processed Nodes: 28
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 104% cpu 0.004 total
+Running randTSP/5/instance_2.txt.
+Solution: ACBED
+Cost: 256.9665798556709
+Num Processed Nodes: 28
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 94% cpu 0.004 total
+Running randTSP/5/instance_3.txt.
+Solution: ACEBD
+Cost: 200.40180282763518
+Num Processed Nodes: 27
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 87% cpu 0.005 total
+Running randTSP/5/instance_4.txt.
+Solution: AECDB
+Cost: 119.44801826621054
+Num Processed Nodes: 26
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 66% cpu 0.006 total
+Running randTSP/5/instance_5.txt.
+Solution: ABECD
+Cost: 162.26277712367855
+Num Processed Nodes: 26
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 58% cpu 0.007 total
+Running randTSP/5/instance_6.txt.
+Solution: AEDBC
+Cost: 245.66667822837377
+Num Processed Nodes: 26
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 61% cpu 0.006 total
+Running randTSP/5/instance_7.txt.
+Solution: AEDCB
+Cost: 233.13843662222502
+Num Processed Nodes: 26
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 60% cpu 0.007 total
+Running randTSP/5/instance_8.txt.
+Solution: ACBDE
+Cost: 225.82476038213923
+Num Processed Nodes: 30
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 63% cpu 0.006 total
+Running randTSP/5/instance_9.txt.
+Solution: ACEDB
+Cost: 218.3407320918522
+Num Processed Nodes: 30
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 59% cpu 0.007 total
+Running randTSP/5/instance_10.txt.
+Solution: AECBD
+Cost: 308.3698337411213
+Num Processed Nodes: 32
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 58% cpu 0.007 total
+Running randTSP/6/instance_1.txt.
+Solution: ABECDF
+Cost: 284.24684899273996
+Num Processed Nodes: 69
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.01s system 108% cpu 0.007 total
+Running randTSP/6/instance_2.txt.
+Solution: AFBECD
+Cost: 223.69561589267047
+Num Processed Nodes: 93
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.01s system 106% cpu 0.007 total
+Running randTSP/6/instance_3.txt.
+Solution: ACDFEB
+Cost: 238.45151716753332
+Num Processed Nodes: 52
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 94% cpu 0.008 total
+Running randTSP/6/instance_4.txt.
+Solution: AFCDBE
+Cost: 202.1915798173647
+Num Processed Nodes: 83
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 103% cpu 0.008 total
+Running randTSP/6/instance_5.txt.
+Solution: AFBCDE
+Cost: 233.90144149595196
+Num Processed Nodes: 58
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 108% cpu 0.007 total
+Running randTSP/6/instance_6.txt.
+Solution: ADEBCF
+Cost: 224.24369295265302
+Num Processed Nodes: 57
+./dist/build/tsp-search/tsp-search astar  0.01s user 0.00s system 111% cpu 0.007 total
+Running randTSP/6/instance_7.txt.
+Solution: ABCFDE
+Cost: 274.9867944854333
+Num Processed Nodes: 54
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 58% cpu 0.007 total
+Running randTSP/6/instance_8.txt.
+Solution: AFDCEB
+Cost: 237.7356459681872
+Num Processed Nodes: 51
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 62% cpu 0.006 total
+Running randTSP/6/instance_9.txt.
+Solution: AFECBD
+Cost: 263.6430020084553
+Num Processed Nodes: 65
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.01s system 116% cpu 0.007 total
+Running randTSP/6/instance_10.txt.
+Solution: AEDCFB
+Cost: 224.15008253060293
+Num Processed Nodes: 88
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 93% cpu 0.004 total
+Running randTSP/7/instance_1.txt.
+Solution: ACFEGDB
+Cost: 280.63168307081787
+Num Processed Nodes: 208
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.01s system 128% cpu 0.009 total
+Running randTSP/7/instance_2.txt.
+Solution: ABGDCFE
+Cost: 298.6273179877354
+Num Processed Nodes: 161
+./dist/build/tsp-search/tsp-search astar  0.08s user 0.01s system 393% cpu 0.024 total
+Running randTSP/7/instance_3.txt.
+Solution: AFGDCEB
+Cost: 262.70944349828176
+Num Processed Nodes: 152
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 87% cpu 0.005 total
+Running randTSP/7/instance_4.txt.
+Solution: ABFEDGC
+Cost: 235.67444751881885
+Num Processed Nodes: 252
+./dist/build/tsp-search/tsp-search astar  0.02s user 0.01s system 247% cpu 0.013 total
+Running randTSP/7/instance_5.txt.
+Solution: ADGFCEB
+Cost: 247.04010019798352
+Num Processed Nodes: 257
+./dist/build/tsp-search/tsp-search astar  0.02s user 0.00s system 150% cpu 0.011 total
+Running randTSP/7/instance_6.txt.
+Solution: AGBECDF
+Cost: 302.6254127561181
+Num Processed Nodes: 155
+./dist/build/tsp-search/tsp-search astar  0.01s user 0.02s system 239% cpu 0.012 total
+Running randTSP/7/instance_7.txt.
+Solution: AGBFDCE
+Cost: 223.76218450537561
+Num Processed Nodes: 161
+./dist/build/tsp-search/tsp-search astar  0.04s user 0.02s system 359% cpu 0.016 total
+Running randTSP/7/instance_8.txt.
+Solution: ADBGECF
+Cost: 319.8795576508584
+Num Processed Nodes: 281
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.02s system 203% cpu 0.012 total
+Running randTSP/7/instance_9.txt.
+Solution: ADEGBFC
+Cost: 168.8028373622787
+Num Processed Nodes: 132
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.00s system 94% cpu 0.008 total
+Running randTSP/7/instance_10.txt.
+Solution: ACBDGEF
+Cost: 228.8007521156929
+Num Processed Nodes: 174
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.02s system 156% cpu 0.010 total
+Running randTSP/8/instance_1.txt.
+Solution: AEBFCDHG
+Cost: 210.35643810611495
+Num Processed Nodes: 181
+./dist/build/tsp-search/tsp-search astar  0.01s user 0.02s system 271% cpu 0.012 total
+Running randTSP/8/instance_2.txt.
+Solution: AFHDCBGE
+Cost: 271.7351376576673
+Num Processed Nodes: 443
+./dist/build/tsp-search/tsp-search astar  0.03s user 0.01s system 272% cpu 0.016 total
+Running randTSP/8/instance_3.txt.
+Solution: AFDGHCEB
+Cost: 239.77864728823064
+Num Processed Nodes: 821
+./dist/build/tsp-search/tsp-search astar  0.04s user 0.01s system 240% cpu 0.020 total
+Running randTSP/8/instance_4.txt.
+Solution: ABDGFCEH
+Cost: 212.22844706196682
+Num Processed Nodes: 330
+./dist/build/tsp-search/tsp-search astar  0.03s user 0.01s system 301% cpu 0.012 total
+Running randTSP/8/instance_5.txt.
+Solution: ABGHECDF
+Cost: 290.1339466684637
+Num Processed Nodes: 493
+./dist/build/tsp-search/tsp-search astar  0.02s user 0.00s system 181% cpu 0.011 total
+Running randTSP/8/instance_6.txt.
+Solution: ADEBCGFH
+Cost: 214.48254173083924
+Num Processed Nodes: 423
+./dist/build/tsp-search/tsp-search astar  0.04s user 0.02s system 308% cpu 0.018 total
+Running randTSP/8/instance_7.txt.
+Solution: AGBDCHEF
+Cost: 242.3259088600219
+Num Processed Nodes: 200
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.01s system 118% cpu 0.007 total
+Running randTSP/8/instance_8.txt.
+Solution: AEFBDGCH
+Cost: 306.30439021595646
+Num Processed Nodes: 616
+./dist/build/tsp-search/tsp-search astar  0.01s user 0.01s system 176% cpu 0.011 total
+Running randTSP/8/instance_9.txt.
+Solution: ADFBHCGE
+Cost: 278.57810415194945
+Num Processed Nodes: 277
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.01s system 114% cpu 0.010 total
+Running randTSP/8/instance_10.txt.
+Solution: AFDEGCBH
+Cost: 335.43415089359553
+Num Processed Nodes: 1667
+./dist/build/tsp-search/tsp-search astar  0.04s user 0.08s system 361% cpu 0.033 total
+Running randTSP/9/instance_1.txt.
+Solution: ABCEIGDHF
+Cost: 284.09408419539375
+Num Processed Nodes: 2399
+./dist/build/tsp-search/tsp-search astar  0.08s user 0.03s system 289% cpu 0.039 total
+Running randTSP/9/instance_2.txt.
+Solution: ACEGFIHDB
+Cost: 268.9668988506972
+Num Processed Nodes: 2147
+./dist/build/tsp-search/tsp-search astar  0.04s user 0.03s system 321% cpu 0.022 total
+Running randTSP/9/instance_3.txt.
+Solution: ADHBEGCIF
+Cost: 283.94316501507495
+Num Processed Nodes: 521
+./dist/build/tsp-search/tsp-search astar  0.00s user 0.01s system 160% cpu 0.007 total
+Running randTSP/9/instance_4.txt.
+Solution: ADBHCIFGE
+Cost: 238.01537751555162
+Num Processed Nodes: 2141
+./dist/build/tsp-search/tsp-search astar  0.07s user 0.03s system 316% cpu 0.030 total
+Running randTSP/9/instance_5.txt.
+Solution: ACBDHEGFI
+Cost: 262.87650560159284
+Num Processed Nodes: 1180
+./dist/build/tsp-search/tsp-search astar  0.04s user 0.01s system 190% cpu 0.025 total
+Running randTSP/9/instance_6.txt.
+Solution: ADCBIFEGH
+Cost: 272.6871309418872
+Num Processed Nodes: 456
+./dist/build/tsp-search/tsp-search astar  0.04s user 0.00s system 315% cpu 0.011 total
+Running randTSP/9/instance_7.txt.
+Solution: ACIFHDEGB
+Cost: 307.47408927734875
+Num Processed Nodes: 1653
+./dist/build/tsp-search/tsp-search astar  0.03s user 0.03s system 322% cpu 0.019 total
+Running randTSP/9/instance_8.txt.
+Solution: AGFBEHICD
+Cost: 272.83950338222087
+Num Processed Nodes: 1467
+./dist/build/tsp-search/tsp-search astar  0.05s user 0.04s system 308% cpu 0.029 total
+Running randTSP/9/instance_9.txt.
+Solution: AGBDFICEH
+Cost: 259.82355472316704
+Num Processed Nodes: 1122
+./dist/build/tsp-search/tsp-search astar  0.03s user 0.01s system 227% cpu 0.016 total
+Running randTSP/9/instance_10.txt.
+Solution: ABDGFCEIH
+Cost: 274.9817934457244
+Num Processed Nodes: 1402
+./dist/build/tsp-search/tsp-search astar  0.05s user 0.04s system 303% cpu 0.029 total
+Running randTSP/10/instance_1.txt.
+Solution: ABJGICFDEH
+Cost: 274.71820980953055
+Num Processed Nodes: 4861
+./dist/build/tsp-search/tsp-search astar  0.09s user 0.08s system 293% cpu 0.056 total
+Running randTSP/10/instance_2.txt.
+Solution: AECDFJIHGB
+Cost: 280.9392507796317
+Num Processed Nodes: 5561
+./dist/build/tsp-search/tsp-search astar  0.19s user 0.12s system 377% cpu 0.084 total
+Running randTSP/10/instance_3.txt.
+Solution: ADGBFIHECJ
+Cost: 268.31061901656153
+Num Processed Nodes: 10484
+./dist/build/tsp-search/tsp-search astar  0.22s user 0.18s system 306% cpu 0.129 total
+Running randTSP/10/instance_4.txt.
+Solution: AJFBHGDIEC
+Cost: 252.94089431801143
+Num Processed Nodes: 990
+./dist/build/tsp-search/tsp-search astar  0.10s user 0.01s system 328% cpu 0.032 total
+Running randTSP/10/instance_5.txt.
+Solution: AJEHIFBCDG
+Cost: 291.0932773898461
+Num Processed Nodes: 1228
+./dist/build/tsp-search/tsp-search astar  0.03s user 0.00s system 212% cpu 0.013 total
+Running randTSP/10/instance_6.txt.
+Solution: AHECGIBFDJ
+Cost: 284.630628615648
+Num Processed Nodes: 1959
+./dist/build/tsp-search/tsp-search astar  0.01s user 0.04s system 239% cpu 0.023 total
+Running randTSP/10/instance_7.txt.
+Solution: ABCDEFGHIJ
+Cost: 348.56270164750987
+Num Processed Nodes: 834
+./dist/build/tsp-search/tsp-search astar  0.01s user 0.02s system 179% cpu 0.013 total
+Running randTSP/10/instance_8.txt.
+Solution: ABCIFJEHDG
+Cost: 287.12384094300523
+Num Processed Nodes: 4055
+./dist/build/tsp-search/tsp-search astar  0.06s user 0.04s system 267% cpu 0.036 total
+Running randTSP/10/instance_9.txt.
+Solution: ADGBCFEJIH
+Cost: 260.97692250491656
+Num Processed Nodes: 2139
+./dist/build/tsp-search/tsp-search astar  0.02s user 0.08s system 361% cpu 0.030 total
+Running randTSP/10/instance_10.txt.
+Solution: ABHGJDFCIE
+Cost: 274.171359975484
+Num Processed Nodes: 7847
+./dist/build/tsp-search/tsp-search astar  0.16s user 0.14s system 293% cpu 0.104 total
+Running randTSP/11/instance_1.txt.
+Solution: AKJDBCFEHGI
+Cost: 305.6823496852058
+Num Processed Nodes: 9490
+./dist/build/tsp-search/tsp-search astar  0.20s user 0.12s system 307% cpu 0.105 total
+Running randTSP/11/instance_2.txt.
+Solution: AHFJDEIKCGB
+Cost: 245.47251775292565
+Num Processed Nodes: 17466
+./dist/build/tsp-search/tsp-search astar  0.42s user 0.28s system 321% cpu 0.220 total
+Running randTSP/11/instance_3.txt.
+Solution: ADKGFCEJIBH
+Cost: 288.3777140195539
+Num Processed Nodes: 7461
+./dist/build/tsp-search/tsp-search astar  0.18s user 0.10s system 302% cpu 0.095 total
+Running randTSP/11/instance_4.txt.
+Solution: AIDGHCKBEFJ
+Cost: 312.2816503593714
+Num Processed Nodes: 2892
+./dist/build/tsp-search/tsp-search astar  0.07s user 0.04s system 338% cpu 0.033 total
+Running randTSP/11/instance_5.txt.
+Solution: AJDKFIEHBCG
+Cost: 298.42360992874313
+Num Processed Nodes: 12109
+./dist/build/tsp-search/tsp-search astar  0.34s user 0.15s system 315% cpu 0.157 total
+Running randTSP/11/instance_6.txt.
+Solution: AIBDCJGEHKF
+Cost: 286.88482617806085
+Num Processed Nodes: 4444
+./dist/build/tsp-search/tsp-search astar  0.10s user 0.06s system 283% cpu 0.058 total
+Running randTSP/11/instance_7.txt.
+Solution: ABGIJHDKCEF
+Cost: 274.2394725131276
+Num Processed Nodes: 14763
+./dist/build/tsp-search/tsp-search astar  0.30s user 0.24s system 299% cpu 0.179 total
+Running randTSP/11/instance_8.txt.
+Solution: AFDIHJKECGB
+Cost: 284.9382719771911
+Num Processed Nodes: 5200
+./dist/build/tsp-search/tsp-search astar  0.12s user 0.09s system 283% cpu 0.075 total
+Running randTSP/11/instance_9.txt.
+Solution: AJDBEIFKHGC
+Cost: 283.5984873310588
+Num Processed Nodes: 11169
+./dist/build/tsp-search/tsp-search astar  0.32s user 0.16s system 317% cpu 0.151 total
+Running randTSP/11/instance_10.txt.
+Solution: ACIKHFBDGJE
+Cost: 324.88654887306984
+Num Processed Nodes: 15766
+./dist/build/tsp-search/tsp-search astar  0.35s user 0.24s system 281% cpu 0.209 total
+Running randTSP/12/instance_1.txt.
+Solution: AKFGIHLJDCBE
+Cost: 278.23732839155196
+Num Processed Nodes: 11038
+./dist/build/tsp-search/tsp-search astar  0.30s user 0.13s system 313% cpu 0.139 total
+Running randTSP/12/instance_2.txt.
+Solution: AKEIBCFHDJGL
+Cost: 321.38646984247293
+Num Processed Nodes: 46357
+./dist/build/tsp-search/tsp-search astar  1.29s user 0.73s system 308% cpu 0.656 total
+Running randTSP/12/instance_3.txt.
+Solution: AIGLCBDHJEFK
+Cost: 216.9431148533308
+Num Processed Nodes: 7945
+./dist/build/tsp-search/tsp-search astar  0.19s user 0.09s system 284% cpu 0.100 total
+Running randTSP/12/instance_4.txt.
+Solution: AJCLEKHBGDFI
+Cost: 268.6501911412098
+Num Processed Nodes: 8845
+./dist/build/tsp-search/tsp-search astar  0.22s user 0.13s system 320% cpu 0.110 total
+Running randTSP/12/instance_5.txt.
+Solution: AFGIJLCEHKDB
+Cost: 355.6621990913734
+Num Processed Nodes: 215637
+./dist/build/tsp-search/tsp-search astar  6.80s user 4.27s system 310% cpu 3.571 total
+Running randTSP/12/instance_6.txt.
+Solution: ALKEJDGCHFIB
+Cost: 359.6913742211937
+Num Processed Nodes: 71548
+./dist/build/tsp-search/tsp-search astar  2.20s user 1.24s system 321% cpu 1.069 total
+Running randTSP/12/instance_7.txt.
+Solution: AJEBCGKDFLIH
+Cost: 345.03190838148817
+Num Processed Nodes: 59033
+./dist/build/tsp-search/tsp-search astar  2.19s user 0.98s system 322% cpu 0.984 total
+Running randTSP/12/instance_8.txt.
+Solution: AEBIDKHCGJFL
+Cost: 327.72161643732454
+Num Processed Nodes: 21911
+./dist/build/tsp-search/tsp-search astar  0.73s user 0.37s system 318% cpu 0.345 total
+Running randTSP/12/instance_9.txt.
+Solution: AJDKHLBGIFCE
+Cost: 290.8440701139304
+Num Processed Nodes: 7772
+./dist/build/tsp-search/tsp-search astar  0.12s user 0.18s system 269% cpu 0.113 total
+Running randTSP/12/instance_10.txt.
+Solution: ABJEKHCDFIGL
+Cost: 344.1259777479079
+Num Processed Nodes: 255720
+./dist/build/tsp-search/tsp-search astar  7.54s user 5.20s system 312% cpu 4.078 total
+Running randTSP/13/instance_1.txt.
+Solution: ACGMJLDKEBIFH
+Cost: 303.5450767584564
+Num Processed Nodes: 33236
+./dist/build/tsp-search/tsp-search astar  1.11s user 0.38s system 303% cpu 0.493 total
+Running randTSP/13/instance_2.txt.
+Solution: AELIMDFGJKHCB
+Cost: 302.21386318604937
+Num Processed Nodes: 101470
+./dist/build/tsp-search/tsp-search astar  2.94s user 1.74s system 318% cpu 1.468 total
+Running randTSP/13/instance_3.txt.
+Solution: AKELFCBHJMIDG
+Cost: 359.67012178549174
+Num Processed Nodes: 200378
+./dist/build/tsp-search/tsp-search astar  5.39s user 3.95s system 308% cpu 3.024 total
+Running randTSP/13/instance_4.txt.
+Solution: ABJHKDICGEMLF
+Cost: 291.6861834301691
+Num Processed Nodes: 154170
+./dist/build/tsp-search/tsp-search astar  4.61s user 2.69s system 309% cpu 2.360 total
+Running randTSP/13/instance_5.txt.
+Solution: ABHMIKDCEGJLF
+Cost: 318.5554722891234
+Num Processed Nodes: 140311
+./dist/build/tsp-search/tsp-search astar  5.05s user 2.59s system 318% cpu 2.397 total
+Running randTSP/13/instance_6.txt.
+Solution: AKLGBCJDHFIME
+Cost: 294.1417108522616
+Num Processed Nodes: 38210
+./dist/build/tsp-search/tsp-search astar  1.18s user 0.58s system 294% cpu 0.597 total
+Running randTSP/13/instance_7.txt.
+Solution: AJDKIMBFGCLEH
+Cost: 329.2105914800939
+Num Processed Nodes: 131202
+./dist/build/tsp-search/tsp-search astar  4.25s user 2.09s system 308% cpu 2.058 total
+Running randTSP/13/instance_8.txt.
+Solution: ALMDKFGCJHEIB
+Cost: 329.0885124725861
+Num Processed Nodes: 97600
+./dist/build/tsp-search/tsp-search astar  3.54s user 1.83s system 327% cpu 1.640 total
+Running randTSP/13/instance_9.txt.
+Solution: AGHIFLMJBKEDC
+Cost: 306.0936823393825
+Num Processed Nodes: 33895
+./dist/build/tsp-search/tsp-search astar  0.99s user 0.37s system 301% cpu 0.453 total
+Running randTSP/13/instance_10.txt.
+Solution: ACJHKDBELGIMF
+Cost: 305.02934995823546
+Num Processed Nodes: 135153
+./dist/build/tsp-search/tsp-search astar  5.45s user 2.35s system 308% cpu 2.526 total
+Running randTSP/14/instance_1.txt.
+Solution: AMJHINGELKDCFB
+Cost: 316.6776082168322
+Num Processed Nodes: 88522
+./dist/build/tsp-search/tsp-search astar  3.98s user 1.40s system 309% cpu 1.738 total
+Running randTSP/14/instance_2.txt.
+Solution: AHDKCBLIGMEJFN
+Cost: 324.3082534116089
+Num Processed Nodes: 10532
+./dist/build/tsp-search/tsp-search astar  0.36s user 0.20s system 304% cpu 0.181 total
+Running randTSP/14/instance_3.txt.
+Solution: AIGEHJFLBNMDKC
+Cost: 336.9950237596884
+Num Processed Nodes: 58826
+./dist/build/tsp-search/tsp-search astar  2.58s user 1.07s system 300% cpu 1.215 total
+Running randTSP/14/instance_4.txt.
+Solution: ADFLBIEGHKNMCJ
+Cost: 319.5282469523323
+Num Processed Nodes: 929953
+./dist/build/tsp-search/tsp-search astar  50.25s user 21.87s system 312% cpu 23.112 total
+Running randTSP/14/instance_5.txt.
+Solution: AMCHGJFINLKBED
+Cost: 351.219732967784
+Num Processed Nodes: 375281
+./dist/build/tsp-search/tsp-search astar  14.36s user 7.68s system 310% cpu 7.096 total
+Running randTSP/14/instance_6.txt.
+Solution: ABFDIEKMJGCNLH
+Cost: 311.1071428151877
+Num Processed Nodes: 56062
+./dist/build/tsp-search/tsp-search astar  2.40s user 0.83s system 310% cpu 1.037 total
+Running randTSP/14/instance_7.txt.
+Solution: ACGLBNJEIFHMDK
+Cost: 271.633085065336
+Num Processed Nodes: 43079
+./dist/build/tsp-search/tsp-search astar  2.30s user 0.68s system 311% cpu 0.959 total
+Running randTSP/14/instance_8.txt.
+Solution: AJHKFCLGDEBIMN
+Cost: 358.9141567661652
+Num Processed Nodes: 781522
+./dist/build/tsp-search/tsp-search astar  28.22s user 17.30s system 312% cpu 14.554 total
+Running randTSP/14/instance_9.txt.
+Solution: AGBNIFCLHEDKMJ
+Cost: 273.0937176970745
+Num Processed Nodes: 2371137
+./dist/build/tsp-search/tsp-search astar  96.51s user 64.78s system 318% cpu 50.594 total
+Running randTSP/14/instance_10.txt.
+Solution: AEDLCMJFNKBHIG
+Cost: 322.3268671711925
+Num Processed Nodes: 880556
+./dist/build/tsp-search/tsp-search astar  41.29s user 19.75s system 316% cpu 19.301 total
+Running randTSP/15/instance_1.txt.
+Solution: ANJCOKDEHFBLIGM
+Cost: 315.07667336786403
+Num Processed Nodes: 1377027
+./dist/build/tsp-search/tsp-search astar  57.48s user 30.25s system 312% cpu 28.103 total
+Running randTSP/15/instance_2.txt.
+Solution: AHONCKMGFBEDJIL
+Cost: 316.1378612465635
+Num Processed Nodes: 167320
+./dist/build/tsp-search/tsp-search astar  7.32s user 2.65s system 320% cpu 3.114 total
+Running randTSP/15/instance_3.txt.
+Solution: ADBNGOMLIEKFJCH
+Cost: 280.7601519106412
+Num Processed Nodes: 453832
+./dist/build/tsp-search/tsp-search astar  16.96s user 9.02s system 314% cpu 8.251 total
+Running randTSP/15/instance_4.txt.
+Solution: AKLMNGBJIEHFDOC
+Cost: 326.244854109834
+Num Processed Nodes: 397094
+./dist/build/tsp-search/tsp-search astar  13.88s user 7.64s system 308% cpu 6.981 total
+Running randTSP/15/instance_5.txt.
+Solution: AHJDBICNMKOLGFE
+Cost: 377.9288829793903
+Num Processed Nodes: 2191094
+./dist/build/tsp-search/tsp-search astar  91.21s user 53.54s system 315% cpu 45.941 total
+Running randTSP/15/instance_6.txt.
+Solution: ABIEJFGOMLNCDHK
+Cost: 291.8966809465451
+Num Processed Nodes: 103307
+./dist/build/tsp-search/tsp-search astar  3.33s user 1.81s system 298% cpu 1.722 total
+Running randTSP/15/instance_7.txt.
+Solution: AOEHBMGKLDFINJC
+Cost: 350.00951894924094
+Num Processed Nodes: 347066
+./dist/build/tsp-search/tsp-search astar  12.85s user 6.70s system 310% cpu 6.292 total
+Running randTSP/15/instance_8.txt.
+Solution: AMEHILFNJKCOGBD
+Cost: 342.56540290561134
+Num Processed Nodes: 362476
+./dist/build/tsp-search/tsp-search astar  12.19s user 6.74s system 310% cpu 6.104 total
+Running randTSP/15/instance_9.txt.
+Solution: AFHOJNECLMKBDIG
+Cost: 355.1054844547043
+Num Processed Nodes: 1560375
+./dist/build/tsp-search/tsp-search astar  61.87s user 36.91s system 312% cpu 31.561 total
+Running randTSP/15/instance_10.txt.
+Solution: AFNHBLEMJOCDIKG
+Cost: 326.72925913371466
+Num Processed Nodes: 361964
+./dist/build/tsp-search/tsp-search astar  11.32s user 6.72s system 304% cpu 5.924 total
+Running randTSP/16/instance_1.txt.
+Solution: ACKMHIGJEFDONBPL
+Cost: 404.0205022000922
+Num Processed Nodes: 24638555
+./dist/build/tsp-search/tsp-search astar  1434.45s user 911.61s system 315% cpu 12:22.86 total
+Running randTSP/16/instance_2.txt.
+Solution: AHPKNDFJCMGBOILE
+Cost: 354.5569131905886
+Num Processed Nodes: 472208
+./dist/build/tsp-search/tsp-search astar  15.88s user 9.05s system 301% cpu 8.255 total
+Running randTSP/16/instance_3.txt.
+Solution: AGIKJCNPEMLBHODF
+Cost: 360.2028589771428
+Num Processed Nodes: 2663022
+./dist/build/tsp-search/tsp-search astar  141.81s user 68.04s system 304% cpu 1:08.95 total
+Running randTSP/16/instance_4.txt.
+Solution: AFGIEBOMCKPJLNHD
+Cost: 347.1584400379535
+Num Processed Nodes: 2517584
+./dist/build/tsp-search/tsp-search astar  160.51s user 63.62s system 303% cpu 1:13.91 total
+Running randTSP/16/instance_5.txt.
+Solution: ALCHGIJEKDNBPMOF
+Cost: 357.17781423241564
+Num Processed Nodes: 2244951
+./dist/build/tsp-search/tsp-search astar  104.37s user 53.14s system 305% cpu 51.581 total
+Running randTSP/16/instance_6.txt.
+Solution: AIDKONECPBGFLMJH
+Cost: 346.5199572862724
+Num Processed Nodes: 42646914
+./dist/build/tsp-search/tsp-search astar  3864.52s user 1729.97s system 314% cpu 29:41.27 total
+Running randTSP/16/instance_7.txt.
+Solution: AIGBEKCPMNFOJHLD
+Cost: 373.29968125620377
+Num Processed Nodes: 4528073
+./dist/build/tsp-search/tsp-search astar  314.01s user 125.41s system 307% cpu 2:22.87 total
+Running randTSP/16/instance_8.txt.
+Solution: AOHNJCEBDMLGKIPF
+Cost: 356.6552939939169
+Num Processed Nodes: 5910776
+./dist/build/tsp-search/tsp-search astar  557.53s user 176.74s system 308% cpu 3:57.86 total
+Running randTSP/16/instance_9.txt.
+Solution: ADOLPIBFKMHNEGCJ
+Cost: 243.97572241252576
+Num Processed Nodes: 278794
+./dist/build/tsp-search/tsp-search astar  45.59s user 9.71s system 225% cpu 24.522 total
+Running randTSP/16/instance_10.txt.
+Solution: ADKBLEPHIOFNCJGM
+Cost: 330.505466419945
+Num Processed Nodes: 4298122
+./dist/build/tsp-search/tsp-search astar  450.40s user 123.49s system 302% cpu 3:09.40 total

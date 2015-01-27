@@ -1,10 +1,11 @@
 {-#LANGUAGE MultiParamTypeClasses, FlexibleInstances #-}
 module AStar (ProblemDef(..), aStarSearch) where
 
-import Control.Arrow
 import qualified Search
 import qualified Data.Set as Set
 import qualified Data.Heap as Heap
+
+import Debug.Trace
 
 data (Search.ProblemNode pn k, Show pn) => AStarNode pn k = AStarNode (Search.Path pn) pn
   deriving Show
@@ -21,17 +22,20 @@ data AStarState pn k = AStarState
   , processed :: !(Set.Set k)
   , problemDef :: ProblemDef pn k
   , successorCount :: !Int
+  , processedCount :: !Int
   }
 
 -- Note: Returns path in reverse order.
-aStarSearch :: (Search.ProblemNode pn k, Show pn) => ProblemDef pn k -> pn -> (Maybe (Search.Path pn), Int)
-aStarSearch probDef startProblemNode = second successorCount $ Search.search searcher
+aStarSearch :: (Search.ProblemNode pn k, Show pn) => ProblemDef pn k -> pn -> (Maybe (Search.Path pn), Int, Int)
+aStarSearch probDef startProblemNode = (fst soln, processedCount $ snd soln, successorCount $ snd soln)
   where searcher = AStarState { problemDef = probDef
                               , processed = Set.empty
                               , fringe = Heap.singleton (nodeCost probDef startAStarNode, startAStarNode)
                               , successorCount = 0
+                              , processedCount = 0
                               }
         startAStarNode = AStarNode [startProblemNode] startProblemNode
+        soln = Search.search searcher
 
 nodeCost :: (Search.ProblemNode pn k, Show pn) => ProblemDef pn k -> AStarNode pn k -> Search.Cost
 nodeCost prob (AStarNode path cur) = costSoFar prob path + heuristicCostToEnd prob cur
@@ -49,17 +53,19 @@ instance (Search.ProblemNode pn k, Show pn) => Search.Searcher (AStarState pn k)
 
   expandNextNode s = case Heap.view $ fringe s of
                       Nothing -> s
-                      Just ((_, AStarNode curPath curProblemNode), newFringe) ->
+                      Just ((_, as@(AStarNode curPath curProblemNode)), newFringe) ->
                         let prob = problemDef s
-                            nextProblemNodes = successors prob curProblemNode
+                            nextProblemNodes = --trace (show curProblemNode ++ ", cost=" ++ show (costSoFar prob curPath) ++ ", heuristic=" ++ show (heuristicCostToEnd prob curProblemNode) ++ ", priority=" ++ show (nodeCost prob as)) $
+                                               successors prob curProblemNode
                             -- TODO: See if we can use difference?
                             nextUnprocessedProblemNodes = filter (not . flip Set.member (processed s) . Search.ident) nextProblemNodes
                             nextNodes = map (\probNode -> AStarNode (probNode:curPath) probNode) nextUnprocessedProblemNodes
-                            newFringe' = foldl (\h n' -> Heap.insert (nodeCost prob n', n') h) newFringe nextNodes
+                            newFringe' = foldl (\h n' -> {-trace (show n' ++ ", priority=" ++ show (nodeCost prob n')) $-} Heap.insert (nodeCost prob n', n') h) newFringe nextNodes
                             newProcessed = Set.insert (Search.ident curProblemNode) $ processed s
                         in s { fringe = newFringe'
                              , processed = newProcessed
                              , successorCount = successorCount s + length nextUnprocessedProblemNodes
+                             , processedCount = processedCount s + 1
                              }
 
 
