@@ -1,6 +1,7 @@
 $import aztex-lib/latex.azx
 $import aztex-lib/amsmath.azx
 $import aztex-lib/graphicx.azx
+$import aztex-lib/listings.azx
 
 $titlepage{CS 486 - Assignment 2}{Alex Klen \\ 20372654}
 
@@ -73,6 +74,14 @@ $titlepage{CS 486 - Assignment 2}{Alex Klen \\ 20372654}
         $bold{Local Search} $nl
         $enumerateN{a.}{
           $item{ % a
+            My neighbourhood operator is to swap the endpoints of two edges in an existing tour. This is the same as reversing a range in a permutation of cities. More concretely, the neighbours for #{T = [p_1..p_n, p_1]} are defined as follows: $nl
+            $let i = $hspace 5pt
+            $math{
+              &@neighbours = $braces{} \\
+              &@{for } i <- [1 .. n-3] \\
+              &$i@{for } j <- [i+1 .. n-2] \\
+              &$i$i@neighbours = @neighbours $union $braces{[p_1..p$un{i-1}, p_j, p$un{j-1}..p$un{i+1}, p_i, p$un{j+1}.. p_n]} \\
+            }
           }
           $item{ % b
           }
