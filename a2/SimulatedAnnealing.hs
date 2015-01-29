@@ -57,8 +57,9 @@ instance (Search.ProblemNode pn k, Show pn) => Search.Searcher (SAState pn k) pn
         curCost = solutionCost problem curPath
         nextCost = solutionCost problem (potentialNextProblemNode:curPath)
         t = getTemperature s
-        moveProb = exp 1.0 ** (-(curCost - nextCost)/t)
-        (rndProb :: Double, rnd'') = Random.randomR (0.0, 1.0) rnd'
+        moveProb = exp 1.0 ** ((curCost - nextCost)/t)
+        (rndProb :: Double, rnd'') = {-(if numSteps s `mod` 1000 == 0 then trace (show moveProb) else id) $-} Random.randomR (0.0, 1.0) rnd'
+        -- Move to this neighbour if the random number in [0, 1] is less than or equal to the move probability, which is larger than one if the new node has a better cost.
         nextProblemNode
           | null succs || rndProb > moveProb = curProblemNode
           | otherwise = potentialNextProblemNode
@@ -68,8 +69,9 @@ instance (Search.ProblemNode pn k, Show pn) => Search.Searcher (SAState pn k) pn
 
         traceState :: a -> a
         traceState
-          | newBestCost == bestCost s = id
-          | otherwise = trace $ show (numSteps s + 1) ++ ", best=" ++ show newBestCost
+          | newBestCost /= bestCost s || (numSteps s + 1) `mod` 1000 == 0 =
+              trace $ show (numSteps s + 1) ++ " cur=" ++ show curCost ++ " best=" ++ show newBestCost
+          | otherwise = id
 
     in traceState $ s { processedCount = processedCount s + 1
          , successorCount = successorCount s + length succs
