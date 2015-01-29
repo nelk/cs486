@@ -95,23 +95,23 @@ $titlepage{CS 486 - Assignment 2}{Alex Klen \\ 20372654}
             }
           }
           $item{ % b
-            The three cooling schedules I used are shown below.
+            The three cooling schedules I used are shown below. These are scaled to run for 1000 time steps.
             $math{
-              &@{1. Linear: } &&1000 - x \\
-              &@{2. Logarithmic: } &&300*$log(-x/100 + 30) \\
-              &@{3. Oscillatory: } &&501 - x/4 + (1000 - x/2)/2 * $cos(x/5) * $sin(x/12) \\
+              &@{1. Linear: } &&5*(1000 - x) \\
+              &@{2. Logarithmic: } &&5*(300*$log(-x/100 + 30)) \\
+              &@{3. Oscillatory: } &&5*(501 - x/4 + (1000 - x/2)/2 * $cos(x/5) * $sin(x/12)) \\
             }
             I think using some form of oscillating schedule would be best, although the formula above isn't necessarily a great one. The idea is that the algorithm will be in an exploitation phase when the temperature drops and it will find a local minimum, and then as the temperature rises it will be in an exploration phase where it can escape valleys and pass into other ones.
           }
           $item{ % c
             $graphic{sa_performance.png}{width=\textwidth} $nl
-            The cost of the best solution found was 974.1. The solutions of all three were quite close. One thing to note is that the linear cooling schedule quickly finds a local minimum and then never finds a better solution after that because it cannot escape a local minimum. The logarithmic schedule is at a higher temperature for a longer period of time and so makes progress later than the linear one, and the oscillatory schedule makes some progress even later.
+            The cost of the best solution found was TEMP. One thing to note is that the linear cooling schedule quickly finds a local minimum and then never finds a better solution after that because it cannot escape a local minimum. The logarithmic schedule is at a higher temperature for a longer period of time and so makes progress later than the linear one, and the oscillatory schedule makes some progress even later.
           }
           $item{ % d
-            Complete?
+            Simulated Annealing is complete, assuming that you start at a goal state and your operator moves to other valid goal states. Since it only looks at goal stats it will output a goal state after running, but it may not be optimal.
           }
           $item{ % e
-            Optimal?
+            Simulated Annealing is not optimal because it doesn't
           }
         }
       }
