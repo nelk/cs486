@@ -51,13 +51,13 @@ $titlepage{CS 486 - Assignment 2}{Alex Klen \\ 20372654}
             }
             The heuristic function is 0 for a complete tour. I did not come up with this heuristic, I found it on page 26 of $it{Heuristic Search: Theory and Applications} By Stefan Edelkamp, Stefan Schroedl. $nl
             It is admissible because of the following observation. The optimal tour #{T^* = [p_1..p_k, u_1, u_l, p_1]} has some path through the remaining unvisited nodes #{u_1..u_l}, with the edges #(p_k, u_1) and #(u_l, p_1). The path #[u_1..u_l] is a spanning tree of the unvisited nodes. By definition the minimum spanning tree (MST) has sum of edge lengths less than or equal to any spanning tree. $nl
-           $math{
-             @dist(T^*) &= @dist(p_1..p_k, u_1..u_l, p_1) \\
-                        &= @dist(p_1..p_k) + @dist(p_k, u_1) + @dist(u_1..u_l) + @dist(u_l, p_1) \\
-                        &$le @dist(p_1..p_k) + $Min{n $in @unvisited}{@dist(p_k, n)} + @dist(@MST(@unvisited)) + $Min{n $in @unvisited}{@dist(n, p_1)} \\
-                        &= @dist(p_1..p_k) + h(@path) \\
-             $therefore @{ } @dist(T^*) &- @dist(p_1..p_k) $le h(@path) \\
-           }
+            $math{
+              @dist(T^*) &= @dist(p_1..p_k, u_1..u_l, p_1) \\
+                         &= @dist(p_1..p_k) + @dist(p_k, u_1) + @dist(u_1..u_l) + @dist(u_l, p_1) \\
+                         &$le @dist(p_1..p_k) + $Min{n $in @unvisited}{@dist(p_k, n)} + @dist(@MST(@unvisited)) + $Min{n $in @unvisited}{@dist(n, p_1)} \\
+                         &= @dist(p_1..p_k) + h(@path) \\
+              $therefore @{ } @dist(T^*) &- @dist(p_1..p_k) $le h(@path) \\
+            }
           }
           $item{ % c
             The following graph shows the number of A* states created and placed in the priority queue during the search averaged over all 10 given TSPs.
@@ -69,6 +69,17 @@ $titlepage{CS 486 - Assignment 2}{Alex Klen \\ 20372654}
             The trend line shows the approximate runtime a 36-city TSP would be $approx 78 hours. $nl
           }
         }
+        $bold{A* Code} $nl
+        First the TSP representation, generic search code, and the main program. I implemented this assignment in Haskell.
+        $nl
+        $codeFile{Haskell}{TSP.hs}
+        $codeFile{Haskell}{Search.hs}
+        $codeFile{Haskell}{Main.hs}
+        $nl
+        Following is a generic A* implementation and the code that applies it to solve TSP.
+        $nl
+        $codeFile{Haskell}{AStar.hs}
+        $codeFile{Haskell}{TSPAStar.hs}
       }
       $item{ % B
         $bold{Local Search} $nl
@@ -94,6 +105,11 @@ $titlepage{CS 486 - Assignment 2}{Alex Klen \\ 20372654}
         }
       }
     }
+    $bold{Simulated Annealing Code} $nl
+    Following is a generic Simulated Annealing implementation and the code that applies it to solve TSP.
+    $nl
+    $codeFile{Haskell}{SimulatedAnnealing.hs}
+    $codeFile{Haskell}{TSPSimulatedAnnealing.hs}
   }
 }
 
