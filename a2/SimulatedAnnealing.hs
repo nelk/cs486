@@ -4,6 +4,8 @@ module SimulatedAnnealing (CoolingSchedule(..), ProblemDef(..), saSearch) where
 import qualified System.Random as Random
 import qualified Search
 
+import Debug.Trace (trace)
+
 data (Search.ProblemNode pn k, Show pn) => SANode pn k = SANode (Search.Path pn) pn
   deriving Show
 
@@ -27,14 +29,18 @@ data SAState pn k = SAState
   , stdGen :: Random.StdGen
   , nextSuccessor :: SANode pn k
   , temperature :: Double
+  , bestNode :: SANode pn k
+  , bestCost :: Search.Cost
   }
 
 instance (Search.ProblemNode pn k, Show pn) => Search.Searcher (SAState pn k) pn where
-  nextNode s = let (SANode _ pn) = nextSuccessor s
-               in Just pn
+  nextNode s
+    | Search.isAtGoal s = let (SANode _ pn) = bestNode s in Just pn
+    | otherwise         = let (SANode _ pn) = nextSuccessor s in Just pn
 
-  searchPath s = let (SANode path _) = nextSuccessor s
-                 in path
+  searchPath s
+    | Search.isAtGoal s = let (SANode path _) = bestNode s in path
+    | otherwise         = let (SANode path _) = nextSuccessor s in path
 
   isAtGoal s = numSteps s > maxSteps (problemDef s) || temperature s <= 0.0
 
@@ -53,12 +59,23 @@ instance (Search.ProblemNode pn k, Show pn) => Search.Searcher (SAState pn k) pn
         nextProblemNode
           | null succs || rndProb > moveProb = curProblemNode
           | otherwise = potentialNextProblemNode
-    in s { processedCount = processedCount s + 1
+        (newBestCost, newBestNode)
+          | nextCost < bestCost s = (nextCost, SANode (potentialNextProblemNode:curPath) potentialNextProblemNode)
+          | otherwise             = (bestCost s, bestNode s)
+
+        traceState :: a -> a
+        traceState
+          | newBestCost == bestCost s = id
+          | otherwise = trace $ show (numSteps s + 1) ++ ", best=" ++ show newBestCost
+
+    in traceState $ s { processedCount = processedCount s + 1
          , successorCount = successorCount s + length succs
          , stdGen = rnd''
          , nextSuccessor = SANode [nextProblemNode] nextProblemNode -- [] -> curPath
          , numSteps = numSteps s + 1
          , temperature = t - decrement (coolingSchedule problem)
+         , bestNode = newBestNode
+         , bestCost = newBestCost
          }
 
 -- Note: Returns path in reverse order.
@@ -72,6 +89,8 @@ saSearch probDef startProblemNode rnd = (fst soln, processedCount $ snd soln, su
           , stdGen = rnd
           , nextSuccessor = SANode [startProblemNode] startProblemNode
           , temperature = startTemperature $ coolingSchedule probDef
+          , bestNode = SANode [startProblemNode] startProblemNode
+          , bestCost = solutionCost probDef [startProblemNode]
           }
         soln = Search.search searcher
  
