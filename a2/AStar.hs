@@ -5,8 +5,6 @@ import qualified Search
 import qualified Data.Set as Set
 import qualified Data.Heap as Heap
 
-import Debug.Trace
-
 data (Search.ProblemNode pn k, Show pn) => AStarNode pn k = AStarNode (Search.Path pn) pn
   deriving Show
 
@@ -53,14 +51,12 @@ instance (Search.ProblemNode pn k, Show pn) => Search.Searcher (AStarState pn k)
 
   expandNextNode s = case Heap.view $ fringe s of
                       Nothing -> s
-                      Just ((_, as@(AStarNode curPath curProblemNode)), newFringe) ->
+                      Just ((_, AStarNode curPath curProblemNode), newFringe) ->
                         let prob = problemDef s
-                            nextProblemNodes = --trace (show curProblemNode ++ ", cost=" ++ show (costSoFar prob curPath) ++ ", heuristic=" ++ show (heuristicCostToEnd prob curProblemNode) ++ ", priority=" ++ show (nodeCost prob as)) $
-                                               successors prob curProblemNode
-                            -- TODO: See if we can use difference?
+                            nextProblemNodes = successors prob curProblemNode
                             nextUnprocessedProblemNodes = filter (not . flip Set.member (processed s) . Search.ident) nextProblemNodes
                             nextNodes = map (\probNode -> AStarNode (probNode:curPath) probNode) nextUnprocessedProblemNodes
-                            newFringe' = foldl (\h n' -> {-trace (show n' ++ ", priority=" ++ show (nodeCost prob n')) $-} Heap.insert (nodeCost prob n', n') h) newFringe nextNodes
+                            newFringe' = foldl (\h n' -> Heap.insert (nodeCost prob n', n') h) newFringe nextNodes
                             newProcessed = Set.insert (Search.ident curProblemNode) $ processed s
                         in s { fringe = newFringe'
                              , processed = newProcessed

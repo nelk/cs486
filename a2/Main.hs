@@ -71,7 +71,9 @@ solveTSP :: RunMode -> TSP -> Random.StdGen -> (Maybe (Search.Path Tour), Int, I
 solveTSP AStarSimple tsp _      = solveWithAStar (heuristicNumRemainingCities tsp) tsp
 solveTSP AStarMaxTriangle tsp _ = solveWithAStar (heuristicFarthestSingleCityThenGoal tsp) tsp
 solveTSP AStarMST tsp _         = solveWithAStar (heuristicMST tsp) tsp
-solveTSP Annealing tsp rnd      = solveWithSA tsp rnd
+solveTSP SALinear tsp rnd       = solveWithSA linearCooling tsp rnd
+solveTSP SALog tsp rnd       = solveWithSA logCooling tsp rnd
+solveTSP SAWavy tsp rnd       = solveWithSA wavyCooling tsp rnd
 
 solveWithAStar :: (Tour -> Search.Cost) -> TSP -> (Maybe (Search.Path Tour), Int, Int)
 solveWithAStar heuristic tsp =
@@ -150,10 +152,9 @@ mkAStarTSPProblem heuristic tsp = AStar.ProblemDef
   where isGoalNode (Tour tour) = length tour == length (tspCities tsp)
         successors (Tour tour) = map (Tour . (:tour)) $ notYetVisited tsp tour
 
-
-solveWithSA :: TSP -> Random.StdGen -> (Maybe (Search.Path Tour), Int, Int)
-solveWithSA tsp rnd =
-  let problem = mkSATSPProblem tsp
+solveWithSA :: SA.CoolingSchedule -> TSP -> Random.StdGen -> (Maybe (Search.Path Tour), Int, Int)
+solveWithSA cs tsp rnd =
+  let problem = mkSATSPProblem cs tsp
   in SA.saSearch problem (Tour $ tspCities tsp) rnd -- TODO: Random start point
 
 reverseRange :: String -> Int -> Int -> String
@@ -164,23 +165,30 @@ reverseRange s i j =
 
 
 -- For this problem, ProblemNodes are actually tours.
-mkSATSPProblem :: TSP -> SA.ProblemDef Tour [City]
-mkSATSPProblem tsp = SA.ProblemDef
+mkSATSPProblem :: SA.CoolingSchedule -> TSP -> SA.ProblemDef Tour [City]
+mkSATSPProblem cs tsp = SA.ProblemDef
   { SA.successors = \(Tour tour) -> successors tour
   , SA.solutionCost = \(tour:_) -> tourCost tsp tour
-  , SA.coolingSchedule = SA.CoolingSchedule
-        { SA.startTemperature = 100.0
-        , SA.decrement = 0.0002
-        }
-  , SA.maxSteps = 40000
+  , SA.coolingSchedule = cs
+  , SA.maxSteps = 1000000 --40000
   }
   where successors tour
           | length tour < 4 = []
           | otherwise = let ranges = [(i, j) | i <- [1..length tour - 3], j <- [i+1..length tour - 2]]
                         in map (Tour . uncurry (reverseRange tour)) ranges
 
+linearCooling :: SA.CoolingSchedule
+linearCooling x = 1000 - x
 
-data RunMode = AStarSimple | AStarMaxTriangle | AStarMST | Annealing
+logCooling :: SA.CoolingSchedule
+logCooling x = 300*log(-x/100 + 30)
+
+wavyCooling :: SA.CoolingSchedule
+wavyCooling x = 501 - x/4 + (1000 - x/2)/2 * cos(x/5) * sin(x/12)
+--wavyCooling x = 1000.0 - x + 100.0 * cos (x/5.0) * sin (x/12.0)
+
+
+data RunMode = AStarSimple | AStarMaxTriangle | AStarMST | SALinear | SALog | SAWavy
 
 parseArgs :: [String] -> Maybe RunMode
 parseArgs []      = Nothing
@@ -188,7 +196,9 @@ parseArgs (s:[])
   | s == "astarsimple"   = Just AStarSimple
   | s == "astartriangle" = Just AStarMaxTriangle
   | s == "astar"         = Just AStarMST
-  | s == "sa"            = Just Annealing
+  | s == "salinear"      = Just SALinear
+  | s == "salog"         = Just SALog
+  | s == "sawavy"        = Just SAWavy
 parseArgs _              = Nothing
 
 exitError :: String -> IO a
@@ -228,7 +238,7 @@ main = do
   rnd <- Random.getStdGen
   args <- getArgs
   case parseArgs args of
-    Nothing -> exitError "Usage: ./tsp-search (astarsimple|astartriangle|astar|sa)"
+    Nothing -> exitError "Usage: ./tsp-search (astarsimple|astartriangle|astar|salinear|salog|sawavy)"
     Just mode -> do
       cityInfos <- parseCityInfos
       let tsp = makeTSP cityInfos
