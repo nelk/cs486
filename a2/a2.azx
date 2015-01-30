@@ -70,16 +70,12 @@ $titlepage{CS 486 - Assignment 2}{Alex Klen \\ 20372654}
           }
         }
         $bold{A* Code} $nl
-        First the generic search code, TSP representation, and the main program. I implemented this assignment in Haskell.
-        $nl
-        $codeFile{Haskell}{Search.hs}
-        $codeFile{Haskell}{TSP.hs}
-        $codeFile{Haskell}{Main.hs}
-        $nl
-        Following is a generic A* implementation and the code that applies it to solve TSP.
-        $nl
-        $codeFile{Haskell}{AStar.hs}
-        $codeFile{Haskell}{TSPAStar.hs}
+        My code is implemented in Haskell and included in separate files with this report. $nl
+        See the included files $it{Search.hs} for the generic searching algorithm, $it{TSP.hs} for my TSP representation, and $it{Main.hs} for the main program entry point.  $nl
+        Then see $it{AStar.hs} for a generic A* implementation and $it{TSPAStar.hs} for the code that applies it to TSP.
+        %$nl
+        %$codeFile{Haskell}{AStar.hs}
+        %$codeFile{Haskell}{TSPAStar.hs}
       }
       $item{ % B
         $bold{Local Search} $nl
@@ -105,22 +101,22 @@ $titlepage{CS 486 - Assignment 2}{Alex Klen \\ 20372654}
           }
           $item{ % c
             $graphic{sa_performance.png}{width=\textwidth} $nl
-            The cost of the best solution found was TEMP. One thing to note is that the linear cooling schedule quickly finds a local minimum and then never finds a better solution after that because it cannot escape a local minimum. The logarithmic schedule is at a higher temperature for a longer period of time and so makes progress later than the linear one, and the oscillatory schedule makes some progress even later.
+            The cost of the best solution found was 420.07. One thing to note is that the linear cooling schedule quickly finds a local minimum and then never finds a better solution after that because it cannot escape a local minimum. The logarithmic schedule is at a higher temperature for a longer period of time and so makes progress later than the linear one, and the oscillatory schedule makes some progress even later.
           }
           $item{ % d
             Simulated Annealing is complete, assuming that you start at a goal state and your operator moves to other valid goal states. Since it only looks at goal stats it will output a goal state after running, but it may not be optimal.
           }
           $item{ % e
-            Simulated Annealing is not optimal because it doesn't
+            Simulated Annealing is not optimal because it isn't guaranteed to find an optimal goal state. Its performance depends on the cooling schedule, the local search operator, and randomness. It might get caught in a local minima and output a sub-optimal solution.
           }
         }
       }
     }
     $bold{Simulated Annealing Code} $nl
-    Following is a generic Simulated Annealing implementation and the code that applies it to solve TSP.
-    $nl
-    $codeFile{Haskell}{SimulatedAnnealing.hs}
-    $codeFile{Haskell}{TSPSimulatedAnnealing.hs}
+    See $it{SimulatedAnnealing.hs} for a generic Simulated Annealing implementation $it{TSPSimulatedAnnealing.hs} for the code that applies it to solve TSP.
+    %$nl
+    %$codeFile{Haskell}{SimulatedAnnealing.hs}
+    %$codeFile{Haskell}{TSPSimulatedAnnealing.hs}
   }
 }
 
