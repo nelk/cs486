@@ -33,7 +33,7 @@ parseInstance = do
         solnRegex = mkRegex "Solution: ([A-Z]+)$"
         -- nodesRegex = mkRegex "Processed Nodes: ([0-9]+)$"
         nodesRegex = mkRegex "Processed: ([0-9]+), Successors: ([0-9]+)$"
-        timeRegex = mkRegex "user *([0-9]+\\.[0-9]+)s"
+        timeRegex = mkRegex "([0-9]+\\.[0-9]+) total"
 
 parseAllInstances :: IO [Instance]
 parseAllInstances = do

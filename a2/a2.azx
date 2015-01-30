@@ -66,7 +66,7 @@ $titlepage{CS 486 - Assignment 2}{Alex Klen \\ 20372654}
             The trend line shows the approximate number of states generated for a 36-city TSP, which is 36.3 million. $nl
             The chart below shows the averaged running times for the same runs. $nl
             $graphic{astar_runtime.png}{scale=1.0} $nl
-            The trend line shows the approximate runtime a 36-city TSP would be $approx 18 hours. $nl
+            The trend line shows the approximate runtime a 36-city TSP would be $approx 35 hours. $nl
           }
         }
         $bold{A* Code} $nl
