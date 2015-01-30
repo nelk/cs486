@@ -7,7 +7,6 @@ import System.Environment (getArgs)
 import System.Exit
 import Control.Monad
 import Text.Read hiding (lift, get)
-import Safe
 import qualified System.Random as Random
 
 import qualified Search
@@ -76,8 +75,7 @@ parseCityInfos = do
 
         parseCity :: String -> Maybe CityInfo
         parseCity s = case words s of
-                         (ident_s:x_s:y_s:[]) -> do
-                           ident <- headMay ident_s
+                         (ident:x_s:y_s:[]) -> do
                            x :: Int <- readMaybe x_s
                            y :: Int <- readMaybe y_s
                            return (ident, x, y)
@@ -104,10 +102,9 @@ main = do
 
   where prettyPrintSoln :: TSP -> Int -> Int -> [Tour] -> IO ()
         prettyPrintSoln tsp numProcessed numSuccessors tours =
-          let (Tour tour) = head tours
-              soln = reverse tour
-              totalCost = tourCost tsp (Tour tour)
-          in putStrLn $ "Solution: " ++ soln ++
+          let tour = head tours
+              totalCost = tourCost tsp tour
+          in putStrLn $ "Solution: " ++ show tour ++
                         "\nCost: " ++ show totalCost ++
                         "\nProcessed: " ++ show numProcessed ++
                         ", Successors: " ++ show numSuccessors

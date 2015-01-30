@@ -11,7 +11,7 @@ solveWithSA cs tsp rnd =
   let problem = mkSATSPProblem cs tsp
   in SA.saSearch problem (Tour $ tspCities tsp) rnd
 
-reverseRange :: String -> Int -> Int -> String
+reverseRange :: [a] -> Int -> Int -> [a]
 reverseRange s i j =
   let (prefix, nonPrefix) = splitAt i s
       (inRange, postfix) = splitAt (j-i+1) nonPrefix

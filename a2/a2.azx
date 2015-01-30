@@ -70,10 +70,10 @@ $titlepage{CS 486 - Assignment 2}{Alex Klen \\ 20372654}
           }
         }
         $bold{A* Code} $nl
-        First the TSP representation, generic search code, and the main program. I implemented this assignment in Haskell.
+        First the generic search code, TSP representation, and the main program. I implemented this assignment in Haskell.
         $nl
-        $codeFile{Haskell}{TSP.hs}
         $codeFile{Haskell}{Search.hs}
+        $codeFile{Haskell}{TSP.hs}
         $codeFile{Haskell}{Main.hs}
         $nl
         Following is a generic A* implementation and the code that applies it to solve TSP.
