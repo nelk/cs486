@@ -1,0 +1,41 @@
+$import aztex-lib/latex.azx
+$import aztex-lib/amsmath.azx
+$import aztex-lib/graphicx.azx
+
+$titlepage{CS 486 - Assignment 3}{Alex Klen \\ 20372654}
+
+@{
+  $section{Adversarial Search} {
+    $enumerate{
+      $item{ % 1
+      }
+      $item{ % 2
+      }
+    }
+  }
+
+  $section{Constraint Satisfaction}{
+  }
+
+  $section{Constraint Satisfaction}{
+    $enumerate{
+      $item{ % 1
+      }
+      $item{ % 2
+      }
+    }
+  }
+
+  $section{Programming Questions}{
+    $enumerateN{a.}{
+      $item{ % a
+      }
+      $item{ % b
+      }
+      $item{ % c
+      }
+    }
+  }
+}
+
+
