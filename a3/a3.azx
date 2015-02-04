@@ -1,6 +1,7 @@
 $import aztex-lib/latex.azx
 $import aztex-lib/amsmath.azx
 $import aztex-lib/graphicx.azx
+$import aztex-lib/graphviz.azx
 
 $titlepage{CS 486 - Assignment 3}{Alex Klen \\ 20372654}
 
@@ -8,8 +9,50 @@ $titlepage{CS 486 - Assignment 3}{Alex Klen \\ 20372654}
   $section{Adversarial Search} {
     $enumerate{
       $item{ % 1
+        For each MAX decision step with children #{m_1, ..., m_k} the computed costs MiniMax(MIN, #m_i) are the minimum possible payoffs for MAX when selecting each of those decisions, assuming that MIN is using the same optional strategy. An optimal MIN will, for any MAX choice #{m_i}, the choice that will result in MiniMax(MIN, #m_i). A suboptimal MIN might choose a value which results in a payoff for MAX of greater than MiniMax(MIN, #m_i).
       }
       $item{ % 2
+        In the scenario shown below, MiniMax would tell MAX to choose the node with the minimum payoff of 20. However if MAX knows that MIN is not playing optimally and has a high chance of making a mistake when choosing between the 5 and 100 cases, MAX might end up selecting the node with minimum payoff 5 and getting to the goal state with value 100. $nl
+
+        $digraph{scale=1}{minimaxsuboptimal}{
+          subgraph cluster0 {
+            node [style=filled];
+            label="MAX";
+            a [label="??"];
+          }
+          subgraph cluster1 {
+            node [style=filled];
+            rank=same;
+            label="MIN";
+            b [label="5"];
+            c [label="20"];
+            d [label="10"];
+          }
+          a->b;
+          a->c;
+          a->d;
+          subgraph cluster2 {
+            node [style=filled];
+            rank=same;
+            label="MAX";
+            e [label="100"];
+            f [label="5"];
+            g [label="20"];
+            h [label="10"];
+          }
+          b->{e, f};
+          c->g;
+          d->h;
+
+          dots1 [label="..."];
+          dots2 [label="..."];
+          dots3 [label="..."];
+          dots4 [label="..."];
+          e->dots1;
+          f->dots2;
+          g->dots3;
+          h->dots4;
+        }
       }
     }
   }
