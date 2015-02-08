@@ -2,6 +2,7 @@ $import aztex-lib/latex.azx
 $import aztex-lib/amsmath.azx
 $import aztex-lib/graphicx.azx
 $import aztex-lib/graphviz.azx
+$import aztex-lib/listings.azx
 
 $titlepage{CS 486 - Assignment 3}{Alex Klen \\ 20372654}
 
@@ -58,13 +59,43 @@ $titlepage{CS 486 - Assignment 3}{Alex Klen \\ 20372654}
   }
 
   $section{Constraint Satisfaction}{
+    $subsection{Problem}{
+      $nobreak{
+        $lstlisting{}{
+          ZEROES
+          + ONES
+          ------
+          BINARY
+        }
+      }
+    }
+    $subsection{Constraints}{
+      $math{
+        Alldiff&(Z, E, R, O, S, N, B, I, A, Y) \\
+        S + S       &= Y + X_1 *10 \\
+        E + E + X_1 &= R + X_2 *10 \\
+        O + N + X_2 &= A + X_3 *10 \\
+        R + O + X_3 &= N + X_4 *10 \\
+        E +     X_4 &= I + X_5 *10 \\
+        Z +     X_5 &= B           \\
+      }
+    }
+    $subsection{Solution}{
+      $itemize{
+        $item{
+          %TODO
+        }
+      }
+    }
   }
 
   $section{Constraint Satisfaction}{
     $enumerate{
       $item{ % 1
+        The arc from #N to #W is arc consistent because #{$forall n. $exists w. v(n, w)}. For #{n = 1}, #{v(1, added)} is true, for #{n = 3}, #{v(3, blue)} is true, and for #{n = 5}, #{v(5, stare)} is true.
       }
       $item{ % 2
+        The arc from W to N is not arc consistent because #{$forall w. $not$exists n. v(n, w)}. The only word that doesn't have a vowel in any of its 1st, 3rd, or 5th positions is "fever", so by removing "fever", we can achieve arc consistency with the new domain #{W = $braces{added, blue, green, stare}}.
       }
     }
   }
