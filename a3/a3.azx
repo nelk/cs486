@@ -103,6 +103,13 @@ $titlepage{CS 486 - Assignment 3}{Alex Klen \\ 20372654}
   $section{Programming Questions}{
     $enumerateN{a.}{
       $item{ % a
+        $math{
+          &@{Variables } A_{i,j} $in $braces{1..9} @{ for } (i, j) $in $braces{1..9}^2 \\
+          &$forall i. Alldiff(A_{i, j} @{ for } j $in $braces{1..9}) @{ (all values in same row are different)}\\
+          &$forall j. Alldiff(A_{i, j} @{ for } i $in $braces{1..9}) @{ (all values in same column are different)}\\
+          &@{For } (@offi, @offj) $in $braces{1, 4, 7}^2 \\
+          &$hspace{2em} Alldiff(A_{i, j} @{ for } i $in $braces{@offi, @offi +1, @offi +2}, j $in $braces{@offj, @offj +1, @offj +2}) @{ (all values in same square)}\\
+        }
       }
       $item{ % b
       }
