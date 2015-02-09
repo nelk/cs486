@@ -1,10 +1,12 @@
 
-.PHONY all: sudoku-solver report
+.PHONY: all report clean
 
-.PHONY report: a3.pdf
+all: sudoku-solver report
 
-.PHONY clean:
-	rm a3.tex sudoku-solver
+report: a3.pdf
+
+clean:
+	rm -f a3.tex sudoku-solver
 
 a3.tex: a3.azx
 	aztexc a3.azx > a3.tex
