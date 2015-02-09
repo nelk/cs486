@@ -1,0 +1,20 @@
+name:                sudoku-solver
+version:             0.1.0.0
+synopsis:            A sudoku solver implemented using constraint solving.
+author:              Alex Klen
+maintainer:          alex.klen@uwaterloo.ca
+build-type:          Simple
+cabal-version:       >=1.10
+
+executable sudoku-solver
+  main-is:             Main.hs
+
+  ghc-options: -O2 -Wall -threaded -with-rtsopts=-N8-K10000000
+  -- -prof -fprof-auto -rtsopts
+  build-depends:       base >=4.6 && <4.7
+                     , containers
+                     , mtl
+                     , either
+                     , heap
+                     , random
+  default-language:    Haskell2010

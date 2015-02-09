@@ -38,7 +38,7 @@ instance Constraint SudokuConstraint Cell Digits where
 
 sudoku :: ConstraintProblem SudokuConstraint Cell Digits
 sudoku = ConstraintProblem
-  { vars = []
+  { initialVars = []
   , constraints = []
   }
 
