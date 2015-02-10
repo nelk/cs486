@@ -15,6 +15,6 @@ a3.pdf: a3.tex
 	pdflatex --shell-escape a3.tex
 
 sudoku-solver: sudoku-solver.cabal Main.hs Backtracking.hs SudokuSolver.hs ConstraintSolver.hs
-	cabal build
+	cabal build -j8
 	cp ./dist/build/sudoku-solver/sudoku-solver ./sudoku-solver
 

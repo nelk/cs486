@@ -28,7 +28,7 @@ instance MonadTrans (BacktrackingT persist soln) where
   lift m = BacktrackingT $ \p s -> do a <- m
                                       return (Right a, p, s)
 
--- Run a backtracker, but reset the solution state if it fails.
+-- Run a backtracker, but reset the solution state if it doesn't succeed.
 branch :: Monad m => BacktrackingT persist soln m a -> BacktrackingT persist soln m (Maybe a)
 branch bt = BacktrackingT $ \p s -> do (r, p', s') <- runBacktrackingT bt p s
                                        decide r s p' s'
@@ -37,11 +37,13 @@ branch bt = BacktrackingT $ \p s -> do (r, p', s') <- runBacktrackingT bt p s
                     decide (Right a) s p' _ = return (Right (Just a), p', s)
 
 -- Run a backtracker, but reset the solution state after. If it succeeds or fails (and doesn't produce a value), then it returns the default.
-try :: Monad m => BacktrackingT persist soln m a -> a -> BacktrackingT persist soln m a
-try bt def = BacktrackingT $ \p s -> do (r, p', s') <- runBacktrackingT bt p s
+{-
+try :: Monad m => a -> BacktrackingT persist soln m a -> BacktrackingT persist soln m a
+try def bt = BacktrackingT $ \p s -> do (r, p', s') <- runBacktrackingT bt p s
                                         decide r s p' s'
               where decide (Left _) s p' _ = return (Right def, p', s)
                     decide (Right a) s p' _ = return (Right a, p', s)
+                    -}
 
 success :: Monad m => BacktrackingT persist soln m ()
 success = BacktrackingT $ \p s -> return (Left True, p, s)

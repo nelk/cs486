@@ -1,11 +1,23 @@
 {-#LANGUAGE MultiParamTypeClasses, FlexibleInstances #-}
-module SudokuSolver where
+module SudokuSolver
+  ( solveSudoku
+  , Cell
+  , Digit(..)
+  , Row(..)
+  , Col(..)
+  , SudokuVar
+  , SudokuSoln
+  , Var(..)
+  , varId
+  ) where
 
 import qualified Data.Set as Set
 import Data.List (sortBy)
 import Data.Ord (comparing)
 import Control.Applicative
 import ConstraintSolver
+
+import Debug.Trace
 
 data Digit = D1 | D2 | D3 | D4 | D5 | D6 | D7 | D8 | D9
   deriving (Show, Eq, Ord, Enum)
@@ -16,28 +28,31 @@ data Col = C1 | C2 | C3 | C4 | C5 | C6 | C7 | C8 | C9
 type Cell = (Row, Col)
 
 type SudokuVar = Var Cell Digit
+type SudokuSoln = ConstraintSoln Cell Digit
 
-data SudokuConstraint = Alldiff (Set.Set Cell)
+data SudokuConstraint = Alldiff (Set.Set Cell) deriving Show
 instance Constraint SudokuConstraint Cell Digit where
   included (Alldiff cellSet) var
     = varId var `Set.member` cellSet
 
   restrict (Alldiff cellSet) (AssignedVar cell val) vs = mapM filterVariables vs
     where filterVariables v
-            | varId v `Set.member` cellSet = filterAssignments v
-            | otherwise = Just v
+            -- If the assigned variable is not part of this constraint, it doesn't restrict any variables.
+            | not (cell `Set.member` cellSet) = Just v
+            | varId v `Set.member` cellSet = {- trace (show (varId v) ++ "filterVariables assign " ++ show cellSet) $ -} filterAssignments v
+            | otherwise = {- trace (show (varId v) ++ "filterVariables normal") $ -} Just v
           filterAssignments v@(AssignedVar cell' val')
-            | cell == cell' || val == val' = Just v
-            | otherwise = Nothing
+            | cell == cell' || val /= val' = {- trace "filterAssignments assigned fine" $ -} Just v
+            | otherwise = {- trace "filterAssignments assigned fail" -} Nothing
           filterAssignments v@(UnassignedVar cell' available)
-            | cell == cell' = Just v
-            | available == Set.singleton val = Nothing
+            | cell == cell' = {- trace "filterAssignments unassigned fine" $ -} Just v
+            | available == Set.singleton val = {- trace "filterAssignemtns unassigned fail" -} Nothing
             | otherwise = let available' = val `Set.delete` available
                           in Just $ if Set.size available' == 1
-                                      then AssignedVar cell (head $ Set.toList available')
-                                      else UnassignedVar cell available'
+                                      then {- trace ("restrict assigning " ++ show cell' ++ " " ++ show (head $ Set.toList available')) $ -} AssignedVar cell' (head $ Set.toList available')
+                                      else {- trace ("restrict deleted " ++ show cell' ++ " " ++ show val) $ -} UnassignedVar cell' available'
 
-  restrict _ (UnassignedVar _ _) vs = Just vs
+  restrict _ (UnassignedVar _ _) vs = trace "BAD" $ Just vs
 
 zipMatching :: Ord i => (a -> i) -> [a] -> (b -> i) -> [b] -> [(Maybe a, Maybe b)]
 zipMatching _      []     _      []     = []
@@ -48,7 +63,7 @@ zipMatching identA (a:as) identB (b:bs) = case compare (identA a) (identB b) of
   LT -> (Just a, Nothing):zipMatching identA as identB (b:bs)
   GT -> (Nothing, Just b):zipMatching identA (a:as) identB bs
 
-makeVarsFromStartingState :: [(Cell, Digit)] -> [Var Cell Digit]
+makeVarsFromStartingState :: [(Cell, Digit)] -> [SudokuVar]
 makeVarsFromStartingState startVals =
   let sortedStartVals = sortBy (comparing fst) startVals
       allCells = [(i, j) | i <- enumFromTo R1 R9, j <- enumFromTo C1 C9]
@@ -75,11 +90,12 @@ sudokuConstraints =
     (\(rowOff, colOff) -> Alldiff $ Set.fromList [(i, j) | i <- enumFromTo rowOff (succ $ succ rowOff), j <- enumFromTo colOff (succ $ succ colOff)])
     ((,) <$> [R1, R4, R7] <*> [C1, C4, C7])
 
-
-
 sudoku :: [(Cell, Digit)] -> ConstraintProblem SudokuConstraint Cell Digit
 sudoku startVals = ConstraintProblem
   { initialVars = makeVarsFromStartingState startVals
   , constraints = sudokuConstraints
   }
+
+solveSudoku :: [(Cell, Digit)] -> SudokuSoln
+solveSudoku = solveConstraintProblem . sudoku
 
