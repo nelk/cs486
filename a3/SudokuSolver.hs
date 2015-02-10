@@ -1,6 +1,8 @@
 {-#LANGUAGE MultiParamTypeClasses, FlexibleInstances #-}
 module SudokuSolver
   ( solveSudoku
+  , sudoku
+  , validateSudokuSoln
   , Cell
   , Digit(..)
   , Row(..)
@@ -15,6 +17,8 @@ import qualified Data.Set as Set
 import Data.List (sortBy)
 import Data.Ord (comparing)
 import Control.Applicative
+import Control.Monad (unless)
+import Data.Maybe (isJust)
 import ConstraintSolver
 
 import Debug.Trace
@@ -48,9 +52,11 @@ instance Constraint SudokuConstraint Cell Digit where
             | cell == cell' = {- trace "filterAssignments unassigned fine" $ -} Just v
             | available == Set.singleton val = {- trace "filterAssignemtns unassigned fail" -} Nothing
             | otherwise = let available' = val `Set.delete` available
-                          in Just $ if Set.size available' == 1
-                                      then {- trace ("restrict assigning " ++ show cell' ++ " " ++ show (head $ Set.toList available')) $ -} AssignedVar cell' (head $ Set.toList available')
-                                      else {- trace ("restrict deleted " ++ show cell' ++ " " ++ show val) $ -} UnassignedVar cell' available'
+                          in Just $ UnassignedVar cell' available'
+                          {-Just $ if Set.size available' == 1
+                                      then AssignedVar cell' (head $ Set.toList available')
+                                      else UnassignedVar cell' available'
+                                      -}
 
   restrict _ (UnassignedVar _ _) vs = trace "BAD" $ Just vs
 
@@ -96,6 +102,28 @@ sudoku startVals = ConstraintProblem
   , constraints = sudokuConstraints
   }
 
-solveSudoku :: [(Cell, Digit)] -> SudokuSoln
-solveSudoku = solveConstraintProblem . sudoku
+solveSudoku :: ConstraintProblem SudokuConstraint Cell Digit
+            -> SudokuSoln
+solveSudoku = solveConstraintProblem
+
+-- Soln and start needs to be sorted!
+validateSudokuSoln :: ConstraintProblem SudokuConstraint Cell Digit
+                   -> [(Cell, Digit)]
+                   -> [Var Cell Digit]
+                   -> Bool
+validateSudokuSoln prob start soln =
+  let startValsCorrect = all startValsChecker $ zipMatching fst start varId soln
+      startValsChecker (Just (_, v), Just (AssignedVar _ v')) = v == v'
+      startValsChecker _ = True
+
+      constraintsCorrect = all constraintChecker $ constraints prob
+      constraintChecker (Alldiff idSet) = isJust $ foldl (availabilityFolder idSet) (Just $ Set.fromList $ enumFromTo D1 D9) soln
+      availabilityFolder idSet valSet_m (AssignedVar cell val)
+        | not (cell `Set.member` idSet) = valSet_m
+        | otherwise = do
+            valSet <- valSet_m
+            unless (val `Set.member` valSet) Nothing
+            Just $ val `Set.delete` valSet
+      availabilityFolder _ _ _ = Nothing
+  in startValsCorrect && constraintsCorrect
 

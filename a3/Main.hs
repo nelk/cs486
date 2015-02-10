@@ -43,9 +43,12 @@ main = do
   case parseSudoku rawStart of
     Left e -> exitError e
     Right start ->
-      case solveSudoku start of
-        (Nothing, n) -> exitError $ "Failed to find solution after " ++ show n ++ " variable assignments."
-        (Just soln, n) -> putStrLn $ prettyPrintSoln soln n
+      let sudokuProb = sudoku start
+      in case solveSudoku sudokuProb of
+          (Nothing, n) -> exitError $ "Failed to find solution after " ++ show n ++ " variable assignments."
+          (Just soln, n) -> do
+            putStrLn $ prettyPrintSoln soln n
+            unless (validateSudokuSoln sudokuProb start soln) $ exitError "Solution is INVALID."
 
 splitEvery :: Int -> [a] -> [[a]]
 splitEvery _ [] = []

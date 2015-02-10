@@ -45,6 +45,7 @@ varAssigned (UnassignedVar _ _) = False
 
 class Constraint c id dom where
   included :: c -> Var id dom -> Bool
+  -- Given a constraint, a variable that has changed, and the list of all current variables, it either returns Nothing if the assignment causes a variable to have no possible value, or Just a list variables that is arc consistent with respect to the changed variable. This must leave unassigned variables unassigned.
   restrict :: c -> Var id dom -> [Var id dom] -> Maybe [Var id dom]
 
 data Constraint c id dom => ConstraintProblem c id dom = ConstraintProblem
@@ -158,17 +159,45 @@ leastConstrainingValue v = do
             SolnState vs <- getSoln
             return (d, sum (map varDomainSize vs) - sum (map varDomainSize originalVs))
 
-forwardCheck :: (Show id, Show dom, Eq id, Ord dom, Constraint c id dom)
+forwardCheck :: forall id dom c.
+                (Show id, Show dom, Eq id, Ord dom, Constraint c id dom)
              => id -> Backtracker c id dom ()
 forwardCheck vid = do
   cs <- liftM constraints $ lift ask
   vs <- liftM vars getSoln
   when (length vs /= 81) $ error "FAIL1"
   let var = head $ filter ((== vid) . varId) vs
+  --case doRestrictions cs vs [var] of
   case foldl (restrictFolder var) (Just vs) cs of
     Nothing -> {- trace ("failure: no possible values for " ++ show vid) -} failure
     Just vs' -> {- trace ("forwardCheck " ++ show vs') $ -} putSoln (SolnState vs')
   where restrictFolder var maybe_vs c = do
           vs <- maybe_vs
           restrict c var vs
+    {-
+  where doRestrictions cs vs changedVs = do
+          newVs <- foldl (restrictVar cs) (Just vs) changedVs
+          let (newVs', changedVs') = foldl forwardAssignsFolder ([], []) newVs
+          if null changedVs'
+             then return newVs'
+             else doRestrictions cs newVs' changedVs'
+
+        restrictVar :: [c] -> Maybe [Var id dom] -> Var id dom -> Maybe [Var id dom]
+        restrictVar cs may_vs var =
+          foldl (restrictFolder var) may_vs cs
+
+        restrictFolder :: Var id dom -> Maybe [Var id dom] -> c -> Maybe [Var id dom]
+        restrictFolder var maybe_vs c = do
+          vs <- maybe_vs
+          restrict c var vs
+
+        forwardAssignsFolder :: ([Var id dom], [Var id dom]) -> Var id dom -> ([Var id dom], [Var id dom])
+        forwardAssignsFolder (newVs, assignedVs) v@(UnassignedVar cell available)
+          | Set.size available == 1 =
+              let newV = (AssignedVar cell $ head $ Set.toList available)
+              in (newV:newVs, newV:assignedVs)
+          | otherwise = (v:newVs, assignedVs)
+        forwardAssignsFolder (newVs, assignedVs) v = (v:newVs, assignedVs)
+        -}
+
 
