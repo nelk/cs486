@@ -10,11 +10,13 @@ import Data.Ord (comparing)
 import Data.Maybe (catMaybes)
 import SudokuSolver
 
+-- |Exit the program with fail status after printing an error message.
 exitError :: String -> IO a
 exitError msg = do
   hPutStrLn stderr msg
   exitWith $ ExitFailure 1
 
+-- |Attempt to parse a raw string as a sudoku problem (a bunch of starting assignments).
 parseSudoku :: String -> Either String [(Cell, Digit)]
 parseSudoku s = do
   let rows = lines s
@@ -32,7 +34,6 @@ parseSudoku s = do
           | otherwise
             = Left $ "Value \"" ++ v ++ "\" at " ++ show (i, j) ++ " needs to be between 1 and 9."
 
--- |Exit the program with fail status after printing an error message.
 main :: IO ()
 main = do
   args <- getArgs
@@ -41,18 +42,23 @@ main = do
   case parseSudoku rawStart of
     Left e -> exitError e
     Right start ->
+      -- Create Sudoku problem from starting assignments.
       let sudokuProb = sudoku start
+      -- Attempt to solve the problem.
       in case solveSudoku sudokuProb of
           (Nothing, n) -> exitError $ "Failed to find solution after " ++ show n ++ " variable assignments."
           (Just soln, n) -> do
+            -- If we succeeded, print the solution and also validate it.
             putStrLn $ prettyPrintSoln soln n
             unless (validateSudokuSoln sudokuProb start soln) $ exitError "Solution is INVALID."
 
+-- |Helper to chop up an array every n elements.
 splitEvery :: Int -> [a] -> [[a]]
 splitEvery _ [] = []
 splitEvery n as = let (front, back) = splitAt n as
                   in front:splitEvery n back
 
+-- |Print the solution in a human-readable square (like the input format).
 prettyPrintSoln :: [SudokuVar] -> Int -> String
 prettyPrintSoln soln n =
   let sortedSoln = sortBy (comparing varId) soln
@@ -61,5 +67,4 @@ prettyPrintSoln soln n =
       showVar _ = error "Unassigned var in solution!"
       pretty = concatMap ((++ "\n") . concatMap ((++ " ") . showVar)) rows
   in pretty ++ "\nUsed " ++ show n ++ " variable assignments."
-
 
