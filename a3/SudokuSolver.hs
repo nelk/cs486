@@ -13,7 +13,8 @@ module SudokuSolver
   , varId
   ) where
 
-import qualified Data.Set as Set
+import qualified Data.HashSet as Set
+import Data.Hashable
 import Data.List (sortBy)
 import Data.Ord (comparing)
 import Control.Applicative
@@ -31,10 +32,17 @@ data Col = C1 | C2 | C3 | C4 | C5 | C6 | C7 | C8 | C9
   deriving (Show, Eq, Ord, Enum)
 type Cell = (Row, Col)
 
+instance Hashable Digit where
+  hashWithSalt salt digit = hashWithSalt salt $ fromEnum digit
+instance Hashable Row where
+  hashWithSalt salt digit = hashWithSalt salt $ fromEnum digit
+instance Hashable Col where
+  hashWithSalt salt digit = hashWithSalt salt $ fromEnum digit
+
 type SudokuVar = Var Cell Digit
 type SudokuSoln = ConstraintSoln Cell Digit
 
-data SudokuConstraint = Alldiff (Set.Set Cell) deriving Show
+data SudokuConstraint = Alldiff (Set.HashSet Cell) deriving Show
 instance Constraint SudokuConstraint Cell Digit where
   included (Alldiff cellSet) var
     = varId var `Set.member` cellSet

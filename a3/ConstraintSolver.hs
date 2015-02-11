@@ -10,29 +10,28 @@ module ConstraintSolver
   , Constraint(..)
   ) where
 
-import qualified Data.Set as Set
+import qualified Data.HashSet as Set
 import Control.Monad.Reader
 import Data.List
 import Data.Maybe (catMaybes)
 import Data.Ord (comparing)
+import Data.Hashable
 import Backtracking
-
-import Debug.Trace
 
 data (Eq id, Ord dom) =>
   Var id dom = AssignedVar id dom
-             | UnassignedVar id (Set.Set dom)
+             | UnassignedVar id (Set.HashSet dom)
 
-instance (Show id, Show dom, Eq id, Ord dom)
+instance (Show id, Show dom, Eq id, Ord dom, Hashable dom)
       => Show (Var id dom) where
   show (AssignedVar ident dom) = "AssignedVar " ++ show ident ++ " " ++ show dom
   show (UnassignedVar ident domSet) = "UnassignedVar " ++ show ident ++ " " ++ show domSet
 
-varDomain :: (Eq id, Ord dom) => Var id dom -> Set.Set dom
+varDomain :: (Eq id, Ord dom, Hashable dom) => Var id dom -> Set.HashSet dom
 varDomain (AssignedVar _ s) = Set.singleton s
 varDomain (UnassignedVar _ s) = s
 
-varDomainSize :: (Eq id, Ord dom) => Var id dom -> Int
+varDomainSize :: (Eq id, Ord dom, Hashable dom) => Var id dom -> Int
 varDomainSize = Set.size . varDomain
 
 varId :: (Eq id, Ord dom) => Var id dom -> id
@@ -55,9 +54,7 @@ data Constraint c id dom => ConstraintProblem c id dom = ConstraintProblem
 
 type ConstraintSoln id dom = (Maybe [Var id dom], Int)
 
-data PersistState = PersistState
-  { numAssignments :: Int
-  }
+data PersistState = PersistState Int
 
 data SolnState c id dom = SolnState
   { vars :: [Var id dom]
@@ -66,7 +63,7 @@ data SolnState c id dom = SolnState
 type Backtracker c id dom = BacktrackingT PersistState (SolnState c id dom) (Reader (ConstraintProblem c id dom))
 
 
-solveConstraintProblem :: (Show id, Show dom, Eq id, Ord dom, Constraint c id dom)
+solveConstraintProblem :: (Show id, Show dom, Eq id, Ord dom, Hashable dom, Constraint c id dom)
                        => ConstraintProblem c id dom
                        -> ConstraintSoln id dom
 solveConstraintProblem prob
@@ -82,29 +79,24 @@ solveConstraintProblem prob
         Right _ -> (Nothing, n)
 
 
-solveWithBacktracking :: (Show id, Show dom, Eq id, Ord dom, Constraint c id dom)
+solveWithBacktracking :: (Show id, Show dom, Eq id, Ord dom, Hashable dom, Constraint c id dom)
                       => Int -> Backtracker c id dom ()
 solveWithBacktracking indent = do
   vs <- liftM vars getSoln
   -- Check if all assigned.
-  --trace ("solveWithBacktracking " ++ show vs) $
   if all varAssigned vs
     then success
     else -- Select which variable to assign next using MRV heuristic.
       case minimumRemainingValues vs of
         [] -> failure
-        mrvVars -> {- trace ("MRV " ++ show mrvVars) $ -} do
+        mrvVars -> do
           chosenVar <- mostConstrainingVariable mrvVars
           -- Decide what to set for it.
           chosenValues <- leastConstrainingValue chosenVar
-          --trace (replicate indent ' ' ++ "Choosing for " ++ show (varId chosenVar)) $ return ()
           forM_ chosenValues $ \val -> branch $ do
-            --trace (replicate indent ' ' ++ "Assigning " ++ show val ++ " to " ++ show (varId chosenVar)) $ return ()
             assignVar (varId chosenVar) val
             incrementAssignments
             forwardCheck (varId chosenVar)
-            --tmpvs <- liftM vars getSoln
-            --trace (show tmpvs) $ return ()
             solveWithBacktracking (indent + 1)
 
 assignVar :: (Show id, Show dom, Eq id, Ord dom, Constraint c id dom)
@@ -112,20 +104,20 @@ assignVar :: (Show id, Show dom, Eq id, Ord dom, Constraint c id dom)
 assignVar vid val = do
   vs <- liftM vars getSoln
   when (length vs /= 81) $ error "FAIL2"
-  let newVar = {- trace ("Assigning " ++ show val ++ " to " ++ show vid) $ -} AssignedVar vid val
+  let newVar = AssignedVar vid val
       newVars = map (\v' -> if varId v' == vid
                               then newVar
                               else v'
                     ) vs
   when (length newVars /= 81) $ error "FAIL3"
-  putSoln $ {- trace ("State after assigning: " ++ show newVars) $ -} SolnState newVars
+  putSoln $ SolnState newVars
 
 incrementAssignments :: (Show id, Show dom, Eq id, Ord dom, Constraint c id dom)
                      => Backtracker c id dom ()
 incrementAssignments = getPersistent >>= \(PersistState n) -> putPersistent (PersistState $ n + 1)
 
 
-minimumRemainingValues :: (Eq id, Ord dom)
+minimumRemainingValues :: (Eq id, Ord dom, Hashable dom)
                        => [Var id dom] -> [Var id dom]
 minimumRemainingValues = foldl foldFunc [] . filter (not . varAssigned)
   where foldFunc [] newVar = [newVar]
@@ -146,7 +138,7 @@ mostConstrainingVariable vs = do
 
 
 leastConstrainingValue :: forall c id dom.
-                          (Show id, Show dom, Eq id, Ord dom, Constraint c id dom)
+                          (Show id, Show dom, Eq id, Ord dom, Hashable dom, Constraint c id dom)
                        => Var id dom -> Backtracker c id dom [dom]
 leastConstrainingValue v = do
   SolnState originalVs <- getSoln
@@ -169,35 +161,9 @@ forwardCheck vid = do
   let var = head $ filter ((== vid) . varId) vs
   --case doRestrictions cs vs [var] of
   case foldl (restrictFolder var) (Just vs) cs of
-    Nothing -> {- trace ("failure: no possible values for " ++ show vid) -} failure
-    Just vs' -> {- trace ("forwardCheck " ++ show vs') $ -} putSoln (SolnState vs')
+    Nothing -> failure
+    Just vs' -> putSoln (SolnState vs')
   where restrictFolder var maybe_vs c = do
           vs <- maybe_vs
           restrict c var vs
-    {-
-  where doRestrictions cs vs changedVs = do
-          newVs <- foldl (restrictVar cs) (Just vs) changedVs
-          let (newVs', changedVs') = foldl forwardAssignsFolder ([], []) newVs
-          if null changedVs'
-             then return newVs'
-             else doRestrictions cs newVs' changedVs'
-
-        restrictVar :: [c] -> Maybe [Var id dom] -> Var id dom -> Maybe [Var id dom]
-        restrictVar cs may_vs var =
-          foldl (restrictFolder var) may_vs cs
-
-        restrictFolder :: Var id dom -> Maybe [Var id dom] -> c -> Maybe [Var id dom]
-        restrictFolder var maybe_vs c = do
-          vs <- maybe_vs
-          restrict c var vs
-
-        forwardAssignsFolder :: ([Var id dom], [Var id dom]) -> Var id dom -> ([Var id dom], [Var id dom])
-        forwardAssignsFolder (newVs, assignedVs) v@(UnassignedVar cell available)
-          | Set.size available == 1 =
-              let newV = (AssignedVar cell $ head $ Set.toList available)
-              in (newV:newVs, newV:assignedVs)
-          | otherwise = (v:newVs, assignedVs)
-        forwardAssignsFolder (newVs, assignedVs) v = (v:newVs, assignedVs)
-        -}
-
 

@@ -1,18 +1,10 @@
 module Backtracking where
 
-import Control.Applicative
-import Control.Monad.Trans
---import Control.Monad
---import Control.Monad.State
---import Control.Monad.Trans.Either
-
--- TODO
---data SuccessState = Successful | Failure | Neither
+import Control.Applicative ((<$>))
+import Control.Monad.Trans (MonadTrans, lift)
 
 data BacktrackingT persist soln m a = BacktrackingT
   { runBacktrackingT :: persist -> soln -> m (Either Bool a, persist, soln) }
-
---StateT (persist, soln) (EitherT Bool m)
 
 instance Functor m => Functor (BacktrackingT persist soln m) where
   fmap f m = BacktrackingT $ \p s -> (\(r, p', s') -> (fmap f r, p', s')) <$> runBacktrackingT m p s
@@ -35,15 +27,6 @@ branch bt = BacktrackingT $ \p s -> do (r, p', s') <- runBacktrackingT bt p s
               where decide (Left True) _ p' s' = return (Left True, p', s')
                     decide (Left False) s p' _ = return (Right Nothing, p', s)
                     decide (Right a) s p' _ = return (Right (Just a), p', s)
-
--- Run a backtracker, but reset the solution state after. If it succeeds or fails (and doesn't produce a value), then it returns the default.
-{-
-try :: Monad m => a -> BacktrackingT persist soln m a -> BacktrackingT persist soln m a
-try def bt = BacktrackingT $ \p s -> do (r, p', s') <- runBacktrackingT bt p s
-                                        decide r s p' s'
-              where decide (Left _) s p' _ = return (Right def, p', s)
-                    decide (Right a) s p' _ = return (Right a, p', s)
-                    -}
 
 success :: Monad m => BacktrackingT persist soln m ()
 success = BacktrackingT $ \p s -> return (Left True, p, s)

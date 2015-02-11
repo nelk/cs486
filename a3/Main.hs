@@ -10,8 +10,6 @@ import Data.Ord (comparing)
 import Data.Maybe (catMaybes)
 import SudokuSolver
 
-import Debug.Trace (trace)
-
 exitError :: String -> IO a
 exitError msg = do
   hPutStrLn stderr msg
