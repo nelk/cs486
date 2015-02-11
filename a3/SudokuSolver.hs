@@ -104,19 +104,19 @@ sudokuConstraints =
     (\(rowOff, colOff) -> Alldiff $ Set.fromList [(i, j) | i <- enumFromTo rowOff (succ $ succ rowOff), j <- enumFromTo colOff (succ $ succ colOff)])
     ((,) <$> [R1, R4, R7] <*> [C1, C4, C7])
 
-sudoku :: [(Cell, Digit)] -> ConstraintProblem SudokuConstraint Cell Digit
-sudoku startVals = ConstraintProblem
+sudoku :: [(Cell, Digit)] -> CSP SudokuConstraint Cell Digit
+sudoku startVals = CSP
   { initialVars = makeVarsFromStartingState startVals
   , constraints = sudokuConstraints
   , maxAssignments = Just 10000
   }
 
-solveSudoku :: ConstraintProblem SudokuConstraint Cell Digit
+solveSudoku :: CSP SudokuConstraint Cell Digit
             -> SudokuSoln
 solveSudoku = solveConstraintProblem
 
 -- Soln and start needs to be sorted!
-validateSudokuSoln :: ConstraintProblem SudokuConstraint Cell Digit
+validateSudokuSoln :: CSP SudokuConstraint Cell Digit
                    -> [(Cell, Digit)]
                    -> [Var Cell Digit]
                    -> Bool
