@@ -50,6 +50,7 @@ class Constraint c id dom where
 data Constraint c id dom => ConstraintProblem c id dom = ConstraintProblem
   { initialVars :: [Var id dom]
   , constraints :: [c]
+  , maxAssignments :: Maybe Int
   }
 
 type ConstraintSoln id dom = (Maybe [Var id dom], Int)
@@ -114,7 +115,14 @@ assignVar vid val = do
 
 incrementAssignments :: (Show id, Show dom, Eq id, Ord dom, Constraint c id dom)
                      => Backtracker c id dom ()
-incrementAssignments = getPersistent >>= \(PersistState n) -> putPersistent (PersistState $ n + 1)
+incrementAssignments = do
+  PersistState n <- getPersistent
+  let n' = n + 1
+  putPersistent $ PersistState n'
+  maxN_m <- liftM maxAssignments $ lift ask
+  case maxN_m of
+    Nothing -> return ()
+    Just maxN -> when (n' >= maxN) failure
 
 
 minimumRemainingValues :: (Eq id, Ord dom, Hashable dom)

@@ -112,8 +112,22 @@ $titlepage{CS 486 - Assignment 3}{Alex Klen \\ 20372654}
         }
       }
       $item{ % b
+        I implemented a general CSP solver in Haskell and applied to to Sudoku.$nl
+        The implementation is split among four files.
+        $itemize{
+          $item{ Backtracking.hs holds a general backtracking computation data type that is used in the main constraint solver. }
+          $item{ ConstraintSolver.hs is the general CSP solver. }
+          $item{ SudokuSolver.hs uses the constraint solver with Sudoku constraints and variables with a given input. }
+          $item{ Main.hs is the program entry point. }
+        }
+        The program can be build and run using Cabal and the provided package information and Makefile.
       }
       $item{ % c
+        The average number of variable assignments required for my algorithm to solve each Sudoku instance is shown below. Note that any trials that took over 10000 assignments were stopped and added as 10000, which accounts for the spikes in the graph.
+
+        $graphic{data.png}{}
+
+        %TODO
       }
     }
   }

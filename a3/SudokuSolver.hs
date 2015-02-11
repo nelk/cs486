@@ -108,6 +108,7 @@ sudoku :: [(Cell, Digit)] -> ConstraintProblem SudokuConstraint Cell Digit
 sudoku startVals = ConstraintProblem
   { initialVars = makeVarsFromStartingState startVals
   , constraints = sudokuConstraints
+  , maxAssignments = Just 10000
   }
 
 solveSudoku :: ConstraintProblem SudokuConstraint Cell Digit
