@@ -104,13 +104,11 @@ assignVar :: (Show id, Show dom, Eq id, Ord dom, Constraint c id dom)
           => id -> dom -> Backtracker c id dom ()
 assignVar vid val = do
   vs <- liftM vars getSoln
-  when (length vs /= 81) $ error "FAIL2"
   let newVar = AssignedVar vid val
       newVars = map (\v' -> if varId v' == vid
                               then newVar
                               else v'
                     ) vs
-  when (length newVars /= 81) $ error "FAIL3"
   putSoln $ SolnState newVars
 
 incrementAssignments :: (Show id, Show dom, Eq id, Ord dom, Constraint c id dom)
@@ -165,9 +163,7 @@ forwardCheck :: forall id dom c.
 forwardCheck vid = do
   cs <- liftM constraints $ lift ask
   vs <- liftM vars getSoln
-  when (length vs /= 81) $ error "FAIL1"
   let var = head $ filter ((== vid) . varId) vs
-  --case doRestrictions cs vs [var] of
   case foldl (restrictFolder var) (Just vs) cs of
     Nothing -> failure
     Just vs' -> putSoln (SolnState vs')
