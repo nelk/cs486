@@ -225,7 +225,7 @@ $titlepage{CS 486 - Assignment 3}{Alex Klen \\ 20372654}
         }
       }
 
-      The final assignments found by the above algorithm are: #{X_1 = 0, X_2 = 1, X_3 = 0, X_4 = 1, X_5 = 1, E = 9, I = 0, R = 8, Y = 4, S = 2, Z = 6, B = 7, O = 3, N = 1, A = 5}.$nl
+      The final assignments found by the above algorithm are: #{X_1 = 0, X_2 = 1, X_3 = 0, X_4 = 1, X_5 = 1, I = 0, N = 1, S = 2, O = 3, Y = 4, A = 5, Z = 6, B = 7, E = 9, R = 8}.$nl
       This results in the following solution:
       $lstlisting{}{
         698392
