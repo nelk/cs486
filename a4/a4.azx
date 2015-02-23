@@ -1,0 +1,67 @@
+$import aztex-lib/latex.azx
+$import aztex-lib/amsmath.azx
+%$import aztex-lib/listings.azx
+
+$titlepage{CS 486 - Assignment 4}{Alex Klen \\ 20372654}
+
+@{
+  $section{Warmup Exercises} {
+    % TODO: Make aztexc work better with enumitem.
+    $enumerateN{label=\arabic*.}{
+      $item{ % 1
+      }
+      $item{ % 2
+        $enumerateN{label=(\alph*)}{
+          $item{ % a
+          }
+          $item{ % b
+          }
+          $item{ % c
+          }
+          $item{ % d
+          }
+          $item{ % e
+          }
+          $item{ % f
+          }
+          $item{ % g
+          }
+          $item{ % h
+          }
+          $item{ % i
+          }
+          $item{ % j
+          }
+          $item{ % k
+          }
+          $item{ % l
+          }
+          $item{ % m
+          }
+          $item{ % n
+          }
+          $item{ % o
+          }
+        }
+      }
+    }
+  }
+
+  $section{Variable Elimination}{
+  }
+
+  $section{Bayes Nets}{
+    $enumerateN{label=\arabic*.}{
+      $item{ % 1
+      }
+      $item{ % 2
+      }
+      $item{ % 3
+      }
+      $item{ % 4
+      }
+      $item{ % 4
+      }
+    }
+  }
+}
