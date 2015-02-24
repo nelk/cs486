@@ -9,6 +9,28 @@ $titlepage{CS 486 - Assignment 4}{Alex Klen \\ 20372654}
     % TODO: Make aztexc work better with enumitem.
     $enumerateN{label=\arabic*.}{
       $item{ % 1
+        Variables: $nl
+          T = blue|green (which taxi actually hit John Doe). $nl
+          W = blue|green (which taxi was witnessed to hit John Doe). $nl
+        $nl
+        Given:
+        $math{
+          P(T=blue) &= 0.15 \\
+          P(W=blue) &= 1 \\
+          P(W=blue|T=blue) &= 0.8 \\
+          P(W=green|T=green) &= 0.8 \\
+        }
+
+        Solving using Baye's rule (second lawyer's argument):
+        $let and = \&
+        $math{
+          P(T=blue|W=blue) &= $frac{P(W=blue|T=blue)P(T=blue)}{P(W=blue)} \\
+                           &= $frac{P(W=blue|T=blue)P(T=blue)}{(P(W=blue|T=blue)P(T=blue) + P(W=blue|T=green)P(T=green))} \\
+                           &= $frac{0.8*(15/100)}{0.8*(15/100) + 0.2*(85/100)} \\
+                           &= $frac{0.8*15}{0.8*15 + 0.2*85} \\
+                           &= 12/29 < 0.42
+        }
+        This proves that the second lawyer's argument is consistent with Baye's rule and there is no preponderance of the evidence, so the defendant should not have to pay.
       }
       $item{ % 2
         $enumerateN{label=(\alph*)}{
