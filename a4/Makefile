@@ -11,8 +11,11 @@ clean:
 a4.tex: a4.azx
 	aztexc $< > $@
 
-a4.pdf: a4.tex
+a4.pdf: a4.tex fido_bayes_net.png
 	pdflatex --shell-escape $<
+
+fido_bayes_net.png: fido_bayes_net.dot
+	dot -Tpng $< > $@
 
 HASK_FILES = Main.hs
 HASK_CABAL_FILES = bayesian-vars.cabal $(HASK_FILES)

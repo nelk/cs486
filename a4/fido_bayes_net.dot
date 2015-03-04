@@ -1,0 +1,41 @@
+digraph G {
+  //Problem definition:
+  //Variables: FH (Fido howls), FS (Fido sick), FB (food left in Fido's bowl), FM (full moon),
+  //           NDH (neighbour's dog howls), NA (neighbour away)
+  //P(fs) = 0.05
+  //P(~fs) = 0.95
+  //P(fb | fs) = 0.6
+  //P(fb | ~fs) = 0.1
+  //P(fm) = 0.0357
+  //P(~fm) = 0.9643
+  //P(na) = 0.3
+  //P(~na) = 0.7
+  //P(ndh | na, fm) = 0.8
+  //P(ndh | na, ~fm) = 0.5
+  //P(ndh | ~na, fm) = 0.4
+  //P(ndh | ~na, ~fm) = 0
+  //P(fh | fs, ndh, fm) = 0.99
+  //P(fh | fs, ndh, ~fm) = 0.75
+  //P(fh | fs, ~ndh, fm) = 0.9
+  //P(fh | fs, ~ndh, ~fm) = 0.5
+  //P(fh | ~fs, ndh, fm) = 0.65
+  //P(fh | ~fs, ndh, ~fm) = 0.2
+  //P(fh | ~fs, ~ndh, fm) = 0.4
+  //P(fh | ~fs, ~ndh, ~fm) = 0
+
+  node [shape=box];
+
+  FH [label="FH (Fido's Howling)\n P(fh | fs, ndh, fm) = 0.99\l P(fh | fs, ndh, ~fm) = 0.75\l P(fh | fs, ~ndh, fm) = 0.9\l P(fh | fs, ~ndh, ~fm) = 0.5\l P(fh | ~fs, ndh, fm) = 0.65\l P(fh | ~fs, ndh, ~fm) = 0.2\l P(fh | ~fs, ~ndh, fm) = 0.4\l P(fh | ~fs, ~ndh, ~fm) = 0\l"];
+  FS [label="FS (Fido's Sick)\n P(fs) = 0.05\l P(~fs) = 0.95\l"];
+  FB [label="FB (Food Bowl full)\n P(fb | fs) = 0.6\l P(fb | ~fs) = 0.1\l"];
+  FM [label="FM (Full Moon)\n P(fm) = 0.0357\l P(~fm) = 0.9643\l"];
+  NDH [label="NDH (Neighbour's Dog Howling)\n P(ndh | na, fm) = 0.8\l P(ndh | na, ~fm) = 0.5\l P(ndh | ~na, fm) = 0.4\l P(ndh | ~na, ~fm) = 0\l"];
+  NA [label="NA (Neighbour Away)\n P(na) = 0.3\l P(~na) = 0.7\l"];
+
+  FS -> FB;
+  NA -> NDH;
+  FM -> NDH;
+  FS -> FH;
+  NDH -> FH;
+  FM -> FH;
+}

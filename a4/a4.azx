@@ -38,7 +38,7 @@ $titlepage{CS 486 - Assignment 4}{Alex Klen \\ 20372654}
             A and B are independent because they are d-separated: [A,B,C] is blocked because C is not in the evidence set and [A, C, D, E, B] is blocked because D is not in the evidence set.
           }
           $item{ % b
-            A and B are $it{not} independent given D because of the unblocked path [A, C, D, E, B].
+            A and B are $it{not} independent given D because of the unblocked path [A, C, B]. %[A, C, D, E, B].
           }
           $item{ % c
             A and E are independent because they are d-separated: [A, C, B, E] is blocked because C is not in the evidence set, and [A, C, D, E] is blocked because D is not in the evidence set.
@@ -56,7 +56,8 @@ $titlepage{CS 486 - Assignment 4}{Alex Klen \\ 20372654}
             A and E are $it{not} independent given D because of the unblocked path [A, C, D, E].
           }
           $item{ % h
-            A and E are independent given F because they are d-separated: [A, C, B, E] is blocked because C is not in the evidence set, and [A, C, D, E] is blocked because D is not in the evidence set.
+            A and E are $it{not} independent given F because of the unblocked path [A, C, B, E].
+%they are d-separated: [A, C, B, E] is blocked because C is not in the evidence set, and [A, C, D, E] is blocked because D is not in the evidence set.
           }
           $item{ % i
             F and H are $it{not} independent because of the unblocked path [F, C, D, H].
@@ -74,7 +75,7 @@ $titlepage{CS 486 - Assignment 4}{Alex Klen \\ 20372654}
             G and A are $it{not} independent because of the unblocked path [A, C, D, G].
           }
           $item{ % n
-            G and A are $it{not} independent because of the unblocked path [A, C, B, E, D, G].
+            G and A are $it{not} independent given C because of the unblocked path [A, C, B, E, D, G].
           }
           $item{ % o
             G and A are independent given C and D because they are d-separated: [A, C, D, G] is blocked because both C and D are in the evidence set and [A, C, B, E, D, G] is blocked because D is in the evidence set.
@@ -90,14 +91,21 @@ $titlepage{CS 486 - Assignment 4}{Alex Klen \\ 20372654}
   $section{Bayes Nets}{
     $enumerateN{label=\arabic*.}{
       $item{ % 1
+        $labeledGraphic{$verb{fido_bayes_net.png}}{scale=0.7}{Bayesian Network for Fido}{fig:fido}
       }
       $item{ % 2
+        Query: P(fh)
       }
       $item{ % 3
+        Query: P(fs | fh, fm)
       }
       $item{ % 4
+        Query: P(fs | fh, fm, fb)
+        % How has it changed from 3?
       }
       $item{ % 4
+        Query: P(fs | fh, fm, fb, na)
+        % How has it changed from 4?
       }
     }
   }
