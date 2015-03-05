@@ -1,23 +1,27 @@
 {-# LANGUAGE DataKinds, ScopedTypeVariables, GADTs #-}
 module Bayes where
 
-import Prelude hiding (foldl)
+import Prelude hiding (foldl, (^))
 import Data.Foldable (foldl)
-import Control.Applicative
-import Data.Array (Array, Ix)
 import qualified Data.Array as Array
+import Data.List (sortBy, groupBy, elemIndex)
+import Data.Ord (comparing)
+
+import Debug.Trace (trace)
 
 import Factor
 
 -- |Give factors in "reverse" order - the order they should be computed.
 inference :: [Factor Prob Unnormalized]
-          -> [Var]
+          -> [(Var, Val)]
           -> [Var]
           -> [(Var, Val)]
           -> Prob
 inference factors query_vars hidden_vars evidence =
-  let restricted_factors = traceShow "Restricted: " $ map restrict_ factors
-      restrict_ fact = foldl (\f (var, val) -> restrict f var val) fact evidence
+  let restricted_factors = traceShow "Restricted: " $ map (restrict_ evidence) factors
+
+      restrict_ :: [(Var, Val)] -> Factor Prob 'Unnormalized -> Factor Prob 'Unnormalized
+      restrict_ evd fact = foldl (\f (var, val) -> restrict f var val) fact evd
 
       step :: [Var] -> [Factor Prob Unnormalized] -> Factor Prob Unnormalized
       step _ [] = undefined
@@ -25,12 +29,84 @@ inference factors query_vars hidden_vars evidence =
       step [] (f1:f2:fs) = step [] $ multiply f1 f2 : fs
       step (v:vs) [f] = step vs [sumout f v]
       step (v:vs) (f1@(Factor vars1 _):f2@(Factor vars2 _):fs)
+        -- Both inside next sum - multiply.
         | v `elem` vars1 && v `elem` vars2 = step (v:vs) (multiply f1 f2 : fs)
-        | otherwise = step vs (multiply (sumout f1 v) (sumout f2 v) : fs)
+        -- First inside next sum - sumout and multiply.
+        | v `elem` vars1 = step vs (multiply (sumout f1 v) f2 : fs)
+        -- Both outside - drop v and multiply
+        | otherwise = step vs (multiply f1 f2 : fs)
 
       computed_fact = traceShow "Computed: " $ step hidden_vars restricted_factors
-      (NormalizedFactor _ final_arr) = traceShow "Normalized: " $ normalize computed_fact
+      normalized_fact = traceShow "Normalized: " $ normalize computed_fact
+      -- Restrict by not of each query var.
+      (Factor _ final_arr) = restrict_ query_vars (toUnnormalized normalized_fact)
   in foldl (+) 0 final_arr
 
--- TODO: 'DSL' for constructing a Bayes network, setting up tables, and inferencing.
+-- |DSL for building factors.
+data BayesAssgs = BayesAssgs [(Var, Val)]
+data P = P BayesAssgs
+data BayesTerm = BayesTerm BayesAssgs Prob
+
+infixl 2 .|.
+infixl 3 ^
+infixr 4 .=
+
+instance Num BayesAssgs where
+  fromInteger var = BayesAssgs [(fromInteger var, True)]
+  negate (BayesAssgs [(var, val)]) = BayesAssgs [(var, not val)]
+
+  negate _ = trace "Tried to negate multiple variables at once." undefined
+  (+) = trace "Operator + attempted on BayesAssgs." undefined
+  (*) = trace "Operator * attempted on BayesAssgs." undefined
+  abs = trace "Function abs attempted on BayesAssgs." undefined
+  signum = trace "Function signum attempted on BayesAssgs." undefined
+
+(.|.) :: BayesAssgs -> BayesAssgs -> BayesAssgs
+(BayesAssgs assgs) .|. (BayesAssgs assgs') = BayesAssgs $ assgs ++ assgs'
+
+(^) :: BayesAssgs -> BayesAssgs -> BayesAssgs
+(^) = (.|.)
+
+(.=) :: P -> Prob -> BayesTerm
+(P assgs) .= p = BayesTerm assgs p
+
+sort_assgs :: BayesTerm -> BayesTerm
+sort_assgs (BayesTerm (BayesAssgs assgs)  p) = BayesTerm (BayesAssgs $ sortBy (comparing fst) assgs) p
+
+get_assgs :: BayesTerm -> [(Var, Val)]
+get_assgs (BayesTerm (BayesAssgs assgs) _) = assgs
+
+compute :: [BayesTerm] -> BayesAssgs -> BayesAssgs -> [P] -> [Var] -> Prob
+compute terms (BayesAssgs query) (BayesAssgs evidence) factor_order hidden_vars =
+  let sorted_evidence = sortBy (comparing fst) evidence
+      sorted_query = sortBy (comparing fst) query
+
+      factors :: [Factor Prob 'Unnormalized]
+      factors = factorize terms
+
+      factor_order_assigs :: [[Var]]
+      factor_order_assigs = map (\(P (BayesAssgs assgs)) -> map fst assgs) factor_order
+
+      sorted_factors = reverse $ sortBy (comparing $ \(Factor vars _) -> vars `elemIndex` factor_order_assigs) factors
+  in inference sorted_factors sorted_query hidden_vars sorted_evidence
+
+factorize :: [BayesTerm] -> [Factor Prob 'Unnormalized]
+factorize terms = let sorted_terms = map sort_assgs terms
+
+                      grouped_assgs = groupBy is_same_factor sorted_terms
+
+                      is_same_factor :: BayesTerm -> BayesTerm -> Bool
+                      is_same_factor (BayesTerm (BayesAssgs assgs1) _) (BayesTerm (BayesAssgs assgs2) _) =
+                        map fst assgs1 == map fst assgs2
+
+                      make_factor :: [BayesTerm] -> Factor Prob 'Unnormalized
+                      make_factor [] = trace "Tried to make empty factor!" undefined
+                      make_factor terms' =
+                        let vars = map fst $ get_assgs $ head $ terms'
+                            make_assoc :: BayesTerm -> ([Val], Prob)
+                            make_assoc (BayesTerm (BayesAssgs assgs) p) = (map snd assgs, p)
+                            assocs = map make_assoc terms'
+                        in Factor vars $ Array.array (makeValRange $ length vars)  assocs
+
+                  in map make_factor grouped_assgs
 

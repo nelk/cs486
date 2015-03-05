@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds, ScopedTypeVariables #-}
 module BayesSpec where
 
+import Prelude hiding ((^))
 import Test.Hspec
 --import Test.QuickCheck
 
@@ -19,6 +20,16 @@ testData l = let keys = replicateM l allVals
                  arr = Array.array (makeValRange l) assocs
              in Factor [0..l-1] arr
 -}
+
+epsilon :: Float
+epsilon = 0.00001
+
+infixr 5 `shouldBeClose`
+shouldBeClose :: Float -> Float -> Expectation
+shouldBeClose actual expected =
+  if actual <= expected + epsilon && actual >= expected - epsilon
+    then return ()
+    else expectationFailure $ "expected: " ++ show expected ++ "\nbut got: " ++ show actual
 
 spec :: Spec
 spec = describe "Bayes Variable Elimination" $ do
@@ -104,23 +115,23 @@ spec = describe "Bayes Variable Elimination" $ do
               in f_summed `shouldBe` f_expected
 
           context "Solves bayes inferences" $ do
-            it "Can solve A -> B network. P(A|B=b) = P(A|B=b)P(B=b) + P(A|B=~b)P(B=~b)" $
+            it "Can solve A -> B network. P(a|b) = P(b|a)P(a)" $
               let prob :: [Var] -> [([Val], Prob)] -> Factor Prob Unnormalized
                   prob vars assocs = Factor (sort vars) $ Array.array (makeValRange $ length vars) assocs
                   a = 0
                   b = 1
-                  p_b = prob [b] $
+                  p_a = prob [a] $
                     [ ([False], 0.3)
                     , ([True ], 0.7)
                     ]
-                  p_a_given_b = prob [a, b] $
+                  p_b_given_a = prob [a, b] $
                     [ ([False, False], 0.1)
                     , ([False, True ], 0.2)
                     , ([True , False], 0.6)
                     , ([True , True ], 0.1)
                     ]
-                  p = inference [p_b, p_a_given_b] [a] [b] [(b, True)]
-              in p `shouldBe` 0.1735537
+                  p = inference [p_a, p_b_given_a] [(a, True)] [] [(b, True)]
+              in p `shouldBeClose` 0.1*0.7/(0.2*0.3+0.1*0.7)
 
             it "Can solve A -> B <- C. P(A=a|B=b,C=c) = alpha*P(B=b|A=a,C=c)P(A=a)P(C=c)" $
               let -- Note: All vars and associated vals have to be in ascending order!
@@ -129,13 +140,13 @@ spec = describe "Bayes Variable Elimination" $ do
                   a = 0
                   b = 1
                   c = 2
-                  p_a = prob [b] $
+                  p_a = prob [a] $
                     [ ([False], 0.3)
                     , ([True ], 0.7)
                     ]
                   p_c = prob [c] $
-                    [ ([False], 0.3)
-                    , ([True ], 0.7)
+                    [ ([False], 0.4)
+                    , ([True ], 0.6)
                     ]
                   p_b_given_a_c = prob [a, b, c] $
                     [ ([False, False, False], 0.1)
@@ -147,8 +158,27 @@ spec = describe "Bayes Variable Elimination" $ do
                     , ([True , True , False], 0.05)
                     , ([True , True , True ], 0.05)
                     ]
-                  p = inference [p_c, p_a, p_b_given_a_c] [a] [b, c] [(a, True), (b, True), (c, True)]
-              in p `shouldBe` 0.023914104
+                  p = inference [p_c, p_a, p_b_given_a_c] [(a, True)] [] [(b, True), (c, True)]
+              in p `shouldBeClose` 0.7*0.05/(0.7*0.05 + 0.3*0.1)
+
+            it "DSL: Can solve A -> B <- C. P(A=a|B=b,C=c) = alpha*P(B=b|A=a,C=c)P(A=a)P(C=c)" $
+              let -- Note: All vars and associated vals have to be in ascending order!
+                  a = 0
+                  b = 1
+                  c = 2
+              in compute [ P(-a) .= 0.3
+                         , P( a) .= 0.7
+                         , P(-c) .= 0.4
+                         , P( c) .= 0.6
+                         , P(-b .|. -a ^ -c) .= 0.1
+                         , P(-b .|. -a ^  c) .= 0.2
+                         , P(-b .|.  a ^ -c) .= 0.1
+                         , P(-b .|.  a ^  c) .= 0.1
+                         , P( b .|. -a ^ -c) .= 0.3
+                         , P( b .|. -a ^  c) .= 0.1
+                         , P( b .|.  a ^ -c) .= 0.05
+                         , P( b .|.  a ^  c) .= 0.05
+                         ] (a) (b ^ c) [P(c), P(a), P(b .|. a ^ c)] [] `shouldBeClose` 0.7*0.05/(0.7*0.05 + 0.3*0.1)
 
             --it "Prop" $ property $ \(a::Int) -> True
 

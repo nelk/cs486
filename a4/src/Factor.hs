@@ -165,8 +165,9 @@ sumout f@(Factor vars arr) var = case var `elemIndex` vars of
 
 normalize :: Factor Prob 'Unnormalized
           -> Factor Prob 'Normalized
+normalize (Factor [] arr) = NormalizedFactor [] arr
 normalize (Factor vars arr) =
-  let total = foldl (+) 1 arr
+  let total = foldl (+) 0 arr
       alpha = (1.0 / total)
   in NormalizedFactor vars $ fmap (*alpha) arr
 
