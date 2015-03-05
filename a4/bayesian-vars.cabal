@@ -6,13 +6,34 @@ maintainer:          alex.klen@uwaterloo.ca
 build-type:          Simple
 cabal-version:       >=1.10
 
-executable bayesian-vars
-  main-is:             Main.hs
-
+library
+  exposed-modules:  Bayes
   ghc-options: -O2 -Wall -threaded -with-rtsopts=-N8-K10000000 
 -- -prof -fprof-auto -rtsopts
-  build-depends:       base >=4.6 && <4.7
-                     , mtl
-                     , array
-                     , containers
+  build-depends:     base >=4.6 && <4.7
+                   , mtl
+                   , array
+                   , containers
+  hs-source-dirs:    src
   default-language:    Haskell2010
+
+executable bayesian-vars
+  main-is:             Main.hs
+  hs-source-dirs:      src
+  build-depends:     base >=4.6 && <4.7
+                   , array
+                   , containers
+  default-language:    Haskell2010
+
+test-suite bayesian-vars-tests
+  type:              exitcode-stdio-1.0
+  build-depends:     base >=4.6 && <4.7
+                   , bayesian-vars
+                   , containers
+                   , array
+                   , QuickCheck
+                   , hspec >=1.9.0
+  hs-source-dirs:    test
+  default-language:  Haskell2010
+  main-is:           Spec.hs
+
