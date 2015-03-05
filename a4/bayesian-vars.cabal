@@ -8,6 +8,7 @@ cabal-version:       >=1.10
 
 library
   exposed-modules:  Bayes
+                  , Factor
   ghc-options: -O2 -Wall -threaded -with-rtsopts=-N8-K10000000 
 -- -prof -fprof-auto -rtsopts
   build-depends:     base >=4.6 && <4.7

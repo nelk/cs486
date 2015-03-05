@@ -4,6 +4,7 @@ import Data.Array (Array)
 import qualified Data.Array as Array
 import qualified Data.Set as Set
 
+import Factor
 import Bayes
 
 main :: IO ()

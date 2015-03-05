@@ -1,0 +1,135 @@
+{-# OPTIONS_GHC -fno-warn-orphans #-}
+{-# LANGUAGE DataKinds, KindSignatures, GADTs, TypeOperators, ScopedTypeVariables, StandaloneDeriving #-}
+module Factor where
+
+import Control.Applicative
+import Data.Array (Array, Ix, (!))
+import qualified Data.Array as Array
+import Data.Maybe (mapMaybe)
+import Data.List (elemIndex)
+
+import Debug.Trace (trace)
+
+type Var = Int
+type Val = Bool
+type Prob = Float
+data Normalized = Normalized | Unnormalized
+  deriving (Show, Eq)
+
+allVals :: [Val]
+allVals = [minBound .. maxBound]
+
+makeValRange :: Int -> ([Val], [Val])
+makeValRange i = (replicate i minBound, replicate i maxBound)
+
+instance (Ix a, Enum a) => Ix [a] where
+  range ([], []) = [[]]
+  range (s:ss, e:es) = (:) <$> [s..e] <*> Array.range (ss, es)
+  range _ = undefined
+
+  index ([s], [e]) [i]
+    | s <= i && i <= e = fromEnum i - fromEnum s
+    | otherwise        = undefined
+  index (s:ss, e:es) (i:is) = let this_idx = Array.index ([s], [e]) [i]
+                                  rest_idx = Array.index (ss, es) is
+                                  rest_total = Array.rangeSize (ss, es)
+                              in this_idx * rest_total + rest_idx
+  index _ _ = undefined
+
+  inRange ([], []) [] = True
+  inRange (s:ss, e:es) (i:is) = s <= i && i <= e && Array.inRange (ss, es) is
+  inRange _ _ = False
+
+  rangeSize ([], []) = 1
+  rangeSize (s:ss, e:es) = (fromEnum e - fromEnum s + 1) * Array.rangeSize (ss, es)
+  rangeSize _ = undefined
+
+data Factor :: * -> Normalized -> * where
+  Factor :: [Var] -> Array [Val] t -> Factor t 'Unnormalized
+deriving instance Show t => Show (Factor t n)
+deriving instance Eq t => Eq (Factor t n)
+
+deleteAt :: Int -> [a] -> [a]
+deleteAt _ [] = []
+deleteAt 0 (_:as) = as
+deleteAt i (a:as) = a:deleteAt (i-1) as
+
+unionSorted :: Ord a => [a] -> [a] -> [a]
+unionSorted [] [] = []
+unionSorted as [] = as
+unionSorted [] bs = bs
+unionSorted (a:as) (b:bs)
+  | a == b    = a:unionSorted as bs
+  | a < b     = a:unionSorted as (b:bs)
+  | otherwise = b:unionSorted (a:as) bs
+
+restrict :: Factor t n
+         -> Var
+         -> Val
+         -> Factor t 'Unnormalized
+restrict (Factor vars arr) var val = case var `elemIndex` vars of
+  Nothing -> trace "Restricting variable that doesn't exist!" undefined
+  Just i -> let new_vars = deleteAt i vars
+                restrict_f (idx, p)
+                  | (idx!!i) == val = Just (deleteAt i idx, p)
+                  | otherwise         = Nothing
+                new_assocs = mapMaybe restrict_f $ Array.assocs arr
+            in Factor new_vars $ Array.array (makeValRange $ length new_vars) new_assocs
+
+{-
+unionFactorAssocs :: [Var] -> [([Val], Prob)]
+                  -> [Var] -> [([Var], Prob)]
+                  -> ([Var], [([Var], Prob)])
+unionFactorAssocs (avar:avars) () (bvar:bvars) () =
+-}
+
+-- |Given two lists of variables, returns a list with
+-- an entry for each variable in the union of the two lists in order.
+-- The entry contains the variable name, the source it came from, and the
+-- index in its source list.
+data SourceLoc = LeftSource | RightSource | BothSources deriving (Show, Eq)
+unionSortedVars :: [Var] -> [Var] -> [(Var, SourceLoc, Int)]
+unionSortedVars as' bs' = unionSortedVars_ as' 0 bs' 0
+  where unionSortedVars_ :: [Var] -> Int -> [Var] -> Int -> [(Var, SourceLoc, Int)]
+        unionSortedVars_ [] _ [] _ = []
+        unionSortedVars_ [] _ (b:bs) bi = (b, RightSource, bi):unionSortedVars_ [] 0 bs (bi+1)
+        unionSortedVars_ (a:as) ai [] _ = (a, LeftSource, ai):unionSortedVars_ as (ai+1) [] 0
+        unionSortedVars_ (a:as) ai (b:bs) bi
+          | a == b    = (a, BothSources, ai):unionSortedVars_ as (ai+1) bs (bi+1)
+          | a < b     = (a, LeftSource, ai):unionSortedVars_ as (ai+1) (b:bs) bi
+          | otherwise = (b, RightSource, bi):unionSortedVars_ (a:as) ai bs (bi+1)
+
+elementwiseMult :: forall t. Num t
+                => Array [Val] t
+                -> Array [Val] t
+                -> [(Var, SourceLoc, Int)]
+                -> Array [Val] t
+elementwiseMult arr_a arr_b info =
+  let new_bounds = makeValRange $ length info
+      new_range = Array.range new_bounds
+      new_assocs = map doMult new_range
+
+      doMult :: [Val] -> ([Val], t)
+      doMult vals = (vals, doMult_ (zip info vals) [] [])
+
+      doMult_ :: [((Var, SourceLoc, Int), Val)] -> [Val] -> [Val] -> t
+      doMult_ [] idxa idxb = arr_a!idxa * arr_b!idxb
+      doMult_ (((var, source, i), val):rest) idxa idxb
+        | source == BothSources = doMult_ rest (idxa++[val]) (idxb++[val])
+        | source == LeftSource  = doMult_ rest (idxa++[val]) idxb
+        | source == RightSource = doMult_ rest idxa (idxb++[val])
+      doMult_ _ _ _ = trace "doMult_ received bad data" undefined
+  in Array.array new_bounds new_assocs
+
+
+multiply :: Num t
+         => Factor t n
+         -> Factor t n
+         -> Factor t 'Unnormalized
+multiply (Factor vars1 arr1) (Factor vars2 arr2) =
+  let merged_info = unionSortedVars vars1 vars2
+      new_vars = map (\(a, _, _) -> a) merged_info
+      new_arr = elementwiseMult arr1 arr2 merged_info
+  in Factor new_vars new_arr
+
+
