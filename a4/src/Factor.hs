@@ -54,6 +54,11 @@ deleteAt _ [] = []
 deleteAt 0 (_:as) = as
 deleteAt i (a:as) = a:deleteAt (i-1) as
 
+insertAt :: Int -> a -> [a] -> [a]
+insertAt 0 v as = v:as
+insertAt i v (a:as) = a:insertAt (i-1) v as
+insertAt _ _ [] = []
+
 unionSorted :: Ord a => [a] -> [a] -> [a]
 unionSorted [] [] = []
 unionSorted as [] = as
@@ -131,5 +136,24 @@ multiply (Factor vars1 arr1) (Factor vars2 arr2) =
       new_vars = map (\(a, _, _) -> a) merged_info
       new_arr = elementwiseMult arr1 arr2 merged_info
   in Factor new_vars new_arr
+
+
+sumout :: forall t n. Num t
+       => Factor t n
+       -> Var
+       -> Factor t n
+sumout (Factor vars arr) var = case var `elemIndex` vars of
+  Nothing -> trace "Tried to sum out a variable that didn't exist!" undefined
+  Just i  -> let new_vars = deleteAt i vars
+                 new_bounds = makeValRange $ length new_vars
+                 new_range = Array.range new_bounds
+                 new_assocs = map sumit new_range
+
+                 sumit :: [Val] -> ([Val], t)
+                 sumit vs = let false_idx = insertAt i False vs
+                                true_idx = insertAt i True vs
+                            in (vs, arr!false_idx + arr!true_idx)
+
+             in Factor new_vars $ Array.array new_bounds new_assocs
 
 
