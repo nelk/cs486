@@ -2,11 +2,13 @@
 {-# LANGUAGE DataKinds, KindSignatures, GADTs, TypeOperators, ScopedTypeVariables, StandaloneDeriving #-}
 module Factor where
 
+import Prelude hiding (foldl)
 import Control.Applicative
 import Data.Array (Array, Ix, (!))
 import qualified Data.Array as Array
 import Data.Maybe (mapMaybe)
 import Data.List (elemIndex)
+import Data.Foldable (foldl)
 
 import Debug.Trace (trace)
 
@@ -46,6 +48,7 @@ instance (Ix a, Enum a) => Ix [a] where
 
 data Factor :: * -> Normalized -> * where
   Factor :: [Var] -> Array [Val] t -> Factor t 'Unnormalized
+  NormalizedFactor :: [Var] -> Array [Val] t -> Factor t 'Normalized
 deriving instance Show t => Show (Factor t n)
 deriving instance Eq t => Eq (Factor t n)
 
@@ -72,8 +75,8 @@ restrict :: Factor t n
          -> Var
          -> Val
          -> Factor t 'Unnormalized
-restrict (Factor vars arr) var val = case var `elemIndex` vars of
-  Nothing -> trace "Restricting variable that doesn't exist!" undefined
+restrict f@(Factor vars arr) var val = case var `elemIndex` vars of
+  Nothing -> f
   Just i -> let new_vars = deleteAt i vars
                 restrict_f (idx, p)
                   | (idx!!i) == val = Just (deleteAt i idx, p)
@@ -128,8 +131,8 @@ elementwiseMult arr_a arr_b info =
 
 
 multiply :: Num t
-         => Factor t n
-         -> Factor t n
+         => Factor t 'Unnormalized
+         -> Factor t 'Unnormalized
          -> Factor t 'Unnormalized
 multiply (Factor vars1 arr1) (Factor vars2 arr2) =
   let merged_info = unionSortedVars vars1 vars2
@@ -138,12 +141,12 @@ multiply (Factor vars1 arr1) (Factor vars2 arr2) =
   in Factor new_vars new_arr
 
 
-sumout :: forall t n. Num t
-       => Factor t n
+sumout :: forall t. Num t
+       => Factor t 'Unnormalized
        -> Var
-       -> Factor t n
-sumout (Factor vars arr) var = case var `elemIndex` vars of
-  Nothing -> trace "Tried to sum out a variable that didn't exist!" undefined
+       -> Factor t 'Unnormalized
+sumout f@(Factor vars arr) var = case var `elemIndex` vars of
+  Nothing -> f
   Just i  -> let new_vars = deleteAt i vars
                  new_bounds = makeValRange $ length new_vars
                  new_range = Array.range new_bounds
@@ -155,5 +158,16 @@ sumout (Factor vars arr) var = case var `elemIndex` vars of
                             in (vs, arr!false_idx + arr!true_idx)
 
              in Factor new_vars $ Array.array new_bounds new_assocs
+
+normalize :: Factor Prob 'Unnormalized
+          -> Factor Prob 'Normalized
+normalize (Factor vars arr) =
+  let total = foldl (*) 1 arr
+      alpha = (1.0 / total)
+  in NormalizedFactor vars $ fmap (*alpha) arr
+
+toUnnormalized :: Factor Prob 'Normalized
+               -> Factor Prob 'Unnormalized
+toUnnormalized (NormalizedFactor vars arr) = Factor vars arr
 
 
