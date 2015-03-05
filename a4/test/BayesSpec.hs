@@ -5,6 +5,7 @@ import Test.Hspec
 --import Test.QuickCheck
 
 import qualified Data.Array as Array
+import Data.List (sort)
 --import Control.Monad (replicateM)
 import Factor
 import Bayes
@@ -101,6 +102,53 @@ spec = describe "Bayes Variable Elimination" $ do
                   f_summed = sumout f1 0
                   f_expected = Factor [1] $ Array.array (makeValRange 1) [([False], 2+5), ([True], 3+7)]
               in f_summed `shouldBe` f_expected
+
+          context "Solves bayes inferences" $ do
+            it "Can solve A -> B network. P(A|B=b) = P(A|B=b)P(B=b) + P(A|B=~b)P(B=~b)" $
+              let prob :: [Var] -> [([Val], Prob)] -> Factor Prob Unnormalized
+                  prob vars assocs = Factor (sort vars) $ Array.array (makeValRange $ length vars) assocs
+                  a = 0
+                  b = 1
+                  p_b = prob [b] $
+                    [ ([False], 0.3)
+                    , ([True ], 0.7)
+                    ]
+                  p_a_given_b = prob [a, b] $
+                    [ ([False, False], 0.1)
+                    , ([False, True ], 0.2)
+                    , ([True , False], 0.6)
+                    , ([True , True ], 0.1)
+                    ]
+                  p = inference [p_b, p_a_given_b] [a] [b] [(b, True)]
+              in p `shouldBe` 0.1735537
+
+            it "Can solve A -> B <- C. P(A=a|B=b,C=c) = alpha*P(B=b|A=a,C=c)P(A=a)P(C=c)" $
+              let -- Note: All vars and associated vals have to be in ascending order!
+                  prob :: [Var] -> [([Val], Prob)] -> Factor Prob Unnormalized
+                  prob vars assocs = Factor vars $ Array.array (makeValRange $ length vars) assocs
+                  a = 0
+                  b = 1
+                  c = 2
+                  p_a = prob [b] $
+                    [ ([False], 0.3)
+                    , ([True ], 0.7)
+                    ]
+                  p_c = prob [c] $
+                    [ ([False], 0.3)
+                    , ([True ], 0.7)
+                    ]
+                  p_b_given_a_c = prob [a, b, c] $
+                    [ ([False, False, False], 0.1)
+                    , ([False, False, True ], 0.2)
+                    , ([False, True , False], 0.3)
+                    , ([False, True , True ], 0.1)
+                    , ([True , False, False], 0.1)
+                    , ([True , False, True ], 0.1)
+                    , ([True , True , False], 0.05)
+                    , ([True , True , True ], 0.05)
+                    ]
+                  p = inference [p_c, p_a, p_b_given_a_c] [a] [b, c] [(a, True), (b, True), (c, True)]
+              in p `shouldBe` 0.023914104
 
             --it "Prop" $ property $ \(a::Int) -> True
 

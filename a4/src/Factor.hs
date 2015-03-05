@@ -12,6 +12,9 @@ import Data.Foldable (foldl)
 
 import Debug.Trace (trace)
 
+traceShow :: Show v => String -> v -> v
+traceShow prefix v = trace (prefix ++ show v) v
+
 type Var = Int
 type Val = Bool
 type Prob = Float
@@ -29,6 +32,7 @@ instance (Ix a, Enum a) => Ix [a] where
   range (s:ss, e:es) = (:) <$> [s..e] <*> Array.range (ss, es)
   range _ = undefined
 
+  index ([], []) [] = 0
   index ([s], [e]) [i]
     | s <= i && i <= e = fromEnum i - fromEnum s
     | otherwise        = undefined
@@ -162,7 +166,7 @@ sumout f@(Factor vars arr) var = case var `elemIndex` vars of
 normalize :: Factor Prob 'Unnormalized
           -> Factor Prob 'Normalized
 normalize (Factor vars arr) =
-  let total = foldl (*) 1 arr
+  let total = foldl (+) 1 arr
       alpha = (1.0 / total)
   in NormalizedFactor vars $ fmap (*alpha) arr
 
