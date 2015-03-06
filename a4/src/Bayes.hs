@@ -1,9 +1,9 @@
 module Bayes where
 
-import Prelude hiding (foldl, (^))
-import Data.Foldable (foldl)
+import Prelude hiding ((^), sum)
+import Data.Foldable (sum)
 import qualified Data.Array as Array
-import Data.List (sortBy, groupBy, elemIndex)
+import Data.List (sort, sortBy, groupBy, elemIndex)
 import Data.Ord (comparing)
 
 import Debug.Trace (trace)
@@ -39,7 +39,7 @@ inference factors query_vars hidden_vars evidence =
       normalized_fact = traceShow "Normalized: " $ normalize computed_fact
       -- Restrict by not of each query var.
       (Factor _ final_arr) = restrict_ query_vars (toUnnormalized normalized_fact)
-  in foldl (+) 0 final_arr
+  in sum final_arr
 
 -- |DSL for building factors.
 data BayesAssgs = BayesAssgs [(Var, Val)]
@@ -87,10 +87,11 @@ compute terms (P (BayesCombinedAssgs query evidence)) factor_order hidden_vars =
       factors = factorize terms
 
       factor_order_assigs :: [[Var]]
-      factor_order_assigs = map (\(P (allAssigs -> assgs)) -> map fst assgs) factor_order
+      factor_order_assigs = map (\(P (allAssigs -> assgs)) -> sort $ map fst assgs) factor_order
 
       -- Sort and reverse.
-      sorted_factors = sortBy (flip (comparing $ \(Factor vars _) -> vars `elemIndex` factor_order_assigs)) factors
+      filtered_factors = filter (\(Factor vars _) -> vars `elem` factor_order_assigs) factors
+      sorted_factors = sortBy (flip (comparing $ \(Factor vars _) -> vars `elemIndex` factor_order_assigs)) filtered_factors
   in inference sorted_factors sorted_query hidden_vars sorted_evidence
 
 factorize :: [BayesTerm] -> [Factor Prob 'Unnormalized]
