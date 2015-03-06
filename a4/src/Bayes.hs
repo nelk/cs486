@@ -65,6 +65,11 @@ instance Num BayesAssgs where
   abs = trace "Function abs attempted on BayesAssgs." undefined
   signum = trace "Function signum attempted on BayesAssgs." undefined
 
+getVar :: BayesAssgs -> Var
+getVar (BayesAssgs ((var, _):_)) = var
+getVar (BayesCombinedAssgs ((var, _):_) _) = var
+getVar _ = undefined
+
 (.|.) :: BayesAssgs -> BayesAssgs -> BayesAssgs
 (BayesAssgs assgs) .|. (BayesAssgs assgs') = BayesCombinedAssgs assgs assgs'
 _ .|. _ = trace "Tried to .|. multiple times." undefined

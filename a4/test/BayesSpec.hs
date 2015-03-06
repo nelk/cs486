@@ -161,8 +161,7 @@ spec = describe "Bayes Variable Elimination" $ do
               in p `shouldBeClose` 0.7*0.05/(0.7*0.05 + 0.3*0.1)
 
             it "DSL: Can solve A -> B <- C. P(A=a|B=b,C=c) = alpha*P(B=b|A=a,C=c)P(A=a)P(C=c)" $
-              let -- Note: All vars and associated vals have to be in ascending order!
-                  a = 0
+              let a = 0
                   b = 1
                   c = 2
               in compute [ P(-a) .= 0.3
@@ -178,6 +177,22 @@ spec = describe "Bayes Variable Elimination" $ do
                          , P( b .|.  a ^ -c) .= 0.05
                          , P( b .|.  a ^  c) .= 0.05
                          ] (P(a .|. b ^ c)) [P(c), P(a), P(b .|. a ^ c)] [] `shouldBeClose` 0.7*0.05/(0.7*0.05 + 0.3*0.1)
+
+            it "DSL: Notes ex. A -> B -> C. P(c) = P(c|b)P(b|a)P(a)" $
+              let a = 0
+                  b = 1
+                  c = 2
+              in compute [ P(-a) .= 0.1
+                         , P( a) .= 0.9
+                         , P(-b .|. -a) .= 0.6
+                         , P(-b .|.  a) .= 0.1
+                         , P( b .|. -a) .= 0.4
+                         , P( b .|.  a) .= 0.9
+                         , P(-c .|. -b) .= 0.8
+                         , P(-c .|.  b) .= 0.3
+                         , P( c .|. -b) .= 0.2
+                         , P( c .|.  b) .= 0.7
+                         ] (P(c)) [P(a), P(b .|. a), P(c .|. b)] [] `shouldBeClose` 0.625
 
             --it "Prop" $ property $ \(a::Int) -> True
 

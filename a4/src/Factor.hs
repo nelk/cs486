@@ -11,8 +11,12 @@ import Data.Foldable (sum)
 
 import Debug.Trace (trace)
 
+debugOn :: Bool
+debugOn = False
 traceShow :: Show v => String -> v -> v
-traceShow prefix v = trace (prefix ++ show v) v
+traceShow prefix v
+  | debugOn   = trace (prefix ++ show v) v
+  | otherwise = v
 
 type Var = Int
 type Val = Bool

@@ -46,7 +46,7 @@ problem = snd . runWriter $ do
   termWithNeg $ P(fh .|. -fs ^ -ndh ^ -fm) .= 0
 
 q2 :: Prob
-q2 = compute problem (P(fh)) [] []
+q2 = compute problem (P(fh)) [P(na), P(fm), P(ndh .|. fm ^ na), P(fs), P(fh .|. fs ^ ndh ^ fm)] $ map getVar[na, fm, ndh, fs]
 
 main :: IO ()
 main = print q2
