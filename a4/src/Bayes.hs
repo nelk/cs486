@@ -1,4 +1,4 @@
-{-# LANGUAGE DataKinds, ScopedTypeVariables, GADTs #-}
+{-# LANGUAGE DataKinds, ScopedTypeVariables, GADTs, ViewPatterns #-}
 module Bayes where
 
 import Prelude hiding (foldl, (^))
@@ -44,8 +44,13 @@ inference factors query_vars hidden_vars evidence =
 
 -- |DSL for building factors.
 data BayesAssgs = BayesAssgs [(Var, Val)]
+                | BayesCombinedAssgs [(Var, Val)] [(Var, Val)]
 data P = P BayesAssgs
 data BayesTerm = BayesTerm BayesAssgs Prob
+
+allAssigs :: BayesAssgs -> [(Var, Val)]
+allAssigs (BayesAssgs assigs) = assigs
+allAssigs (BayesCombinedAssgs assigs assigs') = assigs ++ assigs'
 
 infixl 2 .|.
 infixl 3 ^
@@ -62,22 +67,20 @@ instance Num BayesAssgs where
   signum = trace "Function signum attempted on BayesAssgs." undefined
 
 (.|.) :: BayesAssgs -> BayesAssgs -> BayesAssgs
-(BayesAssgs assgs) .|. (BayesAssgs assgs') = BayesAssgs $ assgs ++ assgs'
+(BayesAssgs assgs) .|. (BayesAssgs assgs') = BayesCombinedAssgs assgs assgs'
+_ .|. _ = trace "Tried to .|. multiple times." undefined
 
 (^) :: BayesAssgs -> BayesAssgs -> BayesAssgs
-(^) = (.|.)
+(BayesAssgs assgs) ^  (BayesAssgs assgs') = BayesAssgs $ assgs ++ assgs'
+_ ^ _ = trace "Tried to ^ on results of .|." undefined
 
 (.=) :: P -> Prob -> BayesTerm
 (P assgs) .= p = BayesTerm assgs p
 
-sort_assgs :: BayesTerm -> BayesTerm
-sort_assgs (BayesTerm (BayesAssgs assgs)  p) = BayesTerm (BayesAssgs $ sortBy (comparing fst) assgs) p
-
-get_assgs :: BayesTerm -> [(Var, Val)]
-get_assgs (BayesTerm (BayesAssgs assgs) _) = assgs
-
-compute :: [BayesTerm] -> BayesAssgs -> BayesAssgs -> [P] -> [Var] -> Prob
-compute terms (BayesAssgs query) (BayesAssgs evidence) factor_order hidden_vars =
+compute :: [BayesTerm] -> P -> [P] -> [Var] -> Prob
+compute terms (P (BayesAssgs query)) factor_order hidden_vars =
+  compute terms (P (BayesCombinedAssgs query [])) factor_order hidden_vars
+compute terms (P (BayesCombinedAssgs query evidence)) factor_order hidden_vars =
   let sorted_evidence = sortBy (comparing fst) evidence
       sorted_query = sortBy (comparing fst) query
 
@@ -85,26 +88,30 @@ compute terms (BayesAssgs query) (BayesAssgs evidence) factor_order hidden_vars 
       factors = factorize terms
 
       factor_order_assigs :: [[Var]]
-      factor_order_assigs = map (\(P (BayesAssgs assgs)) -> map fst assgs) factor_order
+      factor_order_assigs = map (\(P (allAssigs -> assgs)) -> map fst assgs) factor_order
 
-      sorted_factors = reverse $ sortBy (comparing $ \(Factor vars _) -> vars `elemIndex` factor_order_assigs) factors
+      -- Sort and reverse.
+      sorted_factors = sortBy (flip (comparing $ \(Factor vars _) -> vars `elemIndex` factor_order_assigs)) factors
   in inference sorted_factors sorted_query hidden_vars sorted_evidence
 
 factorize :: [BayesTerm] -> [Factor Prob 'Unnormalized]
 factorize terms = let sorted_terms = map sort_assgs terms
+                      sort_assgs :: BayesTerm -> BayesTerm
+                      sort_assgs (BayesTerm (allAssigs -> assgs)  p) = BayesTerm (BayesAssgs $ sortBy (comparing fst) assgs) p
 
                       grouped_assgs = groupBy is_same_factor sorted_terms
 
                       is_same_factor :: BayesTerm -> BayesTerm -> Bool
-                      is_same_factor (BayesTerm (BayesAssgs assgs1) _) (BayesTerm (BayesAssgs assgs2) _) =
+                      is_same_factor (BayesTerm (allAssigs -> assgs1) _) (BayesTerm (allAssigs -> assgs2) _) =
                         map fst assgs1 == map fst assgs2
 
                       make_factor :: [BayesTerm] -> Factor Prob 'Unnormalized
                       make_factor [] = trace "Tried to make empty factor!" undefined
                       make_factor terms' =
-                        let vars = map fst $ get_assgs $ head $ terms'
+                        let (BayesTerm (allAssigs -> head_assigs) _) = head terms'
+                            vars = map fst head_assigs
                             make_assoc :: BayesTerm -> ([Val], Prob)
-                            make_assoc (BayesTerm (BayesAssgs assgs) p) = (map snd assgs, p)
+                            make_assoc (BayesTerm (allAssigs -> assgs) p) = (map snd assgs, p)
                             assocs = map make_assoc terms'
                         in Factor vars $ Array.array (makeValRange $ length vars)  assocs
 

@@ -75,7 +75,7 @@ unionSorted (a:as) (b:bs)
   | a < b     = a:unionSorted as (b:bs)
   | otherwise = b:unionSorted (a:as) bs
 
-restrict :: Factor t n
+restrict :: Factor t 'Unnormalized
          -> Var
          -> Val
          -> Factor t 'Unnormalized
@@ -126,7 +126,7 @@ elementwiseMult arr_a arr_b info =
 
       doMult_ :: [((Var, SourceLoc, Int), Val)] -> [Val] -> [Val] -> t
       doMult_ [] idxa idxb = arr_a!idxa * arr_b!idxb
-      doMult_ (((var, source, i), val):rest) idxa idxb
+      doMult_ (((_, source, _), val):rest) idxa idxb
         | source == BothSources = doMult_ rest (idxa++[val]) (idxb++[val])
         | source == LeftSource  = doMult_ rest (idxa++[val]) idxb
         | source == RightSource = doMult_ rest idxa (idxb++[val])

@@ -178,7 +178,7 @@ spec = describe "Bayes Variable Elimination" $ do
                          , P( b .|. -a ^  c) .= 0.1
                          , P( b .|.  a ^ -c) .= 0.05
                          , P( b .|.  a ^  c) .= 0.05
-                         ] (a) (b ^ c) [P(c), P(a), P(b .|. a ^ c)] [] `shouldBeClose` 0.7*0.05/(0.7*0.05 + 0.3*0.1)
+                         ] (P(a .|. b ^ c)) [P(c), P(a), P(b .|. a ^ c)] [] `shouldBeClose` 0.7*0.05/(0.7*0.05 + 0.3*0.1)
 
             --it "Prop" $ property $ \(a::Int) -> True
 
