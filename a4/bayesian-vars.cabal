@@ -9,8 +9,16 @@ cabal-version:       >=1.10
 library
   exposed-modules:  Bayes
                   , Factor
-  ghc-options: -O2 -Wall -threaded -with-rtsopts=-N8-K10000000 
--- -prof -fprof-auto -rtsopts
+  default-extensions: DataKinds
+                    , RankNTypes
+                    , KindSignatures
+                    , GADTs
+                    , TypeOperators
+                    , ScopedTypeVariables
+                    , StandaloneDeriving
+                    , ViewPatterns
+  ghc-options: -Wall
+-- -O2 -prof -fprof-auto -rtsopts
   build-depends:     base >=4.6 && <4.7
                    , mtl
                    , array
@@ -21,9 +29,19 @@ library
 executable bayesian-vars
   main-is:             Main.hs
   hs-source-dirs:      src
+  ghc-options: -threaded -with-rtsopts=-N8-K10000000 
+  default-extensions: DataKinds
+                    , RankNTypes
+                    , KindSignatures
+                    , GADTs
+                    , TypeOperators
+                    , ScopedTypeVariables
+                    , StandaloneDeriving
+                    , ViewPatterns
   build-depends:     base >=4.6 && <4.7
                    , array
                    , containers
+                   , mtl
   default-language:    Haskell2010
 
 test-suite bayesian-vars-tests

@@ -1,14 +1,13 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
-{-# LANGUAGE DataKinds, KindSignatures, GADTs, TypeOperators, ScopedTypeVariables, StandaloneDeriving #-}
 module Factor where
 
-import Prelude hiding (foldl)
+import Prelude hiding (sum)
 import Control.Applicative
 import Data.Array (Array, Ix, (!))
 import qualified Data.Array as Array
 import Data.Maybe (mapMaybe)
 import Data.List (elemIndex)
-import Data.Foldable (foldl)
+import Data.Foldable (sum)
 
 import Debug.Trace (trace)
 
@@ -167,7 +166,7 @@ normalize :: Factor Prob 'Unnormalized
           -> Factor Prob 'Normalized
 normalize (Factor [] arr) = NormalizedFactor [] arr
 normalize (Factor vars arr) =
-  let total = foldl (+) 0 arr
+  let total = sum arr
       alpha = (1.0 / total)
   in NormalizedFactor vars $ fmap (*alpha) arr
 

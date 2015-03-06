@@ -31,6 +31,10 @@ shouldBeClose actual expected =
     then return ()
     else expectationFailure $ "expected: " ++ show expected ++ "\nbut got: " ++ show actual
 
+-- Note: All vars and associated vals have to be in ascending order!
+prob :: [Var] -> [([Val], Prob)] -> Factor Prob Unnormalized
+prob vars assocs = Factor vars $ Array.array (makeValRange $ length vars) assocs
+
 spec :: Spec
 spec = describe "Bayes Variable Elimination" $ do
           context "Restricts variables" $ do
@@ -116,9 +120,7 @@ spec = describe "Bayes Variable Elimination" $ do
 
           context "Solves bayes inferences" $ do
             it "Can solve A -> B network. P(a|b) = P(b|a)P(a)" $
-              let prob :: [Var] -> [([Val], Prob)] -> Factor Prob Unnormalized
-                  prob vars assocs = Factor (sort vars) $ Array.array (makeValRange $ length vars) assocs
-                  a = 0
+              let a = 0
                   b = 1
                   p_a = prob [a] $
                     [ ([False], 0.3)
@@ -134,10 +136,7 @@ spec = describe "Bayes Variable Elimination" $ do
               in p `shouldBeClose` 0.1*0.7/(0.2*0.3+0.1*0.7)
 
             it "Can solve A -> B <- C. P(A=a|B=b,C=c) = alpha*P(B=b|A=a,C=c)P(A=a)P(C=c)" $
-              let -- Note: All vars and associated vals have to be in ascending order!
-                  prob :: [Var] -> [([Val], Prob)] -> Factor Prob Unnormalized
-                  prob vars assocs = Factor vars $ Array.array (makeValRange $ length vars) assocs
-                  a = 0
+              let a = 0
                   b = 1
                   c = 2
                   p_a = prob [a] $

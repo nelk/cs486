@@ -1,4 +1,3 @@
-{-# LANGUAGE DataKinds, ScopedTypeVariables, GADTs, ViewPatterns #-}
 module Bayes where
 
 import Prelude hiding (foldl, (^))
