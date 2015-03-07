@@ -20,7 +20,7 @@ traceShow prefix v
 
 type Var = Int
 type Val = Bool
-type Prob = Float
+type Prob = Double
 data Normalized = Normalized | Unnormalized
   deriving (Show, Eq)
 

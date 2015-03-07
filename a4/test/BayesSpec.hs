@@ -21,11 +21,11 @@ testData l = let keys = replicateM l allVals
              in Factor [0..l-1] arr
 -}
 
-epsilon :: Float
+epsilon :: Prob
 epsilon = 0.00001
 
 infixr 5 `shouldBeClose`
-shouldBeClose :: Float -> Float -> Expectation
+shouldBeClose :: Prob -> Prob -> Expectation
 shouldBeClose actual expected =
   if actual <= expected + epsilon && actual >= expected - epsilon
     then return ()

@@ -22,6 +22,8 @@ inference factors query_vars hidden_vars evidence =
       restrict_ :: [(Var, Val)] -> Factor Prob 'Unnormalized -> Factor Prob 'Unnormalized
       restrict_ evd fact = foldl (\f (var, val) -> restrict f var val) fact evd
 
+      -- TODO: Output factors after each step.
+
       step :: [Var] -> [Factor Prob Unnormalized] -> Factor Prob Unnormalized
       step _ [] = undefined
       step [] [f] = f
@@ -36,8 +38,14 @@ inference factors query_vars hidden_vars evidence =
         | otherwise = step vs (multiply f1 f2 : fs)
 
       computed_fact = traceShow "Computed: " $ step hidden_vars restricted_factors
+
+      -- TODO: Don't do this?
+      --all_summed_out = map (\f -> foldl sumout f hidden_vars) restricted_factors
+      --computed_fact = traceShow "Computed: " $ foldl1 multiply all_summed_out
+
       normalized_fact = traceShow "Normalized: " $ normalize computed_fact
-      -- Restrict by not of each query var.
+
+      -- Restrict by each query var.
       (Factor _ final_arr) = restrict_ query_vars (toUnnormalized normalized_fact)
   in sum final_arr
 
