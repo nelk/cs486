@@ -86,26 +86,30 @@ $titlepage{CS 486 - Assignment 4}{Alex Klen \\ 20372654}
   }
 
   $section{Variable Elimination}{
+    I have implemented in Haskell the variable elimination functions and code to use them to solve the questions in the next section of this assignment. $it{Factor.hs} contains the factor operations `multiply', `restrict', `sumout', and `normalize'. $it{Bayes.hs} contains the `inference' function as well as a DSL to specify an inferencing problem and queries. $it{Main.hs} contains all problem-specific code. There are also unit tests in $it{BayesSpec.hs}.
   }
 
   $section{Bayes Nets}{
     $enumerateN{label=\arabic*.}{
       $item{ % 1
         $labeledGraphic{$verb{fido_bayes_net.png}}{scale=0.7}{Bayesian Network for Fido}{fig:fido}
+        Refer to the Bayesian Network diagram with distribution tables in Figure $ref{fig:fido}.
       }
       $item{ % 2
-        Query: P(fh)
+        The query I used was #P(fh)#.$nl
+        The probability was 0.07306.
       }
       $item{ % 3
-        Query: P(fs | fh, fm)
+        The query I used was #P(fs \textbar fh, fm)#.$nl
+        The probability was 0.08654.
       }
       $item{ % 4
-        Query: P(fs | fh, fm, fb)
-        % How has it changed from 3?
+        The query I used was #P(fs \textbar fh, fm, fb)#.$nl
+        The probability was 0.3624. This has increased from q3 because when Fido is sick he is more likely to not eat, so if he didn't eat then he's more likely to be sick.
       }
       $item{ % 4
-        Query: P(fs | fh, fm, fb, na)
-        % How has it changed from 4?
+        The query I used was #P(fs \textbar fh, fm, fb, na)#.$nl
+        The probability was 0.3384. This has decreased from q4 because when your neighbour is away, his dog is more likely to howl, and when the neighbour's dog howls, Fido is more likely to howl, so since your neighbour is away, this could explain why Fido is howling, so he is a little less likely to be sick.
       }
     }
   }

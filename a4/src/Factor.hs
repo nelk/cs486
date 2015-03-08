@@ -11,13 +11,6 @@ import Data.Foldable (sum)
 
 import Debug.Trace (trace)
 
-debugOn :: Bool
-debugOn = False
-traceShow :: Show v => String -> v -> v
-traceShow prefix v
-  | debugOn   = trace (prefix ++ show v) v
-  | otherwise = v
-
 type Var = Int
 type Val = Bool
 type Prob = Double
@@ -63,15 +56,6 @@ insertAt :: Int -> a -> [a] -> [a]
 insertAt 0 v as = v:as
 insertAt i v (a:as) = a:insertAt (i-1) v as
 insertAt _ _ [] = []
-
-unionSorted :: Ord a => [a] -> [a] -> [a]
-unionSorted [] [] = []
-unionSorted as [] = as
-unionSorted [] bs = bs
-unionSorted (a:as) (b:bs)
-  | a == b    = a:unionSorted as bs
-  | a < b     = a:unionSorted as (b:bs)
-  | otherwise = b:unionSorted (a:as) bs
 
 restrict :: Factor t
          -> Var
