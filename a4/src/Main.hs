@@ -2,6 +2,7 @@ module Main where
 
 import Prelude hiding ((^))
 import Control.Monad.Writer
+import Control.Monad.Reader
 import Text.Printf (printf)
 
 import Factor
@@ -13,6 +14,15 @@ fb  = 2
 fm  = 3
 ndh = 4
 na  = 5
+
+varName :: Var -> String
+varName 0 = "fh"
+varName 1 = "fs"
+varName 2 = "fb"
+varName 3 = "fm"
+varName 4 = "ndh"
+varName 5 = "na"
+varName _ = undefined
 
 term :: BayesTerm -> Writer [BayesTerm] ()
 term t = tell [t]
@@ -43,47 +53,52 @@ problem = snd . runWriter $ do
   termWithNeg $ P(fh .|. -fs ^ -ndh ^ fm)  .= 0.4
   termWithNeg $ P(fh .|. -fs ^ -ndh ^ -fm) .= 0
 
-ndhPrior :: Prob
+ndhPrior :: (Prob, FactorLog)
 ndhPrior = compute problem
             (P(ndh))
             [P(na), P(fm), P(ndh .|. fm ^ na)]
             $ map getVar [na, fm]
 
-fhPrior :: Prob
+fhPrior :: (Prob, FactorLog)
 fhPrior = compute problem
             (P(fh))
             [P(na), P(fm), P(ndh .|. fm ^ na), P(fs), P(fh .|. fs ^ ndh ^ fm)]
             $ map getVar [na, fm, ndh, fs]
 
-fsGivenHowlMoon :: Prob
+fsGivenHowlMoon :: (Prob, FactorLog)
 fsGivenHowlMoon = compute problem
                     (P(fs .|. fh ^ fm))
                     [P(fm), P(fs), P(fh .|. fs ^ fm ^ ndh)]
                     $ map getVar [fb, ndh]
 
-fsGivenHowlMoonBowl :: Prob
+fsGivenHowlMoonBowl :: (Prob, FactorLog)
 fsGivenHowlMoonBowl = compute problem
                         (P(fs .|. fh ^ fm ^ fb))
                         [P(fm), P(fs), P(fb .|. fs), P(fh .|. fs ^ fm ^ ndh)]
                         $ map getVar [ndh]
 
-fsGivenHowlMoonBowlAway :: Prob
+fsGivenHowlMoonBowlAway :: (Prob, FactorLog)
 fsGivenHowlMoonBowlAway = compute problem
                             (P(fs .|. fh ^ fm ^ fb ^ na))
                             [P(na), P(fm), P(fs), P(fb .|. fs), P(ndh .|. fm ^ na), P(fh .|. fs ^ fm ^ ndh)]
                             $ map getVar [ndh]
 
+render :: (Prob, FactorLog) -> String -> IO ()
+render (p, logs) prob_str = do
+  putStrLn $ "------------------ " ++ prob_str ++ " ----------------------------------"
+  mapM_ putStrLn $ map (flip runReader varName) logs
+  putStrLn "ANSWER:"
+  putStrLn $ prob_str ++ " = " ++ printf "%f" p
+  putStr "\n\n"
 
 main :: IO ()
 main = do
-  let formatDouble = printf "%f"
   putStrLn "\n-------------------------"
   putStrLn   "Bayesian Inference Solver"
   putStrLn   "-------------------------\n"
-  putStrLn $ "P(ndh) = " ++ formatDouble ndhPrior
-  putStrLn ""
-  putStrLn $ "q2: P(fh) = " ++ formatDouble fhPrior
-  putStrLn $ "q3: P(fs|fh,fm) = " ++ formatDouble fsGivenHowlMoon
-  putStrLn $ "q4: P(fs|fh,fm,fb) = " ++ formatDouble fsGivenHowlMoonBowl
-  putStrLn $ "q5: P(fs|fh,fm,fb,na) = " ++ formatDouble fsGivenHowlMoonBowlAway
+  --render ndhPrior "P(ndh)"
+  render fhPrior "q2: P(fh)"
+  render fsGivenHowlMoon "q3: P(fs|fh,fm)"
+  render fsGivenHowlMoonBowl "q4: P(fs|fh,fm,fb)"
+  render fsGivenHowlMoonBowlAway "q5: P(fs|fh,fm,fb,na)"
 

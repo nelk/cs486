@@ -21,8 +21,6 @@ traceShow prefix v
 type Var = Int
 type Val = Bool
 type Prob = Double
-data Normalized = Normalized | Unnormalized
-  deriving (Show, Eq)
 
 allVals :: [Val]
 allVals = [minBound .. maxBound]
@@ -53,11 +51,8 @@ instance (Ix a, Enum a) => Ix [a] where
   rangeSize (s:ss, e:es) = (fromEnum e - fromEnum s + 1) * Array.rangeSize (ss, es)
   rangeSize _ = undefined
 
-data Factor :: * -> Normalized -> * where
-  Factor :: [Var] -> Array [Val] t -> Factor t 'Unnormalized
-  NormalizedFactor :: [Var] -> Array [Val] t -> Factor t 'Normalized
-deriving instance Show t => Show (Factor t n)
-deriving instance Eq t => Eq (Factor t n)
+data Factor p = Factor [Var] (Array [Val] p)
+  deriving (Eq, Show)
 
 deleteAt :: Int -> [a] -> [a]
 deleteAt _ [] = []
@@ -78,10 +73,10 @@ unionSorted (a:as) (b:bs)
   | a < b     = a:unionSorted as (b:bs)
   | otherwise = b:unionSorted (a:as) bs
 
-restrict :: Factor t 'Unnormalized
+restrict :: Factor t
          -> Var
          -> Val
-         -> Factor t 'Unnormalized
+         -> Factor t
 restrict f@(Factor vars arr) var val = case var `elemIndex` vars of
   Nothing -> f
   Just i -> let new_vars = deleteAt i vars
@@ -90,13 +85,6 @@ restrict f@(Factor vars arr) var val = case var `elemIndex` vars of
                   | otherwise         = Nothing
                 new_assocs = mapMaybe restrict_f $ Array.assocs arr
             in Factor new_vars $ Array.array (makeValRange $ length new_vars) new_assocs
-
-{-
-unionFactorAssocs :: [Var] -> [([Val], Prob)]
-                  -> [Var] -> [([Var], Prob)]
-                  -> ([Var], [([Var], Prob)])
-unionFactorAssocs (avar:avars) () (bvar:bvars) () =
--}
 
 -- |Given two lists of variables, returns a list with
 -- an entry for each variable in the union of the two lists in order.
@@ -138,9 +126,9 @@ elementwiseMult arr_a arr_b info =
 
 
 multiply :: Num t
-         => Factor t 'Unnormalized
-         -> Factor t 'Unnormalized
-         -> Factor t 'Unnormalized
+         => Factor t
+         -> Factor t
+         -> Factor t
 multiply (Factor vars1 arr1) (Factor vars2 arr2) =
   let merged_info = unionSortedVars vars1 vars2
       new_vars = map (\(a, _, _) -> a) merged_info
@@ -149,9 +137,9 @@ multiply (Factor vars1 arr1) (Factor vars2 arr2) =
 
 
 sumout :: forall t. Num t
-       => Factor t 'Unnormalized
+       => Factor t
        -> Var
-       -> Factor t 'Unnormalized
+       -> Factor t
 sumout f@(Factor vars arr) var = case var `elemIndex` vars of
   Nothing -> f
   Just i  -> let new_vars = deleteAt i vars
@@ -166,16 +154,12 @@ sumout f@(Factor vars arr) var = case var `elemIndex` vars of
 
              in Factor new_vars $ Array.array new_bounds new_assocs
 
-normalize :: Factor Prob 'Unnormalized
-          -> Factor Prob 'Normalized
-normalize (Factor [] arr) = NormalizedFactor [] arr
+normalize :: Factor Prob
+          -> Factor Prob
+normalize (Factor [] arr) = Factor [] arr
 normalize (Factor vars arr) =
   let total = sum arr
       alpha = (1.0 / total)
-  in NormalizedFactor vars $ fmap (*alpha) arr
-
-toUnnormalized :: Factor Prob 'Normalized
-               -> Factor Prob 'Unnormalized
-toUnnormalized (NormalizedFactor vars arr) = Factor vars arr
+  in Factor vars $ fmap (*alpha) arr
 
 
