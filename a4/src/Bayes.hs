@@ -3,7 +3,7 @@ module Bayes where
 import Prelude hiding ((^), sum)
 import Data.Foldable (sum)
 import qualified Data.Array as Array
-import Data.List (sort, sortBy, groupBy, elemIndex, intercalate)
+import Data.List (sort, sortBy, groupBy, elemIndex, intercalate, intersperse)
 import Data.Ord (comparing)
 import Control.Monad.Writer
 import Control.Monad.Reader
@@ -18,16 +18,18 @@ type VarNameFn = Var -> String
 type FactorRenderFn = Reader VarNameFn String
 type FactorLog = [FactorRenderFn]
 
-renderFactor :: [Factor Prob] -> Factor Prob -> FactorOp -> FactorRenderFn
-renderFactor source_facts (Factor vars arr) op = ask >>= \varName -> return $ snd $ runWriter $ do
+renderFactor :: [Factor Prob] -> Factor Prob -> FactorOp -> Maybe Var -> FactorRenderFn
+renderFactor source_facts (Factor vars arr) op m_var = ask >>= \varName -> return $ snd $ runWriter $ do
   let rendF :: [Var] -> Writer String ()
       rendF vs = do
-        tell "Factor("
+        tell "F("
         tell $ intercalate ", " $ map varName vs
         tell ")"
 
-  mapM_ (\(Factor vs _) -> rendF vs) source_facts
-  tell $ " -> " ++ show op ++ " -> "
+  sequence_ $ intersperse (tell ", ") $ map (\(Factor vs _) -> rendF vs) source_facts
+  tell $ " -> " ++ show op
+  maybe (return ()) (tell . (" " ++ ) . varName) m_var
+  tell " -> "
   rendF vars
   tell "\n"
 
@@ -39,7 +41,7 @@ renderFactor source_facts (Factor vars arr) op = ask >>= \varName -> return $ sn
 
       render_assoc :: [Var] -> ([Val], Prob) -> Writer String ()
       render_assoc vs (vals, p) = do
-        tell "P("
+        tell "F("
         tell $ intercalate ", " $ zipWith render_assig vs vals
         tell $ ") = " ++ printf "%f" p ++ "\n"
   mapM_ (render_assoc vars) assocs
@@ -54,48 +56,57 @@ inference factors query_vars hidden_vars evidence = runWriter $ do
   let restrict_ :: [(Var, Val)] -> Factor Prob -> Writer FactorLog (Factor Prob)
       restrict_ evd fact = foldM (\f (var, val) -> do
           let new_f = restrict f var val
-          tell [renderFactor [f] new_f Restrict]
+          tell [renderFactor [f] new_f Restrict (Just var)]
           return new_f
         ) fact evd
 
-  restricted_factors <-  mapM (restrict_ evidence) factors
+  restricted_factors <- mapM (restrict_ evidence) factors
 
-  let step :: [Var] -> [Factor Prob] -> Writer FactorLog (Factor Prob)
+  let hasVar :: Var -> [Factor Prob] -> Bool
+      hasVar v = any (\(Factor vs _) -> v `elem` vs)
+
+      step :: [Var] -> [Factor Prob] -> Writer FactorLog (Factor Prob)
       step _ [] = return undefined
       step [] [f] = return f
       step [] (f1:f2:fs) = do
         let new_f = multiply f1 f2
-        tell [renderFactor [f1, f2] new_f Multiply]
+        tell [renderFactor [f1, f2] new_f Multiply Nothing]
         step [] $ new_f : fs
-      step (v:vs) [f] = do
-        let new_f = sumout f v
-        tell [renderFactor [f] new_f Sumout]
-        step vs [new_f]
-      step (v:vs) (f1@(Factor vars1 _):f2@(Factor vars2 _):fs)
-        -- Both inside next sum - multiply.
-        | v `elem` vars1 && v `elem` vars2 = do
-          let new_f = multiply f1 f2
-          tell [renderFactor [f1, f2] new_f Multiply]
-          step (v:vs) (new_f:fs)
-        -- First inside next sum - sumout and multiply.
-        | v `elem` vars1 = do
-          let new_f1 = sumout f1 v
-              new_f = multiply new_f1 f2
-          tell [renderFactor [f1] new_f1 Sumout, renderFactor [new_f1, f2] new_f Multiply]
+      step (v:vs) (f:fs)
+        -- Variable gone, remove.
+        | not (hasVar v (f:fs)) = step vs (f:fs)
+        -- Variable only in first factor, sumout.
+        | not (hasVar v fs) = do
+          let new_f = sumout f v
+          tell [renderFactor [f] new_f Sumout (Just v)]
           step vs (new_f:fs)
-        -- Both outside - drop v and multiply
+        -- Last factor - return it.
+        | null fs = return f
+        -- Else multiply.
         | otherwise = do
-          let new_f = multiply f1 f2
-          tell [renderFactor [f1, f2] new_f Multiply]
-          step vs (new_f:fs)
+          let f2 = head fs
+              new_f = multiply f f2
+          tell [renderFactor [f, f2] new_f Multiply Nothing]
+          step (v:vs) $ new_f:tail fs
 
   computed_fact <- step hidden_vars restricted_factors
 
-      -- TODO: Don't do this?
-      --all_summed_out = map (\f -> foldl sumout f hidden_vars) restricted_factors
-      --computed_fact = traceShow "Computed: " $ foldl1 multiply all_summed_out
+{-
+  -- Do all mults then all sums.
+  all_multiplied <- foldM (\f1 f2 -> do
+                            let new_f = multiply f1 f2
+                            tell [renderFactor [f1, f2] new_f Multiply Nothing]
+                            return new_f
+                         ) (head restricted_factors) (tail restricted_factors)
+  computed_fact <- foldM (\f' v -> do
+                           let new_f = sumout f' v
+                           tell [renderFactor [f'] new_f Sumout (Just v)]
+                           return new_f
+                         ) all_multiplied hidden_vars
+-}
 
   let normalized_fact = normalize computed_fact
+  tell [renderFactor [computed_fact] normalized_fact Normalize Nothing]
 
   -- Restrict by each query var.
   (Factor _ final_arr) <- restrict_ query_vars normalized_fact

@@ -97,20 +97,431 @@ $titlepage{CS 486 - Assignment 4}{Alex Klen \\ 20372654}
       }
       $item{ % 2
         The query I used was #P(fh)#.$nl
-        The probability was 0.07306.
+        The probability was 0.07306.$nl
+        The operations performed on factors are shown in the following section.
       }
       $item{ % 3
         The query I used was #P(fs \textbar fh, fm)#.$nl
-        The probability was 0.08654.
+        The probability was 0.08654.$nl
+        The operations performed on factors are shown in the following section.
       }
       $item{ % 4
         The query I used was #P(fs \textbar fh, fm, fb)#.$nl
-        The probability was 0.3624. This has increased from q3 because when Fido is sick he is more likely to not eat, so if he didn't eat then he's more likely to be sick.
+        The probability was 0.3624. This has increased from q3 because when Fido is sick he is more likely to not eat, so if he didn't eat then he's more likely to be sick.$nl
+        The operations performed on factors are shown in the following section.
       }
-      $item{ % 4
+      $item{ % 5
         The query I used was #P(fs \textbar fh, fm, fb, na)#.$nl
-        The probability was 0.3384. This has decreased from q4 because when your neighbour is away, his dog is more likely to howl, and when the neighbour's dog howls, Fido is more likely to howl, so since your neighbour is away, this could explain why Fido is howling, so he is a little less likely to be sick.
+        The probability was 0.3384. This has decreased from q4 because when your neighbour is away, his dog is more likely to howl, and when the neighbour's dog howls, Fido is more likely to howl, so since your neighbour is away, this could explain why Fido is howling, so he is a little less likely to be sick.$nl
+        The operations performed on factors are shown in the following section.
       }
     }
   }
+  $section{Factor Tables}{
+    $enumerateN{label=\arabic*.}{
+      $item{ % 1
+        No factor tables.
+      }
+      $item{ % 2
+        The query I used was #P(fh)#.$nl
+$math{
+\\ F(na), F(fm, ndh, na) \rightarrow Multiply \rightarrow F(fm, ndh, na)
+\\ F(~fm, ~ndh, ~na) &= 0.7
+\\ F(~fm, ~ndh, na) &= 0.15
+\\ F(~fm, ndh, ~na) &= 0.0
+\\ F(~fm, ndh, na) &= 0.15
+\\ F(fm, ~ndh, ~na) &= 0.42
+\\ F(fm, ~ndh, na) &= 0.059999999999999984
+\\ F(fm, ndh, ~na) &= 0.27999999999999997
+\\ F(fm, ndh, na) &= 0.24
+}$math{
+\\ F(fm, ndh, na) \rightarrow Sumout na \rightarrow F(fm, ndh)
+\\ F(~fm, ~ndh) &= 0.85
+\\ F(~fm, ndh) &= 0.15
+\\ F(fm, ~ndh) &= 0.48
+\\ F(fm, ndh) &= 0.52
+\\ 
+\\ F(fm, ndh), F(fs) \rightarrow Multiply \rightarrow F(fs, fm, ndh)
+\\ F(~fs, ~fm, ~ndh) &= 0.8075
+\\ F(~fs, ~fm, ndh) &= 0.1425
+\\ F(~fs, fm, ~ndh) &= 0.45599999999999996
+\\ F(~fs, fm, ndh) &= 0.494
+\\ F(fs, ~fm, ~ndh) &= 0.0425
+\\ F(fs, ~fm, ndh) &= 0.0075
+\\ F(fs, fm, ~ndh) &= 0.024
+\\ F(fs, fm, ndh) &= 0.026000000000000002
+}$math{
+\\ F(fs, fm, ndh), F(fm) \rightarrow Multiply \rightarrow F(fs, fm, ndh)
+\\ F(~fs, ~fm, ~ndh) &= 0.7786722500000001
+\\ F(~fs, ~fm, ndh) &= 0.13741275
+\\ F(~fs, fm, ~ndh) &= 0.0162792
+\\ F(~fs, fm, ndh) &= 0.0176358
+\\ F(fs, ~fm, ~ndh) &= 0.040982750000000005
+\\ F(fs, ~fm, ndh) &= 0.00723225
+\\ F(fs, fm, ~ndh) &= 0.0008568000000000001
+\\ F(fs, fm, ndh) &= 0.0009282000000000001
+\\ 
+\\ F(fs, fm, ndh), F(fh, fs, fm, ndh) \rightarrow Multiply \rightarrow F(fh, fs, fm, ndh)
+\\ F(~fh, ~fs, ~fm, ~ndh) &= 0.7786722500000001
+\\ F(~fh, ~fs, ~fm, ndh) &= 0.1099302
+\\ F(~fh, ~fs, fm, ~ndh) &= 0.00976752
+\\ F(~fh, ~fs, fm, ndh) &= 0.00617253
+\\ F(~fh, fs, ~fm, ~ndh) &= 0.020491375000000003
+\\ F(~fh, fs, ~fm, ndh) &= 0.0018080625
+\\ F(~fh, fs, fm, ~ndh) &= 0.00008567999999999999
+\\ F(~fh, fs, fm, ndh) &= 0.000009282000000000009
+\\ F(fh, ~fs, ~fm, ~ndh) &= 0.0
+\\ F(fh, ~fs, ~fm, ndh) &= 0.02748255
+\\ F(fh, ~fs, fm, ~ndh) &= 0.006511680000000001
+\\ F(fh, ~fs, fm, ndh) &= 0.011463270000000001
+\\ F(fh, fs, ~fm, ~ndh) &= 0.020491375000000003
+\\ F(fh, fs, ~fm, ndh) &= 0.0054241875
+\\ F(fh, fs, fm, ~ndh) &= 0.0007711200000000001
+\\ F(fh, fs, fm, ndh) &= 0.0009189180000000001
+}$math{
+\\ F(fh, fs, fm, ndh) \rightarrow Sumout fm \rightarrow F(fh, fs, ndh)
+\\ F(~fh, ~fs, ~ndh) &= 0.7884397700000001
+\\ F(~fh, ~fs, ndh) &= 0.11610273
+\\ F(~fh, fs, ~ndh) &= 0.020577055000000004
+\\ F(~fh, fs, ndh) &= 0.0018173445
+\\ F(fh, ~fs, ~ndh) &= 0.006511680000000001
+\\ F(fh, ~fs, ndh) &= 0.038945820000000006
+\\ F(fh, fs, ~ndh) &= 0.021262495000000003
+\\ F(fh, fs, ndh) &= 0.0063431055000000005
+}$math{
+\\ F(fh, fs, ndh) \rightarrow Sumout ndh \rightarrow F(fh, fs)
+\\ F(~fh, ~fs) &= 0.9045425000000001
+\\ F(~fh, fs) &= 0.022394399500000002
+\\ F(fh, ~fs) &= 0.045457500000000005
+\\ F(fh, fs) &= 0.027605600500000004
+}$math{
+\\ F(fh, fs) \rightarrow Sumout fs \rightarrow F(fh)
+\\ F(~fh) &= 0.9269368995000001
+\\ F(fh) &= 0.0730631005
+}$math{
+\\ F(fh) \rightarrow Normalize \rightarrow F(fh)
+\\ F(~fh) &= 0.9269368994999999
+\\ F(fh) &= 0.07306310049999999
+\\ 
+\\ F(fh) \rightarrow Restrict fh \rightarrow F()
+\\ F() &= 0.07306310049999999
+}
+      }
+      $item{ % 3
+        The query I used was #P(fs \textbar fh, fm)#.$nl
+$math{
+\\ F(fm) \rightarrow Restrict fh \rightarrow F(fm)
+\\ F(~fm) &= 0.9643
+\\ F(fm) &= 0.0357
+\\ 
+\\ F(fm) \rightarrow Restrict fm \rightarrow F()
+\\ F() &= 0.0357
+\\ 
+\\ F(fs) \rightarrow Restrict fh \rightarrow F(fs)
+\\ F(~fs) &= 0.95
+\\ F(fs) &= 0.05
+\\ 
+\\ F(fs) \rightarrow Restrict fm \rightarrow F(fs)
+\\ F(~fs) &= 0.95
+\\ F(fs) &= 0.05
+}$math{
+\\ F(fh, fs, fm, ndh) \rightarrow Restrict fh \rightarrow F(fs, fm, ndh)
+\\ F(~fs, ~fm, ~ndh) &= 0.0
+\\ F(~fs, ~fm, ndh) &= 0.2
+\\ F(~fs, fm, ~ndh) &= 0.4
+\\ F(~fs, fm, ndh) &= 0.65
+\\ F(fs, ~fm, ~ndh) &= 0.5
+\\ F(fs, ~fm, ndh) &= 0.75
+\\ F(fs, fm, ~ndh) &= 0.9
+\\ F(fs, fm, ndh) &= 0.99
+\\ 
+\\ F(fs, fm, ndh) \rightarrow Restrict fm \rightarrow F(fs, ndh)
+\\ F(~fs, ~ndh) &= 0.4
+\\ F(~fs, ndh) &= 0.65
+\\ F(fs, ~ndh) &= 0.9
+\\ F(fs, ndh) &= 0.99
+\\ 
+\\ F(), F(fs) \rightarrow Multiply \rightarrow F(fs)
+\\ F(~fs) &= 0.033915
+\\ F(fs) &= 0.0017850000000000001
+\\ 
+\\ F(fs), F(fs, ndh) \rightarrow Multiply \rightarrow F(fs, ndh)
+\\ F(~fs, ~ndh) &= 0.013566000000000002
+\\ F(~fs, ndh) &= 0.022044750000000002
+\\ F(fs, ~ndh) &= 0.0016065
+\\ F(fs, ndh) &= 0.00176715
+}$math{
+\\ F(fs, ndh) \rightarrow Sumout ndh \rightarrow F(fs)
+\\ F(~fs) &= 0.035610750000000004
+\\ F(fs) &= 0.00337365
+\\ 
+\\ F(fs) \rightarrow Normalize \rightarrow F(fs)
+\\ F(~fs) &= 0.9134615384615385
+\\ F(fs) &= 0.08653846153846154
+\\ 
+\\ F(fs) \rightarrow Restrict fs \rightarrow F()
+\\ F() &= 0.08653846153846154
+}
+      }
+      $item{ % 4
+        The query I used was #P(fs \textbar fh, fm, fb)#.$nl
+$math{
+\\ F(fm) \rightarrow Restrict fh \rightarrow F(fm)
+\\ F(~fm) &= 0.9643
+\\ F(fm) &= 0.0357
+\\ 
+\\ F(fm) \rightarrow Restrict fb \rightarrow F(fm)
+\\ F(~fm) &= 0.9643
+\\ F(fm) &= 0.0357
+\\ 
+\\ F(fm) \rightarrow Restrict fm \rightarrow F()
+\\ F() &= 0.0357
+\\ 
+\\ F(fs) \rightarrow Restrict fh \rightarrow F(fs)
+\\ F(~fs) &= 0.95
+\\ F(fs) &= 0.05
+\\ 
+\\ F(fs) \rightarrow Restrict fb \rightarrow F(fs)
+\\ F(~fs) &= 0.95
+\\ F(fs) &= 0.05
+\\ 
+\\ F(fs) \rightarrow Restrict fm \rightarrow F(fs)
+\\ F(~fs) &= 0.95
+\\ F(fs) &= 0.05
+\\ 
+\\ F(fs, fb) \rightarrow Restrict fh \rightarrow F(fs, fb)
+\\ F(~fs, ~fb) &= 0.9
+\\ F(~fs, fb) &= 0.1
+\\ F(fs, ~fb) &= 0.4
+\\ F(fs, fb) &= 0.6
+\\ 
+\\ F(fs, fb) \rightarrow Restrict fb \rightarrow F(fs)
+\\ F(~fs) &= 0.1
+\\ F(fs) &= 0.6
+}$math{
+\\ F(fs) \rightarrow Restrict fm \rightarrow F(fs)
+\\ F(~fs) &= 0.1
+\\ F(fs) &= 0.6
+\\ 
+\\ F(fh, fs, fm, ndh) \rightarrow Restrict fh \rightarrow F(fs, fm, ndh)
+\\ F(~fs, ~fm, ~ndh) &= 0.0
+\\ F(~fs, ~fm, ndh) &= 0.2
+\\ F(~fs, fm, ~ndh) &= 0.4
+\\ F(~fs, fm, ndh) &= 0.65
+\\ F(fs, ~fm, ~ndh) &= 0.5
+\\ F(fs, ~fm, ndh) &= 0.75
+\\ F(fs, fm, ~ndh) &= 0.9
+\\ F(fs, fm, ndh) &= 0.99
+\\ 
+\\ F(fs, fm, ndh) \rightarrow Restrict fb \rightarrow F(fs, fm, ndh)
+\\ F(~fs, ~fm, ~ndh) &= 0.0
+\\ F(~fs, ~fm, ndh) &= 0.2
+\\ F(~fs, fm, ~ndh) &= 0.4
+\\ F(~fs, fm, ndh) &= 0.65
+\\ F(fs, ~fm, ~ndh) &= 0.5
+\\ F(fs, ~fm, ndh) &= 0.75
+\\ F(fs, fm, ~ndh) &= 0.9
+\\ F(fs, fm, ndh) &= 0.99
+}$math{
+\\ F(fs, fm, ndh) \rightarrow Restrict fm \rightarrow F(fs, ndh)
+\\ F(~fs, ~ndh) &= 0.4
+\\ F(~fs, ndh) &= 0.65
+\\ F(fs, ~ndh) &= 0.9
+\\ F(fs, ndh) &= 0.99
+\\ 
+\\ F(), F(fs) \rightarrow Multiply \rightarrow F(fs)
+\\ F(~fs) &= 0.033915
+\\ F(fs) &= 0.0017850000000000001
+\\ 
+\\ F(fs), F(fs) \rightarrow Multiply \rightarrow F(fs)
+\\ F(~fs) &= 0.0033915000000000004
+\\ F(fs) &= 0.0010710000000000001
+}$math{
+\\ F(fs), F(fs, ndh) \rightarrow Multiply \rightarrow F(fs, ndh)
+\\ F(~fs, ~ndh) &= 0.0013566000000000003
+\\ F(~fs, ndh) &= 0.0022044750000000004
+\\ F(fs, ~ndh) &= 0.0009639000000000002
+\\ F(fs, ndh) &= 0.0010602900000000002
+\\ 
+\\ F(fs, ndh) \rightarrow Sumout ndh \rightarrow F(fs)
+\\ F(~fs) &= 0.003561075000000001
+\\ F(fs) &= 0.0020241900000000004
+}$math{
+\\ F(fs) \rightarrow Normalize \rightarrow F(fs)
+\\ F(~fs) &= 0.6375838926174497
+\\ F(fs) &= 0.36241610738255037
+\\ 
+\\ F(fs) \rightarrow Restrict fs \rightarrow F()
+\\ F() &= 0.36241610738255037
+}
+
+      }
+      $item{ % 5
+        The query I used was #P(fs \textbar fh, fm, fb, na)#.$nl
+
+$math{
+\\ F(na) \rightarrow Restrict fh \rightarrow F(na)
+\\ F(~na) &= 0.7
+\\ F(na) &= 0.3
+\\ 
+\\ F(na) \rightarrow Restrict fb \rightarrow F(na)
+\\ F(~na) &= 0.7
+\\ F(na) &= 0.3
+\\ 
+\\ F(na) \rightarrow Restrict fm \rightarrow F(na)
+\\ F(~na) &= 0.7
+\\ F(na) &= 0.3
+\\ 
+\\ F(na) \rightarrow Restrict na \rightarrow F()
+\\ F() &= 0.3
+}$math{
+\\ F(fm) \rightarrow Restrict fh \rightarrow F(fm)
+\\ F(~fm) &= 0.9643
+\\ F(fm) &= 0.0357
+\\ 
+\\ F(fm) \rightarrow Restrict fb \rightarrow F(fm)
+\\ F(~fm) &= 0.9643
+\\ F(fm) &= 0.0357
+\\ 
+\\ F(fm) \rightarrow Restrict fm \rightarrow F()
+\\ F() &= 0.0357
+\\ 
+\\ F() \rightarrow Restrict na \rightarrow F()
+\\ F() &= 0.0357
+\\ 
+\\ F(fs) \rightarrow Restrict fh \rightarrow F(fs)
+\\ F(~fs) &= 0.95
+\\ F(fs) &= 0.05
+}$math{
+\\ F(fs) \rightarrow Restrict fb \rightarrow F(fs)
+\\ F(~fs) &= 0.95
+\\ F(fs) &= 0.05
+\\ 
+\\ F(fs) \rightarrow Restrict fm \rightarrow F(fs)
+\\ F(~fs) &= 0.95
+\\ F(fs) &= 0.05
+\\ 
+\\ F(fs) \rightarrow Restrict na \rightarrow F(fs)
+\\ F(~fs) &= 0.95
+\\ F(fs) &= 0.05
+\\ 
+\\ F(fs, fb) \rightarrow Restrict fh \rightarrow F(fs, fb)
+\\ F(~fs, ~fb) &= 0.9
+\\ F(~fs, fb) &= 0.1
+\\ F(fs, ~fb) &= 0.4
+\\ F(fs, fb) &= 0.6
+}$math{
+\\ F(fs, fb) \rightarrow Restrict fb \rightarrow F(fs)
+\\ F(~fs) &= 0.1
+\\ F(fs) &= 0.6
+\\ 
+\\ F(fs) \rightarrow Restrict fm \rightarrow F(fs)
+\\ F(~fs) &= 0.1
+\\ F(fs) &= 0.6
+\\ 
+\\ F(fs) \rightarrow Restrict na \rightarrow F(fs)
+\\ F(~fs) &= 0.1
+\\ F(fs) &= 0.6
+\\ 
+\\ F(fm, ndh, na) \rightarrow Restrict fh \rightarrow F(fm, ndh, na)
+\\ F(~fm, ~ndh, ~na) &= 1.0
+\\ F(~fm, ~ndh, na) &= 0.5
+\\ F(~fm, ndh, ~na) &= 0.0
+\\ F(~fm, ndh, na) &= 0.5
+\\ F(fm, ~ndh, ~na) &= 0.6
+\\ F(fm, ~ndh, na) &= 0.19999999999999996
+\\ F(fm, ndh, ~na) &= 0.4
+\\ F(fm, ndh, na) &= 0.8
+}$math{
+\\ F(fm, ndh, na) \rightarrow Restrict fb \rightarrow F(fm, ndh, na)
+\\ F(~fm, ~ndh, ~na) &= 1.0
+\\ F(~fm, ~ndh, na) &= 0.5
+\\ F(~fm, ndh, ~na) &= 0.0
+\\ F(~fm, ndh, na) &= 0.5
+\\ F(fm, ~ndh, ~na) &= 0.6
+\\ F(fm, ~ndh, na) &= 0.19999999999999996
+\\ F(fm, ndh, ~na) &= 0.4
+\\ F(fm, ndh, na) &= 0.8
+\\ 
+\\ F(fm, ndh, na) \rightarrow Restrict fm \rightarrow F(ndh, na)
+\\ F(~ndh, ~na) &= 0.6
+\\ F(~ndh, na) &= 0.19999999999999996
+\\ F(ndh, ~na) &= 0.4
+\\ F(ndh, na) &= 0.8
+\\ 
+\\ F(ndh, na) \rightarrow Restrict na \rightarrow F(ndh)
+\\ F(~ndh) &= 0.19999999999999996
+\\ F(ndh) &= 0.8
+}$math{
+\\ F(fh, fs, fm, ndh) \rightarrow Restrict fh \rightarrow F(fs, fm, ndh)
+\\ F(~fs, ~fm, ~ndh) &= 0.0
+\\ F(~fs, ~fm, ndh) &= 0.2
+\\ F(~fs, fm, ~ndh) &= 0.4
+\\ F(~fs, fm, ndh) &= 0.65
+\\ F(fs, ~fm, ~ndh) &= 0.5
+\\ F(fs, ~fm, ndh) &= 0.75
+\\ F(fs, fm, ~ndh) &= 0.9
+\\ F(fs, fm, ndh) &= 0.99
+\\ 
+\\ F(fs, fm, ndh) \rightarrow Restrict fb \rightarrow F(fs, fm, ndh)
+\\ F(~fs, ~fm, ~ndh) &= 0.0
+\\ F(~fs, ~fm, ndh) &= 0.2
+\\ F(~fs, fm, ~ndh) &= 0.4
+\\ F(~fs, fm, ndh) &= 0.65
+\\ F(fs, ~fm, ~ndh) &= 0.5
+\\ F(fs, ~fm, ndh) &= 0.75
+\\ F(fs, fm, ~ndh) &= 0.9
+\\ F(fs, fm, ndh) &= 0.99
+}$math{
+\\ F(fs, fm, ndh) \rightarrow Restrict fm \rightarrow F(fs, ndh)
+\\ F(~fs, ~ndh) &= 0.4
+\\ F(~fs, ndh) &= 0.65
+\\ F(fs, ~ndh) &= 0.9
+\\ F(fs, ndh) &= 0.99
+\\ 
+\\ F(fs, ndh) \rightarrow Restrict na \rightarrow F(fs, ndh)
+\\ F(~fs, ~ndh) &= 0.4
+\\ F(~fs, ndh) &= 0.65
+\\ F(fs, ~ndh) &= 0.9
+\\ F(fs, ndh) &= 0.99
+\\ 
+\\ F(), F() \rightarrow Multiply \rightarrow F()
+\\ F() &= 0.01071
+}$math{
+\\ F(), F(fs) \rightarrow Multiply \rightarrow F(fs)
+\\ F(~fs) &= 0.0101745
+\\ F(fs) &= 0.0005355000000000001
+\\ 
+\\ F(fs), F(fs) \rightarrow Multiply \rightarrow F(fs)
+\\ F(~fs) &= 0.00101745
+\\ F(fs) &= 0.0003213
+\\ 
+\\ F(fs), F(ndh) \rightarrow Multiply \rightarrow F(fs, ndh)
+\\ F(~fs, ~ndh) &= 0.00020348999999999996
+\\ F(~fs, ndh) &= 0.0008139600000000001
+\\ F(fs, ~ndh) &= 0.00006425999999999998
+\\ F(fs, ndh) &= 0.00025704
+}$math{
+\\ F(fs, ndh), F(fs, ndh) \rightarrow Multiply \rightarrow F(fs, ndh)
+\\ F(~fs, ~ndh) &= 0.00008139599999999999
+\\ F(~fs, ndh) &= 0.000529074
+\\ F(fs, ~ndh) &= 0.00005783399999999999
+\\ F(fs, ndh) &= 0.0002544696
+\\ 
+\\ F(fs, ndh) \rightarrow Sumout ndh \rightarrow F(fs)
+\\ F(~fs) &= 0.00061047
+\\ F(fs) &= 0.0003123036
+}$math{
+\\ F(fs) \rightarrow Normalize \rightarrow F(fs)
+\\ F(~fs) &= 0.6615598885793873
+\\ F(fs) &= 0.3384401114206128
+\\ 
+\\ F(fs) \rightarrow Restrict fs \rightarrow F()
+\\ F() &= 0.3384401114206128
+}
+
+      }
+    }
+  }
+
 }

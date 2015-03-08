@@ -37,6 +37,6 @@ dist/build/bayesian-vars-tests/bayesian-vars-tests: $(HASK_ALL)
 
 bundle: ayklen_cs486_a4.tar.gz
 
-ayklen_cs486_a3.tar.gz: Makefile a4.pdf $(HASK_ALL)
+ayklen_cs486_a4.tar.gz: Makefile a4.pdf $(HASK_ALL)
 	tar cfzv $@ $^
 

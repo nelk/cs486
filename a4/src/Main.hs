@@ -62,25 +62,25 @@ ndhPrior = compute problem
 fhPrior :: (Prob, FactorLog)
 fhPrior = compute problem
             (P(fh))
-            [P(na), P(fm), P(ndh .|. fm ^ na), P(fs), P(fh .|. fs ^ ndh ^ fm)]
+            [P(fh .|. fs ^ ndh ^ fm), P(fm), P(fs), P(ndh .|. fm ^ na), P(na)]
             $ map getVar [na, fm, ndh, fs]
 
 fsGivenHowlMoon :: (Prob, FactorLog)
 fsGivenHowlMoon = compute problem
                     (P(fs .|. fh ^ fm))
-                    [P(fm), P(fs), P(fh .|. fs ^ fm ^ ndh)]
+                    [P(fh .|. fs ^ fm ^ ndh), P(fs), P(fm)]
                     $ map getVar [fb, ndh]
 
 fsGivenHowlMoonBowl :: (Prob, FactorLog)
 fsGivenHowlMoonBowl = compute problem
                         (P(fs .|. fh ^ fm ^ fb))
-                        [P(fm), P(fs), P(fb .|. fs), P(fh .|. fs ^ fm ^ ndh)]
+                        [P(fh .|. fs ^ fm ^ ndh), P(fb .|. fs), P(fs), P(fm)]
                         $ map getVar [ndh]
 
 fsGivenHowlMoonBowlAway :: (Prob, FactorLog)
 fsGivenHowlMoonBowlAway = compute problem
                             (P(fs .|. fh ^ fm ^ fb ^ na))
-                            [P(na), P(fm), P(fs), P(fb .|. fs), P(ndh .|. fm ^ na), P(fh .|. fs ^ fm ^ ndh)]
+                            [P(fh .|. fs ^ fm ^ ndh), P(ndh .|. fm ^ na), P(fb .|. fs), P(fs), P(fm), P(na)]
                             $ map getVar [ndh]
 
 render :: (Prob, FactorLog) -> String -> IO ()
@@ -96,9 +96,15 @@ main = do
   putStrLn "\n-------------------------"
   putStrLn   "Bayesian Inference Solver"
   putStrLn   "-------------------------\n"
-  --render ndhPrior "P(ndh)"
-  render fhPrior "q2: P(fh)"
-  render fsGivenHowlMoon "q3: P(fs|fh,fm)"
-  render fsGivenHowlMoonBowl "q4: P(fs|fh,fm,fb)"
-  render fsGivenHowlMoonBowlAway "q5: P(fs|fh,fm,fb,na)"
+  let answers = [ ("q2: P(fh)", fhPrior)
+                , ("q3: P(fs|fh,fm)", fsGivenHowlMoon)
+                , ("q4: P(fs|fh,fm,fb)", fsGivenHowlMoonBowl)
+                , ("q5: P(fs|fh,fm,fb,na)", fsGivenHowlMoonBowlAway)
+                ]
+  -- Print all solutions first.
+  forM_ answers $ \(s, (p, _)) -> putStrLn $ s ++ " = " ++ printf "%f" p
+  putStr "\n"
+  -- Render factor tables.
+  mapM_ (uncurry $ flip render) answers
+
 
