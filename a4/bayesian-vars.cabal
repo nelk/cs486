@@ -10,12 +10,7 @@ library
   exposed-modules:  Bayes
                   , Factor
   default-extensions: DataKinds
-                    , RankNTypes
-                    , KindSignatures
-                    , GADTs
-                    , TypeOperators
                     , ScopedTypeVariables
-                    , StandaloneDeriving
                     , ViewPatterns
   ghc-options: -Wall
 -- -O2 -prof -fprof-auto -rtsopts
