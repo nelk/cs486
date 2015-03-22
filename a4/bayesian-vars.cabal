@@ -14,7 +14,7 @@ library
                     , ViewPatterns
   ghc-options: -Wall
 -- -O2 -prof -fprof-auto -rtsopts
-  build-depends:     base >=4.6 && <4.7
+  build-depends:     base >=4.7
                    , mtl
                    , array
                    , containers
@@ -33,7 +33,7 @@ executable bayesian-vars
                     , ScopedTypeVariables
                     , StandaloneDeriving
                     , ViewPatterns
-  build-depends:     base >=4.6 && <4.7
+  build-depends:     base >=4.7
                    , array
                    , containers
                    , mtl
@@ -41,7 +41,7 @@ executable bayesian-vars
 
 test-suite bayesian-vars-tests
   type:              exitcode-stdio-1.0
-  build-depends:     base >=4.6 && <4.7
+  build-depends:     base >=4.7
                    , bayesian-vars
                    , containers
                    , array
