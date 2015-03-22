@@ -83,21 +83,36 @@ valueIteration rewards utility discount epsilon its =
                            in (utility', epsilon', its' + 1)
   in answer
 
-prettyPrintGrid :: Grid -> IO ()
-prettyPrintGrid grid =
-  forM_ (sortBy (comparing ((0-).snd.fst) <> comparing (fst.fst)) $ Array.assocs grid) $ \((x, _), u) -> do
-    putStr $ printf "%8.4f, " u
-    when (x == fst (snd gridBounds)) $ putStr "\n"
+prettyPrintGrid :: Grid -> ((Coords, Float) -> IO ()) -> IO ()
+prettyPrintGrid grid fmt =
+  forM_ (sortBy (comparing ((0-).snd.fst) <> comparing (fst.fst)) $ Array.assocs grid) fmt
+
+prettyPrintGridValues :: Grid -> IO ()
+prettyPrintGridValues g = prettyPrintGrid g $ \((x, _), u) -> do
+  putStr $ printf "%8.4f, " u
+  when (x == fst (snd gridBounds)) $ putStr "\n"
+
+prettyPrintPolicy :: Grid -> IO ()
+prettyPrintPolicy g = prettyPrintGrid g $ \((x, y), u) -> do
+  putStr $ case policy g (x, y) of
+   (0, 1) -> "↑"
+   (0, -1) -> "↓"
+   (1, 0) -> "→"
+   (-1, 0) -> "←"
+  if (x == fst (snd gridBounds))
+     then putStr "\n"
+     else putStr " "
 
 prettyPrint :: Float -> (Grid, Epsilon, Int) -> IO ()
 prettyPrint r (utility, epsilon, iters) = do
   putStrLn $ "Problem with r = " ++ show r ++ ":"
-  prettyPrintGrid $ makeSimpleGrid r
-  putStrLn $ "\nSolution:"
-  prettyPrintGrid utility
-  putStr "\n"
+  prettyPrintGridValues $ makeSimpleGrid r
   putStrLn $ "Stopped after " ++ show iters ++ " iterations."
   putStrLn $ "Epsilon = " ++ show epsilon ++ "."
+  putStrLn $ "Utility:"
+  prettyPrintGridValues utility
+  putStrLn $ "Policy:"
+  prettyPrintPolicy utility
   putStr "\n"
 
 solve :: Float -> (Grid, Epsilon, Int)
