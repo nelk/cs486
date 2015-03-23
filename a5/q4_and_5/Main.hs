@@ -3,20 +3,25 @@ module Main where
 
 import System.Environment (getArgs)
 import System.Exit (exitFailure)
-import Control.Monad (when, forM)
+import Control.Applicative
+import Control.Monad
 import Data.Char (isSpace)
 
-import Data.List.Split (endByOneOf)
+import Data.List.Split (splitOn)
 import Safe (readMay)
 import Data.Vector.Unboxed (Vector)
 import qualified Data.Vector.Unboxed as V
+import Data.Function (fix)
 
 import DecisionTree
+
+trim :: String -> String
+trim = fix (\f s -> if not (null s) && ((||) <$> isSpace <*> (=='.') $ last s) then f (init s) else s)
 
 parseExamples :: String -> IO [Example]
 parseExamples file =
   forM (lines file) $ \line -> do
-    let pieces = endByOneOf ",." $ if isSpace (last line) then init line else line
+    let pieces = splitOn "," $ trim line
         attrs = init pieces
         outcome = last pieces
     parsedAttrs <- forM attrs $ \f_string ->

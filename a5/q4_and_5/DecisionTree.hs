@@ -45,7 +45,7 @@ entropy :: [Example] -> Float
 entropy examples =
   let (positives, negatives) = partitionByClass examples
       entr | null positives || null negatives = 0.0
-              | otherwise = boolEntropy $ lengthF positives / lengthF examples
+           | otherwise = boolEntropy $ lengthF positives / lengthF examples
   in entr
 
 remainder :: [Example] -> Attribute -> Float -> Float
