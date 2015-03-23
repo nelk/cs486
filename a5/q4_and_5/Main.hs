@@ -39,6 +39,7 @@ main = do
     Left err -> putStrLn err >> exitFailure
     Right examples ->
       let tree = learnDecisionTree examples [0..length attrNames] "<none>"
-      in print "yay"
+          dot = decisionTreeToDot tree attrNames
+      in putStrLn dot
 
 

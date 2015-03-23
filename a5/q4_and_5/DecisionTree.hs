@@ -1,10 +1,10 @@
 module DecisionTree where
 
 import Data.Vector.Unboxed (Vector, (!))
-import qualified Data.Vector.Unboxed as V
 import Data.List (partition, maximumBy, sort)
-import Control.Monad (join)
 import Data.Ord (comparing)
+import Control.Monad.State
+import Control.Monad.Writer
 
 type Attribute = Int
 type FeatureName = String
@@ -83,5 +83,41 @@ learnDecisionTree examples attrs parent_class
         this_class = pluralityValue examples
         recurse_branch exs = learnDecisionTree exs attrs this_class
     in Branch best_attr best_thresh (recurse_branch lefts) (recurse_branch rights)
+
+
+nodeName :: Int -> String
+nodeName id' = "n" ++ show id'
+
+genNode :: Int -> String -> String
+genNode id' label = nodeName id' ++ "[label=\"" ++ label ++ "\"];"
+
+decisionTreeToDot :: DecisionTree -> [String] -> String
+decisionTreeToDot tree attr_names =
+  let state_comp = decisionTreeToDot_ tree attr_names
+      writer_comp = runStateT state_comp 1
+      (_, dot_lines) = runWriter writer_comp
+      header = [ "digraph G {"
+               , "rankdir=TB;"
+               ]
+      footer = ["}"]
+  in unlines $ header ++ dot_lines ++ footer
+
+decisionTreeToDot_ :: DecisionTree -> [String] -> StateT Int (Writer [String]) ()
+decisionTreeToDot_ (Leaf clss) _ = do
+  cur_id <- get
+  put $ cur_id + 1
+  tell . return $ genNode cur_id clss
+decisionTreeToDot_ (Branch attr thresh left right) attr_names = do
+  cur_id <- get
+  put $ cur_id + 1
+  tell . return $ genNode cur_id $ (attr_names !! attr) ++ " <= " ++ show thresh
+
+  let left_child_id = cur_id + 1
+  decisionTreeToDot_ left attr_names
+  tell . return $ (nodeName cur_id) ++ "->" ++ (nodeName left_child_id) ++ "[label=\"T\"];"
+
+  right_child_id <- get
+  decisionTreeToDot_ right attr_names
+  tell . return $ (nodeName cur_id) ++ " -> " ++ (nodeName right_child_id) ++ "[label=\"F\"];"
 
 
