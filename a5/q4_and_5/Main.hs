@@ -13,7 +13,7 @@ import DecisionTree
 
 usage :: IO ()
 usage = do
-  putStrLn "./decision-tree file.txt feature1 feature2 feature3..."
+  putStrLn "./decision-tree [--dot out.dot] file.txt feature1 feature2 feature3..."
   exitFailure
 
 parseExamples :: String -> Either String [Example]
@@ -28,18 +28,36 @@ parseExamples file =
         Just f -> Right f
     return $ Example (V.fromList parsedAttrs) outcome
 
-main :: IO ()
-main = do
-  args <- getArgs
-  when (length args < 2) usage
-  let filename = head args
-      attrNames = tail args
+parseAndLearnTree :: String -> [String] -> IO ([Example], DecisionTree)
+parseAndLearnTree filename attrNames = do
   file <- readFile filename
   case parseExamples file of
     Left err -> putStrLn err >> exitFailure
-    Right examples ->
-      let tree = learnDecisionTree examples [0..length attrNames] "<none>"
-          dot = decisionTreeToDot tree attrNames
-      in putStrLn dot
+    Right examples -> return (examples, learnDecisionTree examples [0..length attrNames] "<none>")
+
+main :: IO ()
+main = do
+  args <- getArgs
+  let is_dot = head args == "--dot"
+      dot_filename = args !! 1
+  when (not is_dot && length args < 2) usage
+  when (is_dot && length args < 4) usage
+
+  let filename | is_dot = args !! 2
+               | otherwise = head args
+      attrNames | is_dot = drop 3 args
+                | otherwise = tail args
+  (examples, tree) <- parseAndLearnTree filename attrNames
+
+  when is_dot $ do
+    putStrLn $ "Writing dot file " ++ dot_filename ++ "."
+    writeFile dot_filename $ decisionTreeToDot tree attrNames
+  let checkExample ex = exClass (classify tree $ exAttrs ex) == exClass ex
+      wrongExamples = filter (not . checkExample) examples
+  if null wrongExamples
+    then putStrLn "Tree worked on all examples!"
+    else do
+      putStrLn "Incorrectly Classified: "
+      print wrongExamples
 
 

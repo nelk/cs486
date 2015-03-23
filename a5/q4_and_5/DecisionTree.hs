@@ -85,6 +85,13 @@ learnDecisionTree examples attrs parent_class
     in Branch best_attr best_thresh (recurse_branch lefts) (recurse_branch rights)
 
 
+classify :: DecisionTree -> Vector Float -> Example
+classify (Leaf clss) attrs = Example attrs clss
+classify (Branch attr thresh left right) attrs
+  | attrs ! attr <= thresh = classify left attrs
+  | otherwise = classify right attrs
+
+
 nodeName :: Int -> String
 nodeName id' = "n" ++ show id'
 
