@@ -73,15 +73,13 @@ main = do
 
   let classifier = classify tree
       num_train_wrong = testClassifier classifier training_data
-  when (num_train_wrong > 0) $ putStrLn $ "Incorrectly classified "
-          ++ show num_train_wrong ++ "/" ++ show (length training_data)
+  putStrLn $ "Correctly classified "
+          ++ show (length training_data - num_train_wrong) ++ "/" ++ show (length training_data)
           ++ " training examples!"
 
   let num_test_wrong = testClassifier classifier test_data
-  putStrLn $ if num_test_wrong > 0
-               then "Incorrectly classified "
-                    ++ show num_test_wrong ++ "/" ++ show (length test_data)
-                    ++ " test examples."
-               else "Correctly classified all " ++ show (length test_data) ++ " test examples!"
+  putStrLn $ "Correctly classified "
+            ++ show (length test_data - num_test_wrong) ++ "/" ++ show (length test_data)
+            ++ " test examples."
 
 
