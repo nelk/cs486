@@ -7,16 +7,12 @@ import Control.Monad (when, forM)
 
 import Data.List.Split (endByOneOf)
 import Safe (readMay)
+import Data.Vector.Unboxed (Vector)
 import qualified Data.Vector.Unboxed as V
 
 import DecisionTree
 
-usage :: IO ()
-usage = do
-  putStrLn "./decision-tree [--dot out.dot] file.txt feature1 feature2 feature3..."
-  exitFailure
-
-parseExamples :: String -> Either String [Example]
+parseExamples :: String -> IO [Example]
 parseExamples file =
   forM (lines file) $ \line -> do
     let pieces = endByOneOf ",." $ init line
@@ -24,40 +20,65 @@ parseExamples file =
         outcome = last pieces
     parsedAttrs <- forM attrs $ \f_string ->
       case readMay f_string :: Maybe Float of
-        Nothing -> Left $ "Failed to parse " ++ f_string ++ " as a float."
-        Just f -> Right f
+        Nothing -> do
+          putStrLn $ "Failed to parse " ++ f_string ++ " as a float."
+          exitFailure
+        Just f -> return f
     return $ Example (V.fromList parsedAttrs) outcome
 
 parseAndLearnTree :: String -> [String] -> IO ([Example], DecisionTree)
 parseAndLearnTree filename attrNames = do
   file <- readFile filename
-  case parseExamples file of
-    Left err -> putStrLn err >> exitFailure
-    Right examples -> return (examples, learnDecisionTree examples [0..length attrNames] "<none>")
+  examples <- parseExamples file
+  putStrLn $ "Learning on " ++ show (length examples) ++ " training examples..."
+  return (examples, learnDecisionTree examples [0..length attrNames] "<none>")
+
+testClassifier :: (Vector Float -> Example) -> [Example] -> Int
+testClassifier classifier examples =
+  let checkExample ex = exClass (classifier $ exAttrs ex) == exClass ex
+      wrong_examples = filter (not . checkExample) examples
+   in length wrong_examples
+
+usage :: IO ()
+usage = do
+  putStrLn "./decision-tree [--dot out.dot] trainData.txt testData.txt feature1 feature2 feature3..."
+  exitFailure
 
 main :: IO ()
 main = do
   args <- getArgs
   let is_dot = head args == "--dot"
       dot_filename = args !! 1
-  when (not is_dot && length args < 2) usage
-  when (is_dot && length args < 4) usage
+  when (not is_dot && length args < 3) usage
+  when (is_dot && length args < 5) usage
 
-  let filename | is_dot = args !! 2
-               | otherwise = head args
-      attrNames | is_dot = drop 3 args
-                | otherwise = tail args
-  (examples, tree) <- parseAndLearnTree filename attrNames
+  let args' | is_dot = drop 2 args
+            | otherwise = args
+      train_filename = head args'
+      test_filename = args' !! 1
+      attrNames = drop 2 args'
+
+  putStrLn $ "Training on data from " ++ train_filename ++ "."
+  (training_data, tree) <- parseAndLearnTree train_filename attrNames
+  putStrLn $ "Testing on data from " ++ test_filename ++ "."
+  test_file <- readFile test_filename
+  test_data <- parseExamples test_file
 
   when is_dot $ do
     putStrLn $ "Writing dot file " ++ dot_filename ++ "."
     writeFile dot_filename $ decisionTreeToDot tree attrNames
-  let checkExample ex = exClass (classify tree $ exAttrs ex) == exClass ex
-      wrongExamples = filter (not . checkExample) examples
-  if null wrongExamples
-    then putStrLn "Tree worked on all examples!"
-    else do
-      putStrLn "Incorrectly Classified: "
-      print wrongExamples
+
+  let classifier = classify tree
+      num_train_wrong = testClassifier classifier training_data
+  when (num_train_wrong > 0) $ putStrLn $ "Incorrectly classified "
+          ++ show num_train_wrong ++ "/" ++ show (length training_data)
+          ++ " training examples!"
+
+  let num_test_wrong = testClassifier classifier test_data
+  putStrLn $ if num_test_wrong > 0
+               then "Incorrectly classified "
+                    ++ show num_test_wrong ++ "/" ++ show (length test_data)
+                    ++ " test examples."
+               else "Correctly classified all " ++ show (length test_data) ++ " test examples!"
 
 
