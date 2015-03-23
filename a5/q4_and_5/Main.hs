@@ -4,6 +4,7 @@ module Main where
 import System.Environment (getArgs)
 import System.Exit (exitFailure)
 import Control.Monad (when, forM)
+import Data.Char (isSpace)
 
 import Data.List.Split (endByOneOf)
 import Safe (readMay)
@@ -15,7 +16,7 @@ import DecisionTree
 parseExamples :: String -> IO [Example]
 parseExamples file =
   forM (lines file) $ \line -> do
-    let pieces = endByOneOf ",." $ init line
+    let pieces = endByOneOf ",." $ if isSpace (last line) then init line else line
         attrs = init pieces
         outcome = last pieces
     parsedAttrs <- forM attrs $ \f_string ->
@@ -31,7 +32,7 @@ parseAndLearnTree filename attrNames = do
   file <- readFile filename
   examples <- parseExamples file
   putStrLn $ "Learning on " ++ show (length examples) ++ " training examples..."
-  return (examples, learnDecisionTree examples [0..length attrNames] "<none>")
+  return (examples, learnDecisionTree examples [0..length attrNames - 1] "<none>")
 
 testClassifier :: (Vector Float -> Example) -> [Example] -> Int
 testClassifier classifier examples =
@@ -47,9 +48,9 @@ usage = do
 main :: IO ()
 main = do
   args <- getArgs
+  when (length args < 3) usage
   let is_dot = head args == "--dot"
       dot_filename = args !! 1
-  when (not is_dot && length args < 3) usage
   when (is_dot && length args < 5) usage
 
   let args' | is_dot = drop 2 args
@@ -57,6 +58,8 @@ main = do
       train_filename = head args'
       test_filename = args' !! 1
       attrNames = drop 2 args'
+
+  putStrLn $ "Problem has " ++ show (length attrNames) ++ " attributes."
 
   putStrLn $ "Training on data from " ++ train_filename ++ "."
   (training_data, tree) <- parseAndLearnTree train_filename attrNames
