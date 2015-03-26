@@ -23,6 +23,7 @@ fido_bayes_net.png: fido_bayes_net.dot
 HASK_Q1 = ./q1/*.hs ./q1/value-iteration.cabal
 HASK_Q45 = ./q4_and_5/*.hs ./q4_and_5/decision-tree.cabal
 HASK_ALL = $(HASK_Q1) $(HASK_Q45)
+SCRIPTS = ./q4_and_5/horse.sh ./q4_and_5/porto.sh
 
 Q1_EXEC = q1/dist/build/value-iteration/value-iteration
 Q45_EXEC = q4_and_5/dist/build/decision-tree/decision-tree
@@ -47,6 +48,6 @@ q4_and_5/porto.pdf: q4_and_5/porto.dot
 
 bundle: ayklen_cs486_a5.tar.gz
 
-ayklen_cs486_a5.tar.gz: Makefile a5.pdf $(HASK_ALL)
+ayklen_cs486_a5.tar.gz: Makefile a5.pdf $(HASK_ALL) $(SCRIPTS)
 	tar cfzv $@ $^
 

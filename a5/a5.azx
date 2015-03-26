@@ -1,6 +1,7 @@
 $import aztex-lib/latex.azx
 $import aztex-lib/amsmath.azx
 $import aztex-lib/graphicx.azx
+$import aztex-lib/listings.azx
 
 $titlepage{CS 486 - Assignment 5}{Alex Klen \\ 20372654}
 
@@ -11,6 +12,7 @@ $def T(t) = $large$bold$t$nl
     $enumerate{
       $item{ % 1
         $T{Value Iteration}
+        I implemented the Value Iteration algorithm in Haskell. You can find the source code in `q1/Main.hs'.
         For each of the following, the value iteration algorithm ran for a maximum of 25 steps. I assumed that any movement outside of the grid is a move to the same position, and that all moves from the top left position result in 0 utility (so it always stays at 10 utility).
 
         $def grid(al, body) = $nl$tabular{|$al$al$al|}{$hline$body$hline}$nl$nl
@@ -114,16 +116,103 @@ TODO
   $section{Programming Exercises}{
     $enumerate{
       $item{ % 1
-        $let label = Decision Tree for Equine Colic Diagnosis
-        $T$label
-TODO
-        $labeledGraphic$verb{./q4_and_5/horse.pdf}{scale=0.9}$label{fig:horse}
+        $let title = Decision Tree for Equine Colic Diagnosis
+        $T$title
+
+        $enumerateN{1.}{
+          $item{ % 1
+            I implemented the Decision Tree algorithm in Haskell. You can find the source in `q4_and_5/DecisionTree.hs' and `q4_and_5/Main.hs'. The algorithm for this problem is run using `./q4_and_5/horse.sh', which tells it which files to use for training and testing and what to name the attributes it finds for output. The program also generates a graphviz `.dot' file that can be rendered to a graph (included below in this report).
+          }
+          $item{ % 2
+            My program had the following output:
+            $code$verb{
+              Problem has 16 attributes.
+              Training on data from horseTrain.txt.
+              Learning on 132 training examples...
+              Testing on data from horseTest.txt.
+              Writing dot file horse.dot.
+              Correctly classified 132/132 training examples!
+              Correctly classified 13/13 test examples.
+            }
+          }
+          $item{ % 3
+            $labeledGraphic$verb{./q4_and_5/horse.pdf}{scale=0.9}$title{fig:horse}
+            My decision tree is shown in Figure $ref{fig:horse}.
+          }
+          $item{ % 4
+            The decision tree classified all 132 training instances correctly.
+            The nature of the tree construction algorithm will make sure this
+            is always the case, because the tree will become as deep as
+            necessary in order to separate all data points with different
+            classes, so the same data being classified by the tree will reach
+            the exact leaf it was placed in during training.
+          }
+          $item{ % 5
+            The decision tree classified all 13 test instances correctly.
+          }
+          $item{ % 6
+            I used the information gain metric in order to decide which
+            attribute and threshold to use for each node in order to divide the
+            data in the way that reduces entropy the most. While building the
+            tree, for every attribute, I sorted the values of all of the
+            training data at the node and took the averages of each consecutive
+            pair of values. I calculated the information gain of splitting the
+            data at the node for every attribute for every threshold for that
+            attribute, and used the attribute and threshold which gave the
+            largest information gain. My calculations for information gain were
+            taken directly from the textbook - you can see them in the source
+            code in `q4_and_5/DecisionTree.hs'.
+          }
+        }
       }
       $item{ % 2
-        $let label = Decision Tree for Math Student's Performance
-        $T$label
-TODO
-        $labeledGraphic$verb{./q4_and_5/porto.pdf}{scale=0.25, angle=90}$label{fig:porto}
+        $let title = Decision Tree for Math Student's Performance
+        $T$title
+
+        $enumerateN{1.}{
+          $item{ % 1
+            I used the same code/binary as in Q4.
+          }
+          $item{ % 2
+            My program had the following output:
+            $code$verb{
+              Problem has 28 attributes.
+              Training on data from /dev/fd/63.
+              Learning on 249 training examples...
+              Testing on data from /dev/fd/62.
+              Writing dot file porto.dot.
+              Correctly classified 249/249 training examples!
+              Correctly classified 82/146 test examples.
+            }
+          }
+          $item{ % 3
+            The decision tree classified all 249 training instances correctly.
+          }
+          $item{ % 4
+            The decision tree classified only 82/146 test instances correctly.
+          }
+          $item{ % 5
+            The decision tree learned on the training instances and so will
+            classify all of them correctly. However the test instances show
+            whether the tree can generalize what it learned from the training
+            set to new data. In this case the tree did not do a very good job
+            generalizing, although it performed better than random guessing.
+
+            There are many reasons why the decision tree failed to correctly
+            classify many test instances. One is that it is classifying in a
+            28-dimensional space and so might need a lot more data before it
+            can get reasonably good at classifying new data. There are likely
+            many correlations between variables that the decision tree did not
+            learn because it did not have enough training data. Another
+            possible reason is that the decision tree is overfitting the data
+            it trained on and so incorrectly interpolates classifications for
+            new data. I think this is unlikely in this case, however, because
+            there are relatively many dimensions and relatively few training
+            examples.
+          }
+        }
+
+        $labeledGraphic$verb{./q4_and_5/porto.pdf}{scale=0.25, angle=90}$title{fig:porto}
       }
     }
   }
