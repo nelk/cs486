@@ -1,0 +1,42 @@
+$import aztex-lib/latex.azx
+$import aztex-lib/amsmath.azx
+$import aztex-lib/graphicx.azx
+
+$titlepage{CS 486 - Assignment 5}{Alex Klen \\ 20372654}
+
+@{
+  $section{Written Exercises} {
+    $enumerate{
+      $item{ % 1
+        $large{Value Iteration}$nl
+TODO
+      }
+      $item{ % 2
+        $large{Games}$nl
+TODO
+      }
+      $item{ % 3
+        $large{Cross Validation}$nl
+TODO
+      }
+    }
+  }
+
+  $section{Programming Exercises}{
+    $enumerate{
+      $item{ % 1
+        $let label = Decision Tree for Equine Colic Diagnosis
+        $large$label$nl
+TODO
+        $labeledGraphic$verb{./q4_and_5/horse.pdf}{scale=0.9}$label{fig:horse}
+      }
+      $item{ % 2
+        $let label = Decision Tree for Math Student's Performance
+        $large$label$nl
+TODO
+        $labeledGraphic$verb{./q4_and_5/porto.pdf}{scale=0.25, angle=90}$label{fig:porto}
+      }
+    }
+  }
+
+}
