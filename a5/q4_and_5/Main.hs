@@ -87,4 +87,6 @@ main = do
             ++ show (length test_data - num_test_wrong) ++ "/" ++ show (length test_data)
             ++ " test examples."
 
+  --forM_ (zip [0..] attrNames) (\(i, name) -> putStrLn $ name ++ ": " ++ (show $ informationGain i (100.0) training_data))
+
 

@@ -19,7 +19,8 @@ data DecisionTree = Leaf Clss
                   | Branch Attribute Float DecisionTree DecisionTree
 
 allEqual :: Eq a => [a] -> Bool
-allEqual as | length as < 2 = True
+allEqual [] = True
+allEqual [_] = True
 allEqual (a:b:rest) | a /= b = False
                     | otherwise = allEqual (b:rest)
 
@@ -35,8 +36,8 @@ partitionByClass examples =
   in partition ((== a_class) . exClass) examples
 
 partitionByAttr :: Attribute -> Float -> [Example] -> ([Example], [Example])
-partitionByAttr attr thresh examples =
-  partition (\e -> exAttrs e ! attr <= thresh) examples
+partitionByAttr attr thresh =
+  partition (\e -> exAttrs e ! attr <= thresh)
 
 boolEntropy :: Float -> Float
 boolEntropy q = -(q * log2 q + (1 - q) * log2 (1 - q))
@@ -75,14 +76,17 @@ learnDecisionTree examples attrs parent_class
         calculateGains attr =
           let vals = sort $ map ((! attr) . exAttrs) examples
               thresholds = map ((1.0/2.0 *) . uncurry (+)) $ zip vals (tail vals)
-          in map (\t -> (attr, t, informationGain attr t examples)) thresholds
+          in -- trace ("threshes: " ++ show thresholds ++ "\nvals: " ++ show vals) $
+            map (\t -> (attr, t, informationGain attr t examples)) thresholds
 
-        (best_attr, best_thresh, _) =
-            maximumBy (comparing (\(_, _, g) -> g)) $ join $ map calculateGains attrs
+        -- Reverse attrs in order to prefer earlier attrs for ties for IG (maximumBy takes last).
+        (best_attr, best_thresh, ig) =
+            maximumBy (comparing (\(_, _, g) -> g)) $ join $ map calculateGains $ reverse attrs
         (lefts, rights) = partitionByAttr best_attr best_thresh examples
         this_class = pluralityValue examples
         recurse_branch exs = learnDecisionTree exs attrs this_class
-    in Branch best_attr best_thresh (recurse_branch lefts) (recurse_branch rights)
+    in -- trace (show best_attr ++ ": " ++ show best_thresh ++ ", ig=" ++ show ig) $
+      Branch best_attr best_thresh (recurse_branch lefts) (recurse_branch rights)
 
 
 classify :: DecisionTree -> Vector Float -> Example
@@ -121,10 +125,10 @@ decisionTreeToDot_ (Branch attr thresh left right) attr_names = do
 
   let left_child_id = cur_id + 1
   decisionTreeToDot_ left attr_names
-  tell . return $ (nodeName cur_id) ++ "->" ++ (nodeName left_child_id) ++ "[label=\"T\"];"
+  tell . return $ nodeName cur_id ++ "->" ++ nodeName left_child_id ++ "[label=\"T\"];"
 
   right_child_id <- get
   decisionTreeToDot_ right attr_names
-  tell . return $ (nodeName cur_id) ++ " -> " ++ (nodeName right_child_id) ++ "[label=\"F\"];"
+  tell . return $ nodeName cur_id ++ "->" ++ nodeName right_child_id ++ "[label=\"F\"];"
 
 

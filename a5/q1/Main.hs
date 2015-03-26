@@ -2,7 +2,6 @@ module Main where
 
 import Data.Array (Array, (!))
 import qualified Data.Array as Array
-import Control.Applicative
 import Data.List (maximumBy, sortBy)
 import Data.Ord (comparing)
 import Control.Arrow
@@ -10,18 +9,23 @@ import Data.Monoid
 import Control.Monad (when, forM_)
 import Text.Printf (printf)
 
-import Debug.Trace (trace)
-traceShow a = trace (show a) a
-
 type Coords = (Int, Int)
 type Grid = Array Coords Float
 type Epsilon = Float
 
+coordAdd :: Coords -> Coords -> Coords
 coordAdd (x, y) (x', y') = (x + x', y + y')
+
+coordSub :: Coords -> Coords -> Coords
 coordSub (x, y) (x', y') = (x - x', y - y')
 
+gridBounds :: (Coords, Coords)
 gridBounds = ((0, 0), (2, 2))
+
+xRange :: [Int]
 xRange = [fst (fst gridBounds)..fst (snd gridBounds)]
+
+yRange :: [Int]
 yRange = [snd (fst gridBounds)..snd (snd gridBounds)]
 
 makeSimpleGrid :: Float -> Grid
@@ -41,38 +45,40 @@ endState = (2, 2)
 maxIters :: Int
 maxIters = 25
 
-neighbours :: Grid -> Coords -> [Coords]
-neighbours g (x, y) =
-  filter
-    (Array.inRange (Array.bounds g))
-    [(x + dx, y + dy) | (dx, dy) <- [(-1, 0), (1, 0), (0, -1), (0, 1)]]
+getNeighbourUtil :: Grid -> Coords -> Coords -> Float
+getNeighbourUtil g start delta =
+  let end = coordAdd start delta
+      end' | Array.inRange (Array.bounds g) end = end
+           | otherwise = start
+  in g ! end'
 
-policy :: Grid -> Coords -> Coords
-policy g start =
-  let end = fst $ maximumBy (comparing snd) $ map (id &&& (g !)) $ neighbours g start
-  in coordSub end start
+movementDeltas :: [Coords]
+movementDeltas = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
-movementProb :: Grid -> Coords -> Coords -> Float
-movementProb g start end =
-  let delta = policy g start
-      prob | start == endState = 0
-           | coordAdd start delta == end = 0.8
-           | coordSub start delta == end = 0.1
-           | otherwise = 0.0
-  in prob
+getPolicy :: Grid -> Coords -> Coords
+getPolicy g start = fst $ maximumBy (comparing snd) $ map (id &&& getNeighbourUtil g start) movementDeltas
+
+movementProb :: Coords -> Coords -> Float
+movementProb pd@(pdx, pdy) delta
+  | delta == pd = 0.8
+  | delta == (-pdx, -pdy) = 0.0
+  | otherwise = 0.1
 
 valueIteration :: Grid -> Grid -> Float -> Epsilon -> Int -> (Grid, Epsilon, Int)
 valueIteration _ utility _ _ 0 = (utility, 0, 0)
 valueIteration rewards utility discount epsilon its =
-  let max_neighbour_utility coords =
-        maximum [ movementProb utility coords nb * (utility ! nb)
-                | nb <- neighbours utility coords
+  let policy_utility policy start =
+        sum [ movementProb policy delta * getNeighbourUtil utility start delta
+            | delta <- movementDeltas
+            ]
+      max_policy_utility start =
+        maximum [ policy_utility policy start
+                | policy <- movementDeltas
                 ]
-      new_utility_assocs = [ (coords, r + discount * max_neighbour_utility coords)
+      new_utility_assocs = [ (coords, r + discount * max_policy_utility coords)
                            | (coords, r) <- Array.assocs rewards
                            ]
       new_utility = Array.array (Array.bounds rewards) new_utility_assocs
-      max_delta :: Float
       max_delta = maximum $
                     map (abs . uncurry (-)) $
                       zip (Array.elems utility) (map snd new_utility_assocs)
@@ -84,8 +90,8 @@ valueIteration rewards utility discount epsilon its =
   in answer
 
 prettyPrintGrid :: Grid -> ((Coords, Float) -> IO ()) -> IO ()
-prettyPrintGrid grid fmt =
-  forM_ (sortBy (comparing ((0-).snd.fst) <> comparing (fst.fst)) $ Array.assocs grid) fmt
+prettyPrintGrid grid =
+  forM_ (sortBy (comparing ((0-).snd.fst) <> comparing (fst.fst)) $ Array.assocs grid)
 
 prettyPrintGridValues :: Grid -> IO ()
 prettyPrintGridValues g = prettyPrintGrid g $ \((x, _), u) -> do
@@ -93,15 +99,14 @@ prettyPrintGridValues g = prettyPrintGrid g $ \((x, _), u) -> do
   when (x == fst (snd gridBounds)) $ putStr "\n"
 
 prettyPrintPolicy :: Grid -> IO ()
-prettyPrintPolicy g = prettyPrintGrid g $ \((x, y), u) -> do
-  putStr $ case policy g (x, y) of
+prettyPrintPolicy g = prettyPrintGrid g $ \((x, y), _) -> do
+  putStr $ case getPolicy g (x, y) of
    (0, 1) -> "↑"
    (0, -1) -> "↓"
    (1, 0) -> "→"
    (-1, 0) -> "←"
-  if (x == fst (snd gridBounds))
-     then putStr "\n"
-     else putStr " "
+   _ -> "?"
+  putStr $ if x == fst (snd gridBounds) then "\n" else " "
 
 prettyPrint :: Float -> (Grid, Epsilon, Int) -> IO ()
 prettyPrint r (utility, epsilon, iters) = do
@@ -109,9 +114,9 @@ prettyPrint r (utility, epsilon, iters) = do
   prettyPrintGridValues $ makeSimpleGrid r
   putStrLn $ "Stopped after " ++ show iters ++ " iterations."
   putStrLn $ "Epsilon = " ++ show epsilon ++ "."
-  putStrLn $ "Utility:"
+  putStrLn "Utility:"
   prettyPrintGridValues utility
-  putStrLn $ "Policy:"
+  putStrLn "Policy:"
   prettyPrintPolicy utility
   putStr "\n"
 
@@ -127,5 +132,4 @@ main = mapM_ solveAndPrint [a_r, b_r, c_r, d_r]
         b_r = -3
         c_r = 0
         d_r = 3
-
 
