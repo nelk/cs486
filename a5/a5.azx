@@ -4,19 +4,108 @@ $import aztex-lib/graphicx.azx
 
 $titlepage{CS 486 - Assignment 5}{Alex Klen \\ 20372654}
 
+$def T(t) = $large$bold$t$nl
+
 @{
   $section{Written Exercises} {
     $enumerate{
       $item{ % 1
-        $large{Value Iteration}$nl
-TODO
+        $T{Value Iteration}
+        For each of the following, the value iteration algorithm ran for a maximum of 25 steps. I assumed that any movement outside of the grid is a move to the same position, and that all moves from the top left position result in 0 utility (so it always stays at 10 utility).
+
+        $def grid(al, body) = $nl$tabular{|$al$al$al|}{$hline$body$hline}$nl$nl
+        $enumerate{
+          $item{ % a
+            When #{r = 100}, the problem is:$nl
+            $grid{r}{
+              100.0000 &  -1.0000 &  10.0000\\
+               -1.0000 &  -1.0000 &  -1.0000\\
+               -1.0000 &  -1.0000 &  -1.0000\\
+            }
+            The optimal policy is: $nl
+            $grid{c}{
+              $uparrow & $leftarrow & $leftarrow\\
+              $uparrow & $uparrow & $leftarrow\\
+              $uparrow & $uparrow & $leftarrow\\
+            }
+            The estimated utility of starting in each square is:$nl
+            $grid{r}{
+              828.8879 & 708.5950 &  10.0000\\
+              708.5950 & 614.5235 & 478.1063\\
+              605.2197 & 531.6269 & 459.9854\\
+            }
+          }
+
+          $item{ % b
+            When #{r = -3}, the problem is:$nl
+            $grid{r}{
+               -3.0000 &  -1.0000 &  10.0000\\
+               -1.0000 &  -1.0000 &  -1.0000\\
+               -1.0000 &  -1.0000 &  -1.0000\\
+            }
+            The optimal policy is: $nl
+            $grid{c}{
+              $rightarrow & $rightarrow & $uparrow\\
+              $rightarrow & $uparrow & $uparrow\\
+              $rightarrow & $uparrow & $uparrow\\
+            }
+            The estimated utility of starting in each square is:$nl
+            $grid{r}{
+                2.8210 &   7.3319 &  10.0000\\
+                3.2025 &   5.2454 &   7.3319\\
+                1.9127 &   3.4066 &   5.0390\\
+            }
+          }
+
+          $item{ % c
+            When #{r = 0}, the problem is:$nl
+            $grid{r}{
+                0.0000 &  -1.0000 &  10.0000\\
+               -1.0000 &  -1.0000 &  -1.0000\\
+               -1.0000 &  -1.0000 &  -1.0000\\
+            }
+            The optimal policy is: $nl
+            $grid{c}{
+                6.2402 &   7.3412 &  10.0000\\
+                4.3662 &   5.3393 &   7.3412\\
+                2.7056 &   3.5430 &   5.0598\\
+            }
+            The estimated utility of starting in each square is:$nl
+            $grid{r}{
+              $rightarrow & $rightarrow & $uparrow\\
+              $uparrow & $uparrow & $uparrow\\
+              $uparrow & $uparrow & $uparrow\\
+            }
+          }
+
+          $item{ % d
+            When #{r = 3}, the problem is:$nl
+            $grid{r}{
+                3.0000 &  -1.0000 &  10.0000\\
+               -1.0000 &  -1.0000 &  -1.0000\\
+               -1.0000 &  -1.0000 &  -1.0000\\
+            }
+            The optimal policy is: $nl
+            $grid{c}{
+              $uparrow & $leftarrow & $leftarrow\\
+              $uparrow & $uparrow & $leftarrow\\
+              $uparrow & $uparrow & $leftarrow\\
+            }
+            The estimated utility of starting in each square is:$nl
+            $grid{r}{
+               24.0245 &  19.2604 &  10.0000\\
+               19.2604 &  15.5348 &  11.7954\\
+               15.1663 &  12.2518 &   9.5780\\
+            }
+          }
+        }
       }
       $item{ % 2
-        $large{Games}$nl
+        $T{Games}
 TODO
       }
       $item{ % 3
-        $large{Cross Validation}$nl
+        $T{Cross Validation}
 TODO
       }
     }
@@ -26,13 +115,13 @@ TODO
     $enumerate{
       $item{ % 1
         $let label = Decision Tree for Equine Colic Diagnosis
-        $large$label$nl
+        $T$label
 TODO
         $labeledGraphic$verb{./q4_and_5/horse.pdf}{scale=0.9}$label{fig:horse}
       }
       $item{ % 2
         $let label = Decision Tree for Math Student's Performance
-        $large$label$nl
+        $T$label
 TODO
         $labeledGraphic$verb{./q4_and_5/porto.pdf}{scale=0.25, angle=90}$label{fig:porto}
       }

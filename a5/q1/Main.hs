@@ -1,12 +1,13 @@
 module Main where
 
+import System.Environment
 import Data.Array (Array, (!))
 import qualified Data.Array as Array
 import Data.List (maximumBy, sortBy)
 import Data.Ord (comparing)
 import Control.Arrow
 import Data.Monoid
-import Control.Monad (when, forM_)
+import Control.Monad (forM_)
 import Text.Printf (printf)
 
 type Coords = (Int, Int)
@@ -39,8 +40,8 @@ makeSimpleGrid r = Array.array gridBounds $
 zeroGrid :: Grid
 zeroGrid = Array.array gridBounds [((x, y), 0.0) | y <- yRange, x <- xRange]
 
-endState :: Coords
-endState = (2, 2)
+endCoords :: Coords
+endCoords = (2, 2)
 
 maxIters :: Int
 maxIters = 25
@@ -75,7 +76,7 @@ valueIteration rewards utility discount epsilon its =
         maximum [ policy_utility policy start
                 | policy <- movementDeltas
                 ]
-      new_utility_assocs = [ (coords, r + discount * max_policy_utility coords)
+      new_utility_assocs = [ (coords, r + (if coords == endCoords then 0 else discount * max_policy_utility coords))
                            | (coords, r) <- Array.assocs rewards
                            ]
       new_utility = Array.array (Array.bounds rewards) new_utility_assocs
@@ -93,10 +94,20 @@ prettyPrintGrid :: Grid -> ((Coords, Float) -> IO ()) -> IO ()
 prettyPrintGrid grid =
   forM_ (sortBy (comparing ((0-).snd.fst) <> comparing (fst.fst)) $ Array.assocs grid)
 
-prettyPrintGridValues :: Grid -> IO ()
-prettyPrintGridValues g = prettyPrintGrid g $ \((x, _), u) -> do
-  putStr $ printf "%8.4f, " u
-  when (x == fst (snd gridBounds)) $ putStr "\n"
+prettyPrintGridValues :: Grid -> String -> String -> IO ()
+prettyPrintGridValues g sep endl = prettyPrintGrid g $ \((x, _), u) -> do
+  putStr $ printf "%8.4f" u
+  putStr $ if (x == fst (snd gridBounds)) then endl else sep
+
+aztexPrintPolicy :: Grid -> IO ()
+aztexPrintPolicy g = prettyPrintGrid g $ \((x, y), _) -> do
+  putStr $ case getPolicy g (x, y) of
+   (0, 1) -> "$uparrow"
+   (0, -1) -> "$downarrow"
+   (1, 0) -> "$rightarrow"
+   (-1, 0) -> "$leftarrow"
+   _ -> "?"
+  putStr $ if x == fst (snd gridBounds) then "\\\\\n" else " & "
 
 prettyPrintPolicy :: Grid -> IO ()
 prettyPrintPolicy g = prettyPrintGrid g $ \((x, y), _) -> do
@@ -108,26 +119,31 @@ prettyPrintPolicy g = prettyPrintGrid g $ \((x, y), _) -> do
    _ -> "?"
   putStr $ if x == fst (snd gridBounds) then "\n" else " "
 
-prettyPrint :: Float -> (Grid, Epsilon, Int) -> IO ()
-prettyPrint r (utility, epsilon, iters) = do
+prettyPrint :: Bool -> Float -> (Grid, Epsilon, Int) -> IO ()
+prettyPrint aztex r (utility, epsilon, iters) = do
+  let printGrid | aztex = \g -> prettyPrintGridValues g " & " "\\\\\n"
+                | otherwise = \g -> prettyPrintGridValues g ", " "\n"
   putStrLn $ "Problem with r = " ++ show r ++ ":"
-  prettyPrintGridValues $ makeSimpleGrid r
+  printGrid (makeSimpleGrid r)
   putStrLn $ "Stopped after " ++ show iters ++ " iterations."
   putStrLn $ "Epsilon = " ++ show epsilon ++ "."
   putStrLn "Utility:"
-  prettyPrintGridValues utility
+  printGrid utility
   putStrLn "Policy:"
-  prettyPrintPolicy utility
+  (if aztex then aztexPrintPolicy else prettyPrintPolicy) utility
   putStr "\n"
 
 solve :: Float -> (Grid, Epsilon, Int)
 solve r = valueIteration (makeSimpleGrid r) zeroGrid 0.9 0.01 maxIters
 
-solveAndPrint :: Float -> IO ()
-solveAndPrint = uncurry ($) . (prettyPrint &&& solve)
+solveAndPrint :: Bool -> Float -> IO ()
+solveAndPrint aztex = uncurry ($) . (prettyPrint aztex &&& solve)
 
 main :: IO ()
-main = mapM_ solveAndPrint [a_r, b_r, c_r, d_r]
+main = do
+  args <- getArgs
+  let aztex = "--aztex" `elem` args
+  mapM_ (solveAndPrint aztex) [a_r, b_r, c_r, d_r]
   where a_r = 100
         b_r = -3
         c_r = 0
