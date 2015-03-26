@@ -169,7 +169,15 @@ $def T(t) = $large$bold$t$nl
 
       $item{ % 3
         $T{Cross Validation}
-TODO
+        Since the data set has exactly the same number of positive and negative
+        examples, when using leave-one-out cross-validation, the majority
+        classifier will always be wrong. Without loss of generality, say we are
+        leaving out a positive example. Then the majority classifier is trained
+        on 99 positive examples and 100 negative examples. This classifier will
+        always guess negative since there were more negative examples, and so
+        it will be wrong on the positive test example used for
+        cross-validation. For this reason it will score zero for each left-out
+        example in this cross-validation tests.
       }
     }
   }
