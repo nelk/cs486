@@ -104,8 +104,69 @@ $def T(t) = $large$bold$t$nl
       }
       $item{ % 2
         $T{Games}
-TODO
-      }
+        Initial state:$nl
+        $tabular{|c|c|c|c|}{
+          $hline
+            & N      & C      & J      \\
+          $hline
+          N & 73, 25 & 57, 42 & 66, 32 \\
+          $hline
+          C & 80, 26 & 35, 12 & 32, 54 \\
+          $hline
+          J & 28, 27 & 63, 31 & 54, 29 \\
+          $hline
+        }$nl$nl
+
+        The top player's choice of `N' is dominated by `J'.$nl
+        $tabular{|c|c|c|}{
+          $hline
+            & C      & J      \\
+          $hline
+          N & 57, 42 & 66, 32 \\
+          $hline
+          C & 35, 12 & 32, 54 \\
+          $hline
+          J & 63, 31 & 54, 29 \\
+          $hline
+        }$nl$nl
+
+        The left player's choice of `C' is dominated by both of the others.$nl
+        $tabular{|c|c|c|}{
+          $hline
+            & C      & J      \\
+          $hline
+          N & 57, 42 & 66, 32 \\
+          $hline
+          J & 63, 31 & 54, 29 \\
+          $hline
+        }$nl$nl
+
+        The top player's choice of `J' is dominated by `C'.$nl
+        $tabular{|c|c|}{
+          $hline
+            & C      \\
+          $hline
+          N & 57, 42 \\
+          $hline
+          J & 63, 31 \\
+          $hline
+        }$nl$nl
+
+        The left player's choice of `N' is dominated by `J'.$nl
+        $tabular{|c|c|}{
+          $hline
+            & C      \\
+          $hline
+          J & 63, 31 \\
+          $hline
+        }$nl$nl
+        $nl
+        This choice of `J'/`C', 64/31 is a Nash Equilibrium in the original
+        grid because if the left player were to always choose `J', then the top
+        player would choose `C' since 31 is a higher payoff than 27 or 29, and
+        if the top player were to always choose `C', then the left player would
+        choose `J' since 63 is a higher payoff than 57 or 35.  }
+
       $item{ % 3
         $T{Cross Validation}
 TODO
