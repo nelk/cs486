@@ -129,8 +129,8 @@ TODO
               Problem has 16 attributes.
               Training on data from horseTrain.txt.
               Learning on 132 training examples...
-              Testing on data from horseTest.txt.
               Writing dot file horse.dot.
+              Testing on data from horseTest.txt.
               Correctly classified 132/132 training examples!
               Correctly classified 13/13 test examples.
             }
@@ -179,8 +179,8 @@ TODO
               Problem has 28 attributes.
               Training on data from /dev/fd/63.
               Learning on 249 training examples...
-              Testing on data from /dev/fd/62.
               Writing dot file porto.dot.
+              Testing on data from /dev/fd/62.
               Correctly classified 249/249 training examples!
               Correctly classified 82/146 test examples.
             }
