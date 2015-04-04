@@ -14,18 +14,49 @@ $def T(t) = $large$bold$t$nl
     }
     $item{ % 3.
       $enumerateN{(a)}{
-        $item{ % a.
+        $item{
           % (a) What are the motivations for this work? (5 pts)
+          The motivation for this work is to explore how adding a heuristic shaping function to learning algorithms. `Shaping' function is named after the psychological term used for training animals where a small reward is provided for behavior that is towards the right direction of the desired behavior. The goal is an addition of such a function to existing learning algorithms that preserves optimal solutions the original algorithm would find, but allows it to learn faster. The paper examines in depth shaping for both the model-free Q-learning algorithm and the model-based Rmax algorithm to show that the technique applies to both classes of learning algorithms.
         }
-        $item{ % b.
+        $item{
           % (b) What is the proposed solution? (5 pts)
+          The proposed solution was to add a potential-based shaping function $Phi that maps each state in the space to a real-valued number, and to add #{F(s, s') = $gamma $Phi(s') - $Phi(s)} to the transition reward from state #s to #s', where $gamma is the discounting factor.$nl
+
+          For Q-learning, with original update step
+          $math{
+            $hat{Q}(s, a) $leftarrow _$alpha r + $gamma $Max{a'}{$hat{Q}(s', a')}
+          }
+          adding shaping would change the update step to the following:
+          $math{
+            $hat{Q}(s, a) $leftarrow _$alpha r + F(s, s') + $gamma $Max{a'}{$hat{Q}(s', a')}
+          }
+
+          For Rmax, with original update step
+          $math{
+            $hat{Q}(s, a) = $hat{R}(s, a) + $gamma $sum{s'}{}{$hat{T}(s, a, s') $Max{a'}{$hat{Q}(s', a')}}
+          }
+          adding shaping would change the update step to the following:
+          $math{
+            $hat{Q}(s, a) = $hat{R}(s, a) + $sum{s'}{}{F(s, s')} $gamma $sum{s'}{}{$hat{T}(s, a, s') $Max{a'}{$hat{Q}(s', a')}}
+          }
+
+          A shaping function is defined to be admissable if #{$Phi(s) $ge $Max{a}{Q(s, a)}}, which means the shaping function cannot exceed the actual value of the state. This is similar to admissable functions for A*. An admissable shaping function must be used for the algorithms to retain their guarantees.
         }
-        $item{ % c.
+        $item{
           % (c) What is the evaluation of the proposed solution? (5 pts)
+          The paper included details about experiments that measure learning performance after adding shaping functions to six different algorithms (including Q-learning and Rmax). The experiments use a grid with pitfalls and a single goal, where an agent moving through the space has a 0.8 change of moving in a desired direction and 0.1 chance in moving in each orthogonal direction (the same problem layout as in assignment 5). The potential function used for shaping was #{$Phi(s) = C $times $frac{D(s)}{0.8} + G}, where #C is the per-step cost, #{D(s)} is the shortest path distance to the goal, and #G is the goal's reward.
+
+          The results for the particular problem were that shaping allowed both Q-learning and Rmax find the optimal strategy in about half the time that the original algorithms took.
         }
-        $item{ % d.
+        $item{
           % (d) What are the contributions? (5 pts)
+          The paper summarizes its three main contributions. It provides a novel way to add a shaping function to both model-based and model-free algorithms like Rmax and Q-learning, respectively. Secondly, it provides arguments and mathematical proofs that show why the addition of admissable shaping functions don't prevent Rmax from retaining the property of quickly finding near-optimal policies. Lastly, the paper presents results of real experiments showing how the learning performance original algorithms and ones modified with shaping functions compare.
         }
+        $item{
+          % (e) What are future directions for this research? (5 pts)
+          The paper mentions some of its short-comings which could be improved upon. While it considered both model-based and model-free algorithms, it didn't evaluate the use of shaping functions for more models that generalize experiences across states. The paper states that ``Of particular interest in future work will be integrating these ideas with more powerful function approximation in the Q functions or the model to help the methods scale to larger state spaces.''
+        }
+
       }
     }
   }
