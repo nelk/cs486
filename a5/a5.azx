@@ -8,11 +8,11 @@ $titlepage{CS 486 - Assignment 5}{Alex Klen \\ 20372654}
 $def T(t) = $large$bold$t$nl
 
 @{
-  $section{Written Exercises} {
+  $section_{Written Exercises} {
     $enumerate{
       $item{ % 1
         $T{Value Iteration}
-        I implemented the Value Iteration algorithm in Haskell. You can find the source code in `q1/Main.hs'.
+        I implemented the Value Iteration algorithm in Haskell. You can find the source code in `$verb{q1/Main.hs}'.
         For each of the following, the value iteration algorithm ran for a maximum of 25 steps. I assumed that any movement outside of the grid is a move to the same position, and that all moves from the top left position result in 0 utility (so it always stays at 10 utility).
 
         $def grid(al, body) = $nl$tabular{|$al$al$al|}{$hline$body$hline}$nl$nl
@@ -26,9 +26,9 @@ $def T(t) = $large$bold$t$nl
             }
             The optimal policy is: $nl
             $grid{c}{
+              $uparrow & $leftarrow & \\
               $uparrow & $leftarrow & $leftarrow\\
-              $uparrow & $uparrow & $leftarrow\\
-              $uparrow & $uparrow & $leftarrow\\
+              $uparrow & $leftarrow & $leftarrow\\
             }
             The estimated utility of starting in each square is:$nl
             $grid{r}{
@@ -47,9 +47,9 @@ $def T(t) = $large$bold$t$nl
             }
             The optimal policy is: $nl
             $grid{c}{
-              $rightarrow & $rightarrow & $uparrow\\
-              $rightarrow & $uparrow & $uparrow\\
-              $rightarrow & $uparrow & $uparrow\\
+              $uparrow & $leftarrow & \\
+              $uparrow & $leftarrow & $leftarrow\\
+              $uparrow & $leftarrow & $leftarrow\\
             }
             The estimated utility of starting in each square is:$nl
             $grid{r}{
@@ -74,7 +74,7 @@ $def T(t) = $large$bold$t$nl
             }
             The estimated utility of starting in each square is:$nl
             $grid{r}{
-              $rightarrow & $rightarrow & $uparrow\\
+              $rightarrow & $rightarrow & \\
               $uparrow & $uparrow & $uparrow\\
               $uparrow & $uparrow & $uparrow\\
             }
@@ -89,9 +89,9 @@ $def T(t) = $large$bold$t$nl
             }
             The optimal policy is: $nl
             $grid{c}{
+              $uparrow & $leftarrow & \\
               $uparrow & $leftarrow & $leftarrow\\
-              $uparrow & $uparrow & $leftarrow\\
-              $uparrow & $uparrow & $leftarrow\\
+              $uparrow & $leftarrow & $leftarrow\\
             }
             The estimated utility of starting in each square is:$nl
             $grid{r}{
@@ -182,15 +182,15 @@ $def T(t) = $large$bold$t$nl
     }
   }
 
-  $section{Programming Exercises}{
+  $section_{Programming Exercises}{
     $enumerate{
-      $item{ % 1
+      $itemN{4.}{ % 4
         $let title = Decision Tree for Equine Colic Diagnosis
         $T$title
 
         $enumerateN{1.}{
           $item{ % 1
-            I implemented the Decision Tree algorithm in Haskell. You can find the source in `q4_and_5/DecisionTree.hs' and `q4_and_5/Main.hs'. The algorithm for this problem is run using `./q4_and_5/horse.sh', which tells it which files to use for training and testing and what to name the attributes it finds for output. The program also generates a graphviz `.dot' file that can be rendered to a graph (included below in this report).
+            I implemented the Decision Tree algorithm in Haskell. You can find the source in `$verb{q4\_and\_5/DecisionTree.hs}' and `$verb{q4\_and\_5/Main.hs}'. The algorithm for this problem is run using `$verb{./q4\_and\_5/horse.sh}', which tells it which files to use for training and testing and what to name the attributes it finds for output. The program also generates a graphviz `$verb{.dot}' file that can be rendered to a graph (included below in this report).
           }
           $item{ % 2
             My program had the following output:
@@ -230,11 +230,11 @@ $def T(t) = $large$bold$t$nl
             attribute, and used the attribute and threshold which gave the
             largest information gain. My calculations for information gain were
             taken directly from the textbook - you can see them in the source
-            code in `q4_and_5/DecisionTree.hs'.
+            code in `$verb{q4\_and\_5/DecisionTree.hs}'.
           }
         }
       }
-      $item{ % 2
+      $itemN{5.}{ % 5
         $let title = Decision Tree for Math Student's Performance
         $T$title
 
@@ -253,6 +253,7 @@ $def T(t) = $large$bold$t$nl
               Correctly classified 249/249 training examples!
               Correctly classified 82/146 test examples.
             }
+            I've also included the (large) decision tree in Figure $ref{fig:porto}.
           }
           $item{ % 3
             The decision tree classified all 249 training instances correctly.
@@ -266,7 +267,7 @@ $def T(t) = $large$bold$t$nl
             whether the tree can generalize what it learned from the training
             set to new data. In this case the tree did not do a very good job
             generalizing, although it performed better than random guessing.
-
+            $nl
             There are many reasons why the decision tree failed to correctly
             classify many test instances. One is that it is classifying in a
             28-dimensional space and so might need a lot more data before it
@@ -278,6 +279,11 @@ $def T(t) = $large$bold$t$nl
             new data. I think this is unlikely in this case, however, because
             there are relatively many dimensions and relatively few training
             examples.
+            $nl
+            Another reason this could the case is that the features in the data
+            do not have strong correlations to the classifications. It could
+            simply be difficult to predict how a student will perform based off
+            of these attributes of their past performance.
           }
         }
 

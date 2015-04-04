@@ -68,7 +68,7 @@ movementDeltas = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
 -- |Compute policy by finding the movement delta which gives maximum utility.
 getPolicy :: Grid -> Coords -> Coords
-getPolicy g start = fst $ maximumBy (comparing snd) $ map (id &&& getNeighbourUtil g start) movementDeltas
+getPolicy g start = fst $ maxPolicyUtility g start
 
 -- |Compute the probability of making a move based off the policy delta.
 movementProb :: Coords -> Coords -> Float
@@ -79,6 +79,21 @@ movementProb pd@(pdx, pdy) delta
   | delta == (-pdx, -pdy) = 0.0
   | otherwise = 0.1
 
+-- |Computes the utility of using a particular policy at a given location.
+policyUtility :: Grid -> Coords -> Coords -> Float
+policyUtility utility policy start =
+  sum [ movementProb policy delta * getNeighbourUtil utility start delta
+      | delta <- movementDeltas
+      ]
+-- |Computes the maximum utility of using any policy at a given location.
+maxPolicyUtility :: Grid -> Coords -> (Coords, Float)
+maxPolicyUtility utility start =
+  maximumBy (comparing snd)
+    [ (policy, policyUtility utility policy start)
+    | policy <- movementDeltas
+    ]
+
+
 -- |Main value iteration algorithm.
 -- Given a reward grid, initial utility grid, discounting factor, convergence
 -- epsilon, and maximum number of iterations, it returns the expected utility
@@ -87,18 +102,8 @@ movementProb pd@(pdx, pdy) delta
 valueIteration :: Grid -> Grid -> Float -> Epsilon -> Int -> (Grid, Epsilon, Int)
 valueIteration _ utility _ _ 0 = (utility, 0, 0)
 valueIteration rewards utility discount epsilon its =
-  let -- Computes the utility of using a particular policy at a given location.
-      policy_utility policy start =
-        sum [ movementProb policy delta * getNeighbourUtil utility start delta
-            | delta <- movementDeltas
-            ]
-      -- Computes the maximum utility of using any policy at a given location.
-      max_policy_utility start =
-        maximum [ policy_utility policy start
-                | policy <- movementDeltas
-                ]
-      -- Association list for the grid after applying a Bellman Update to each cell.
-      new_utility_assocs = [ (coords, r + (if coords == endCoords then 0 else discount * max_policy_utility coords))
+  let -- Association list for the grid after applying a Bellman Update to each cell.
+      new_utility_assocs = [ (coords, r + (if coords == endCoords then 0 else discount * snd (maxPolicyUtility utility coords)))
                            | (coords, r) <- Array.assocs rewards
                            ]
       -- New utility grid after applying Bellman Update.
