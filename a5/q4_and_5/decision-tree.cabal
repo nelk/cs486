@@ -3,23 +3,23 @@
 
 name:                decision-tree
 version:             0.1.0.0
--- synopsis:            
--- description:         
--- license:             
+-- synopsis:
+-- description:
+-- license:
 --license-file:        LICENSE
 author:              Alex Klen
 maintainer:          aklen@uwaterloo.ca
--- copyright:           
--- category:            
+-- copyright:
+-- category:
 build-type:          Simple
--- extra-source-files:  
+-- extra-source-files:
 cabal-version:       >=1.10
 
 executable decision-tree
   main-is:             Main.hs
-  -- other-modules:       
-  -- other-extensions:    
-  build-depends:       base >=4.7 && <4.8
+  -- other-modules:
+  -- other-extensions:
+  build-depends:       base >=4.7
                      , vector
                      , split
                      , Safe

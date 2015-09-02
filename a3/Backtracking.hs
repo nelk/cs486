@@ -14,8 +14,17 @@ data BacktrackingT persist soln m a = BacktrackingT
 instance Functor m => Functor (BacktrackingT persist soln m) where
   fmap f m = BacktrackingT $ \p s -> (\(r, p', s') -> (fmap f r, p', s')) <$> runBacktrackingT m p s
 
+instance Applicative m => Applicative (BacktrackingT persist soln m) where
+  pure a = BacktrackingT $ \p s -> pure (Right a, p, s)
+  apFunc <*> apVal = BacktrackingT (\p s ->
+      (\(r', p', s') -> case r' of
+         Left bool -> const (Left bool, p', s') -- Rewrap because of type change (Either Bool b) not (Either Bool (a -> b))
+         Right f -> \(r'', p'', s'') -> (fmap f r'', p'', s'')
+      ) <$> runBacktrackingT apFunc p s <*> runBacktrackingT apVal p s
+    )
+
 instance Monad m => Monad (BacktrackingT persist soln m) where
-  return a = BacktrackingT $ \p s -> return (Right a, p, s)
+  return = pure
   m >>= f = BacktrackingT $ \p s -> do (r, p', s') <- runBacktrackingT m p s
                                        decide r p' s'
               where decide (Left b) p s = return (Left b, p, s)
